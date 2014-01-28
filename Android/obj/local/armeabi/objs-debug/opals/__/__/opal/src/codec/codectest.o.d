@@ -208,7 +208,7 @@ obj/local/armeabi/objs-debug/opals/__/__/opal/src/codec/codectest.o: \
  jni/../../opal/include/opal//transports.h \
  jni/../../ptlib/include/ptclib/pstun.h \
  jni/../../ptlib/include/ptclib/pxml.h \
- jni/../../opal/include/codec/udplistener.h
+ jni/../../opal/src/codec/udplistener.h
 
 jni/../../ptlib/include/ptlib.h:
 
@@ -638,4 +638,4 @@ jni/../../ptlib/include/ptclib/pstun.h:
 
 jni/../../ptlib/include/ptclib/pxml.h:
 
-jni/../../opal/include/codec/udplistener.h:
+jni/../../opal/src/codec/udplistener.h:

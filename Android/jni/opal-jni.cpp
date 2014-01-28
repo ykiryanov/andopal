@@ -59,7 +59,7 @@ extern "C" {
 
   jstring Java_org_opalvoip_opal_andsample_AndOPAL_CodecTest(JNIEnv* env, jclass clazz, jint bufferTime)
   {
-	BoneCodecTest* codecTest = new BoneCodecTest("--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 G.711-uLaw-64k H.261", 0L);
+	BoneCodecTest* codecTest = new BoneCodecTest("--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 G.711-uLaw-64k YUV420P", 0L);
     return env->NewStringUTF("OK");
   }
 

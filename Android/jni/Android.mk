@@ -127,6 +127,7 @@ LOCAL_C_INCLUDES := \
 
 OPAL_SRC_PATH := ../../opal/src
 H264_SRC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec
+AAC_SRC_PATH := $(OPAL_SRC_PATH)/codec/aac
 
 LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/ep/skinnyep.cxx \
@@ -285,6 +286,84 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/t38/t38proto.cxx
 
 # LOCAL_H264_FILES := $(H264_SRC_PATH)/ipp264codec.cpp
+LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/aactabs.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/pns.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/stproc.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/tns.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/buffers.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/decelmnt.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/dequant.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/filefmt.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/imdct.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/noiseless.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/bitstream.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/dct4.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/fft.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/huffman.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/hufftabs.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbr.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrfft.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrfreq.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrhfadj.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrhfgen.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrhuff.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrimdct.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrmath.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrqmf.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrside.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/sbrtabs.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/trigtabs.c \
+			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/trigtabs_fltgen.c \
+			$(AAC_SRC_PATH)/common/src/aac_dec_api.c \
+                        $(AAC_SRC_PATH)/common/src/aac_dec_stream_elements.c \
+                        $(AAC_SRC_PATH)/common/src/aac_enc_elements.c \
+                        $(AAC_SRC_PATH)/common/src/aac_enc_huff_tables.c \
+                        $(AAC_SRC_PATH)/common/src/aac_enc_search.c \
+                        $(AAC_SRC_PATH)/common/src/aac_filterbank_fp.c \
+                        $(AAC_SRC_PATH)/common/src/aac_sfb_tables.c \
+                        $(AAC_SRC_PATH)/common/src/aac_win_tables_fp.c \
+                        $(AAC_SRC_PATH)/common/src/aaccmn_adif.c \
+                        $(AAC_SRC_PATH)/common/src/aaccmn_adts.c \
+                        $(AAC_SRC_PATH)/common/src/aaccmn_chmap.c \
+                        $(AAC_SRC_PATH)/common/src/aaccmn_huff.c \
+                        $(AAC_SRC_PATH)/common/src/mp4cmn_config.c \
+                        $(AAC_SRC_PATH)/common/src/mp4cmn_const.c \
+                        $(AAC_SRC_PATH)/common/src/mp4cmn_pce.c \
+                        $(AAC_SRC_PATH)/common/src/ps_dec_parser.c \
+                        $(AAC_SRC_PATH)/common/src/ps_huff_tabs.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_dec_env_decoding.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_dec_parser.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_dec_reset.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_freq_tabs.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_huff_tabs.c \
+                        $(AAC_SRC_PATH)/common/src/sbr_pow_vec.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_api_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_decoding_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_huff_tables_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_ltp_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_ps_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_sbr_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_ssr_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/aac_dec_tns_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/als_dec_api.c \
+                        $(AAC_SRC_PATH)/dec/src/als_dec_parsers.c \
+                        $(AAC_SRC_PATH)/dec/src/als_dec_reconstruct.c \
+                        $(AAC_SRC_PATH)/dec/src/als_dec_tables.c \
+                        $(AAC_SRC_PATH)/dec/src/bsac_dec_api.c \
+                        $(AAC_SRC_PATH)/dec/src/bsac_dec_tables.c \
+                        $(AAC_SRC_PATH)/dec/src/ps_dec_tabs_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_dequant_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_filter_qmf_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_hf_adjust_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_hf_gen_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_noise_tabs_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/sbr_dec_qmf_tabs_fp.c \
+                        $(AAC_SRC_PATH)/dec/src/umc_aac_decoder.cpp
+
+LOCAL_PLAYER_FILES := $(OPAL_SRC_PATH)/codec/mpeg2ts.cxx \
+			$(OPAL_SRC_PATH)/codec/udplistener.cxx \
+			$(OPAL_SRC_PATH)/codec/h264TSDec.cpp
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
@@ -296,12 +375,14 @@ include $(BUILD_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := libandopal
-LOCAL_SRC_FILES := opal-jni.cpp
+LOCAL_SRC_FILES := opal-jni.cpp \
+		$(LOCAL_AAC_FILES)
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/../../ptlib/include \
 	$(LOCAL_PATH)/../../opal/include \
+	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(TARGET_C_INCLUDES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
