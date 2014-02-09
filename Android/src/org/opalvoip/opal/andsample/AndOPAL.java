@@ -49,7 +49,7 @@ public class AndOPAL extends Activity
 
     // Parameters
     String m_traceOutput = "opal.log";
-    // String m_traceOutput = "syslog";
+    //String m_traceOutput = "syslog";
     String m_traceOptions = "--trace-level 5 --trace-option +ar";
     int    m_audioBufferTime = Build.MANUFACTURER.equals("unknown") ? 250 : 120; // Milliseconds
     String m_natMethod = "STUN";

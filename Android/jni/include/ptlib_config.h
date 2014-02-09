@@ -735,7 +735,7 @@
 //
 
 #if P_VIDEO
-  #undef P_SDL
+  #define P_SDL 1
   #undef P_SDL_WIN64
   #undef P_SDL_WIN32
 #endif

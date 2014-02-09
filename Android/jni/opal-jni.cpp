@@ -35,6 +35,8 @@ extern int opal_java_swig_wrapper_link;
 static int const * const force_java_swig_wrapper_link = &opal_java_swig_wrapper_link;
 
 const unsigned FrameTime = 20; // Milliseconds
+extern "C" { jint JNI_OnLoad(JavaVM* vm, void* reserved); };
+extern "C" { void SDL_Android_Init(JNIEnv* mEnv, jclass cls); };
 
 extern "C" {
 
@@ -59,7 +61,17 @@ extern "C" {
 
   jstring Java_org_opalvoip_opal_andsample_AndOPAL_CodecTest(JNIEnv* env, jclass clazz, jint bufferTime)
   {
-	BoneCodecTest* codecTest = new BoneCodecTest("--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 G.711-uLaw-64k YUV420P", 0L);
+	JavaVM* jvm = NULL;
+	int gotVM = env->GetJavaVM(&jvm);
+
+	JNI_OnLoad(jvm, (void*) env);
+	SDL_Android_Init(env, clazz);
+
+//	BoneCodecTest* codecTest = new BoneCodecTest(env
+//     "--listen-address * --listen-port 5004 G.711-uLaw-64k YUV420P", 0L);
+	BoneCodecTest* codecTest = new BoneCodecTest(
+	 "--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 --display-device SDL "
+     "G.711-uLaw-64k YUV420P", 0L);
     return env->NewStringUTF("OK");
   }
 
