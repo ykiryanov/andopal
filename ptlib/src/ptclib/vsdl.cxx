@@ -34,6 +34,7 @@
 
 #include <ptlib.h>
 
+#define P_SDL 1
 #if P_SDL
 
 #pragma message("SDL video support enabled")
@@ -43,13 +44,11 @@
 #include <ptclib/vsdl.h>
 #include <ptlib/vconvert.h>
 
+#include "SDL.h"
+#include "SDL_render.h"
+
 #define new PNEW
 #define PTraceModule() "SDL"
-
-
-extern "C" {
-  #include <SDL.h>
-};
 
 #ifdef _MSC_VER
   #pragma comment(lib, P_SDL_LIBRARY)
@@ -69,6 +68,7 @@ PCREATE_VIDOUTPUT_PLUGIN_EX(SDL,
   }
 );
 
+void AdjustTextures();
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -100,7 +100,8 @@ class PSDL_Window : public PMutex
 
 
   private:
-    SDL_Surface * m_surface;
+    SDL_Window * m_screen;
+    SDL_Renderer * m_renderer;
     PThread     * m_thread;
     PSyncPoint    m_started;
 
@@ -108,7 +109,7 @@ class PSDL_Window : public PMutex
     DeviceList m_devices;
 
     PSDL_Window()
-      : m_surface(NULL)
+      : m_screen(NULL)
       , m_thread(NULL)
     {
     }
@@ -116,24 +117,21 @@ class PSDL_Window : public PMutex
 
     virtual void MainLoop()
     {
-#if PTRACING
+#if defined(PTRACING)
       PTRACE(4, "Start of event thread");
 
-      SDL_version v1;
-      SDL_VERSION(&v1);
-      const SDL_version * v2 = SDL_Linked_Version();
-      PTRACE(3, "Compiled version: "
-             << (unsigned)v1.major << '.' << (unsigned)v1.minor << '.' << (unsigned)v1.patch
-             << "  Run-Time version: "
-             << (unsigned)v2->major << '.' << (unsigned)v2->minor << '.' << (unsigned)v2->patch);
+      SDL_version v2;
+      SDL_GetVersion(&v2);
+      PTRACE(3, "  Run-Time version: "
+             << (unsigned)v2.major << '.' << (unsigned)v2.minor << '.' << (unsigned)v2.patch);
 #endif
-
       // initialise the SDL library
       if (::SDL_Init(SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE) < 0) {
         PTRACE(1, "Couldn't initialize SDL: " << ::SDL_GetError());
         return;
       }
 
+        
 #ifdef _WIN32
       SDL_SetModuleHandle(GetModuleHandle(NULL));
 #endif
@@ -144,7 +142,7 @@ class PSDL_Window : public PMutex
         ;
 
       ::SDL_Quit();
-      m_surface = NULL;
+      m_screen = NULL;
       m_thread = NULL;
 
       PTRACE(4, "End of event thread");
@@ -173,7 +171,7 @@ class PSDL_Window : public PMutex
               return !m_devices.empty();
 
             case e_SizeChanged :
-              AdjustOverlays();
+              AdjustTextures();
               ((PVideoOutputDevice_SDL *)sdlEvent.user.data1)->m_operationComplete.Signal();
               break;
 
@@ -189,19 +187,20 @@ class PSDL_Window : public PMutex
         case SDL_QUIT :
           PTRACE(3, "User closed window");
           for (DeviceList::iterator it = m_devices.begin(); it != m_devices.end(); ++it)
-            (*it)->FreeOverlay();
+            (*it)->FreeTexture();
 
           m_devices.clear();
           return false;
 
+#if !defined(ANDROID)
         case SDL_VIDEORESIZE :
           PTRACE(4, "Resize window to " << sdlEvent.resize.w << " x " << sdlEvent.resize.h);
-          AdjustOverlays();
+          AdjustTextures();
           break;
-
         case SDL_ACTIVEEVENT :
           PTRACE(4, "Window became active");
           break;
+#endif
 
         default :
           PTRACE(5, "Unhandled event " << (unsigned)sdlEvent.type);
@@ -215,7 +214,7 @@ class PSDL_Window : public PMutex
     {
       m_devices.push_back(device);
 
-      if (m_surface == NULL) {
+      if (m_screen == NULL) {
         PString deviceName = device->GetDeviceName();
 
         PINDEX x_pos = deviceName.Find("X=");
@@ -223,18 +222,34 @@ class PSDL_Window : public PMutex
         if (x_pos != P_MAX_INDEX && y_pos != P_MAX_INDEX) {
           PString str(PString::Printf, "SDL_VIDEO_WINDOW_POS=%i,%i",
                       atoi(&deviceName[x_pos+2]), atoi(&deviceName[y_pos+2]));
+#if !defined(ANDROID)
           ::SDL_putenv((char *)(const char *)str);
+#endif
         }
 
-        ::SDL_WM_SetCaption(device->GetTitle(), NULL);
-
-        m_surface = ::SDL_SetVideoMode(device->GetFrameWidth(),
-                                       device->GetFrameHeight(),
-                                       0, SDL_SWSURFACE /* | SDL_RESIZABLE */);
-        PTRACE_IF(1, m_surface == NULL, "Couldn't create SDL surface: " << ::SDL_GetError());
+          m_screen = SDL_CreateWindow(device->GetTitle(),
+                                      SDL_WINDOWPOS_UNDEFINED,
+                                      SDL_WINDOWPOS_UNDEFINED,
+                                      device->GetFrameWidth(), device->GetFrameHeight(),
+                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+          
+          PTRACE_IF(1, m_screen == NULL, "Couldn't create SDL surface: " << ::SDL_GetError());
       }
 
-      AdjustOverlays();
+      m_renderer = SDL_CreateRenderer(m_screen, -1, 0);
+        
+      if(m_renderer)
+      {
+          SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+          SDL_RenderClear(m_renderer);
+          SDL_RenderPresent(m_renderer);
+          SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+            // make the scaled rendering look smoother.
+          SDL_RenderSetLogicalSize(m_renderer,
+                device->GetFrameWidth(), device->GetFrameHeight());
+      }
+        
+      AdjustTextures();
 
       device->m_operationComplete.Signal();
     }
@@ -244,18 +259,18 @@ class PSDL_Window : public PMutex
     {
       m_devices.remove(device);
 
-      if (PAssertNULL(m_surface) != NULL) {
-        device->FreeOverlay();
-        AdjustOverlays();
+      if (PAssertNULL(m_screen) != NULL) {
+        device->FreeTexture();
+        AdjustTextures();
       }
 
       device->m_operationComplete.Signal();
     }
 
 
-    void AdjustOverlays()
+    void AdjustTextures()
     {
-      if (m_surface == NULL || m_devices.empty())
+      if (m_screen == NULL || m_devices.empty())
         return;
 
       PString title;
@@ -273,12 +288,11 @@ class PSDL_Window : public PMutex
 
         device.m_x = x;
         device.m_y = y;
-        if (device.m_overlay == NULL)
-          device.CreateOverlay(m_surface);
-        else if (device.GetFrameWidth() != (unsigned)device.m_overlay->w ||
-                 device.GetFrameHeight() != (unsigned)device.m_overlay->h) {
-          device.FreeOverlay();
-          device.CreateOverlay(m_surface);
+        if (device.m_texture == NULL)
+          device.CreateTexture(m_screen);
+        else  {
+          device.FreeTexture();
+          device.CreateTexture(m_screen);
         }
 
         if (fullWidth < x+device.GetFrameWidth())
@@ -293,11 +307,11 @@ class PSDL_Window : public PMutex
         }
       }
 
-      ::SDL_WM_SetCaption(title, NULL);
-
-      if (::SDL_SetVideoMode(fullWidth, fullHeight, 0, SDL_SWSURFACE /* | SDL_RESIZABLE */) != m_surface) {
-        PTRACE(1, "Couldn't resize surface: " << ::SDL_GetError());
-      }
+        //      ::SDL_WM_SetCaption(title, NULL);
+        //
+        //      if (::SDL_SetVideoMode(fullWidth, fullHeight, 0, SDL_SWSURFACE /* | SDL_RESIZABLE */) != m_surface) {
+        //        PTRACE(1, "Couldn't resize surface: " << ::SDL_GetError());
+        //      }
 
       for (DeviceList::iterator it = m_devices.begin(); it != m_devices.end(); ++it)
         (*it)->UpdateContent();
@@ -308,7 +322,8 @@ class PSDL_Window : public PMutex
 ///////////////////////////////////////////////////////////////////////
 
 PVideoOutputDevice_SDL::PVideoOutputDevice_SDL()
-  : m_overlay(NULL)
+  : m_texture(NULL)
+  , m_renderer(NULL)
   , m_x(0)
   , m_y(0)
 {
@@ -350,7 +365,7 @@ PBoolean PVideoOutputDevice_SDL::Open(const PString & name, PBoolean /*startImme
 
 PBoolean PVideoOutputDevice_SDL::IsOpen()
 {
-  return m_overlay != NULL;
+  return m_texture != NULL;
 }
 
 
@@ -407,9 +422,9 @@ PBoolean PVideoOutputDevice_SDL::SetFrameData(unsigned x, unsigned y,
 
   PWaitAndSignal mutex(PSDL_Window::GetInstance());
 
-  ::SDL_LockYUVOverlay(m_overlay);
+  // ::SDL_LockYUVOverlay(m_overlay);
 
-  PAssert(frameWidth == (unsigned)m_overlay->w && frameHeight == (unsigned)m_overlay->h, PLogicError);
+//  PAssert(frameWidth == (unsigned)m_overlay->w && frameHeight == (unsigned)m_overlay->h, PLogicError);
   PINDEX pixelsFrame = frameWidth * frameHeight;
   PINDEX pixelsQuartFrame = pixelsFrame >> 2;
 
@@ -421,11 +436,17 @@ PBoolean PVideoOutputDevice_SDL::SetFrameData(unsigned x, unsigned y,
     dataPtr = tempStore;
   }
 
-  memcpy(m_overlay->pixels[0], dataPtr,                                  pixelsFrame);
-  memcpy(m_overlay->pixels[1], dataPtr + pixelsFrame,                    pixelsQuartFrame);
-  memcpy(m_overlay->pixels[2], dataPtr + pixelsFrame + pixelsQuartFrame, pixelsQuartFrame);
+//  memcpy(m_overlay->pixels[0], dataPtr,                                  pixelsFrame);
+//  memcpy(m_overlay->pixels[1], dataPtr + pixelsFrame,                    pixelsQuartFrame);
+//  memcpy(m_overlay->pixels[2], dataPtr + pixelsFrame + pixelsQuartFrame, pixelsQuartFrame);
 
-  ::SDL_UnlockYUVOverlay(m_overlay);
+  SDL_UpdateTexture(m_texture, NULL, dataPtr, frameWidth * sizeof (Uint32));
+  
+  SDL_RenderClear(m_renderer);
+  SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
+  SDL_RenderPresent(m_renderer);
+    
+  //::SDL_UnlockYUVOverlay(m_overlay);
 
   PostEvent(PSDL_Window::e_ContentChanged, false);
   return true;
@@ -447,7 +468,7 @@ PString PVideoOutputDevice_SDL::GetTitle() const
 
 void PVideoOutputDevice_SDL::UpdateContent()
 {
-  if (m_overlay == NULL)
+  if (m_texture == NULL)
     return;
 
   SDL_Rect rect;
@@ -455,36 +476,44 @@ void PVideoOutputDevice_SDL::UpdateContent()
   rect.y = (Uint16)m_y;
   rect.w = (Uint16)frameWidth;
   rect.h = (Uint16)frameHeight;
-  ::SDL_DisplayYUVOverlay(m_overlay, &rect);
+  SDL_RenderPresent(m_renderer);
+  
+  //::SDL_DisplayYUVOverlay(m_overlay, &rect);
 }
 
 
-void PVideoOutputDevice_SDL::CreateOverlay(struct SDL_Surface * surface)
+void PVideoOutputDevice_SDL::CreateTexture(struct SDL_Window * window)
 {
-  if (m_overlay != NULL)
+  if (m_texture != NULL)
     return;
 
-  m_overlay = ::SDL_CreateYUVOverlay(frameWidth, frameHeight, SDL_IYUV_OVERLAY, surface);
-  if (m_overlay == NULL) {
-    PTRACE(1, "Couldn't create SDL overlay: " << ::SDL_GetError());
+  m_texture = SDL_CreateTexture(m_renderer,
+                      SDL_PIXELFORMAT_IYUV,
+                      SDL_TEXTUREACCESS_STREAMING,
+                      frameWidth,
+                      frameHeight);
+    
+  if (m_texture == NULL) {
+    PTRACE(1, "Couldn't create SDL texture: " << ::SDL_GetError());
     return;
   }
 
-  PINDEX sz = frameWidth*frameHeight;
-  memset(m_overlay->pixels[0], 0, sz);
-  sz /= 4;
-  memset(m_overlay->pixels[1], 0x80, sz);
-  memset(m_overlay->pixels[2], 0x80, sz);
+//  PINDEX sz = frameWidth*frameHeight;
+//  memset(m_overlay->pixels[0], 0, sz);
+//  sz /= 4;
+//  memset(m_overlay->pixels[1], 0x80, sz);
+//  memset(m_overlay->pixels[2], 0x80, sz);
 }
 
 
-void PVideoOutputDevice_SDL::FreeOverlay()
+void PVideoOutputDevice_SDL::FreeTexture()
 {
-  if (m_overlay == NULL)
+  if (m_texture == NULL)
     return;
 
-  ::SDL_FreeYUVOverlay(m_overlay);
-  m_overlay = NULL;
+  //::SDL_FreeYUVOverlay(m_overlay);
+  SDL_DestroyTexture(m_texture);
+  m_texture = NULL;
 }
 
 
