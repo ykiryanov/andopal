@@ -117,15 +117,16 @@ class PVideoOutputDevice_SDL : public PVideoOutputDevice
     );
 
   protected:
-    struct SDL_Overlay * m_overlay;
+    struct SDL_Texture * m_texture;
+    struct SDL_Renderer * m_renderer;
     PSyncPoint    m_operationComplete;
     unsigned      m_x, m_y;
 
   private:
     PString GetTitle() const;
     void UpdateContent();
-    void CreateOverlay(struct SDL_Surface * surface);
-    void FreeOverlay();
+    void CreateTexture(struct SDL_Window * window);
+    void FreeTexture();
     void PostEvent(unsigned codei, bool wait);
 
   friend class PSDL_Window;
