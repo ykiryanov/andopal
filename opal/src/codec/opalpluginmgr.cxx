@@ -1009,8 +1009,8 @@ bool OpalPluginVideoTranscoder::DecodeFrames(const RTP_DataFrame & src, RTP_Data
   }
 
   // Markers useless, just use a change of timestamp
-  if (m_badMarkers) {
-    if (m_lastDecodedTimestamp != newTimestamp) {
+//  if (m_badMarkers) {
+//    if (m_lastDecodedTimestamp != newTimestamp) {
       // Send an empty payload frame that has a marker bit
       RTP_DataFrame marker(src, src.GetHeaderSize());
       marker.SetMarker(true);
@@ -1021,8 +1021,8 @@ bool OpalPluginVideoTranscoder::DecodeFrames(const RTP_DataFrame & src, RTP_Data
       if (m_bufferRTP == NULL) {
         m_bufferRTP = new RTP_DataFrame((PINDEX)0, outputDataSize);
         m_lastFrameWasIFrame = false;
-      }
-    }
+//      }
+//    }
     if (m_lastMarkerTimestamp != UINT_MAX)
       const_cast<RTP_DataFrame &>(src).SetMarker(false);
   }

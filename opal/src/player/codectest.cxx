@@ -257,7 +257,7 @@ void BoneCodecTest::MonitorMain(PThread &, INT)
     }
     else
     {
-            bAudio = m_audio.Initialise(args);
+            //bAudio = m_audio.Initialise(args);
             bVideo = m_video.Initialise(args);
         
         if (!bAudio && !bVideo)
@@ -963,7 +963,7 @@ void TranscoderThread::Main()
 			PTRACE(codecTestTraceLevel, "Error\tSource " << (state ? "restor" : "fail") << "ed at frame " << frameCount);
 		}
 
-        timestamp += frameTime;
+        timestamp += 10L; // frameTime;
 
 #ifdef USE_OPALRATECONTROLER
 		bool skip;

@@ -16,6 +16,7 @@
 // for native audio
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+#include <SLES/OpenSLES_AndroidConfiguration.h>
 
 #define PLAYBACK_FRAME_SIZE_IN_SAMPLES		(4096)
 #define PLAYBACK_FRAME_SIZE_IN_BYTES	  	(8192)

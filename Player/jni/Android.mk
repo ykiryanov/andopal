@@ -7,13 +7,10 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := libptlibs
 
-SDL_PATH := SDL2-2.0.1
-
 #LOCAL_EXPORT_C_INCLUDES := ../include
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/../../ptlib/include \
-	$(LOCAL_PATH)/$(SDL_PATH)/include \
 	$(TARGET_C_INCLUDES)
 
 PTLIB_SRC_PATH := ../../ptlib/src/ptlib
@@ -291,7 +288,7 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/t38/t38proto.cxx
 
 # $(H264_SRC_PATH)/ipp264codec.cpp 
-LOCAL_H264_FILES := $(H264_SRC_PATH)/h264decode.asm
+LOCAL_H264_FILES := $(H264_SRC_PATH)/h264decode.s
 
 LOCAL_H261_FILES := 	$(H261_SRC_PATH)/h261vic.cxx \
 			$(H261_SRC_PATH)/vic/bv.c \
@@ -378,99 +375,6 @@ LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
                         $(AAC_SRC_PATH)/dec/src/sbr_dec_qmf_tabs_fp.c \
                         $(AAC_SRC_PATH)/dec/src/umc_aac_decoder.cpp
 
-SDL_PATH := SDL2-2.0.1
-SDL_SRC_PATH := $(SDL_PATH)/src
-
-LOCAL_SDL_FILES :=  	$(PTCLIB_SRC_PATH)/vsdl.cxx \
-			$(SDL_SRC_PATH)/SDL.c \
-			$(SDL_SRC_PATH)/core/android/SDL_android.c \
-			$(SDL_SRC_PATH)/SDL_assert.c \
-                        $(SDL_SRC_PATH)/SDL_error.c \
-                        $(SDL_SRC_PATH)/SDL_hints.c \
-                        $(SDL_SRC_PATH)/SDL_log.c \
-                        $(SDL_SRC_PATH)/atomic/SDL_atomic.c \
-			$(SDL_SRC_PATH)/atomic/SDL_spinlock.c \
-			$(SDL_SRC_PATH)/audio/SDL_audio.c \
-                        $(SDL_SRC_PATH)/audio/SDL_audiocvt.c \
-                        $(SDL_SRC_PATH)/audio/SDL_audiodev.c \
-                        $(SDL_SRC_PATH)/audio/SDL_audiotypecvt.c \
-                        $(SDL_SRC_PATH)/audio/SDL_mixer.c \
-                        $(SDL_SRC_PATH)/audio/SDL_wave.c \
-			$(SDL_SRC_PATH)/audio/dummy/SDL_dummyaudio.c \
-			$(SDL_SRC_PATH)/audio/android/SDL_androidaudio.c \
-			$(SDL_SRC_PATH)/cpuinfo/SDL_cpuinfo.c \
-                        $(SDL_SRC_PATH)/events/SDL_clipboardevents.c \
-                        $(SDL_SRC_PATH)/events/SDL_dropevents.c \
-                        $(SDL_SRC_PATH)/events/SDL_events.c \
-                        $(SDL_SRC_PATH)/events/SDL_gesture.c \
-                        $(SDL_SRC_PATH)/events/SDL_keyboard.c \
-                        $(SDL_SRC_PATH)/events/SDL_mouse.c \
-                        $(SDL_SRC_PATH)/events/SDL_quit.c \
-                        $(SDL_SRC_PATH)/events/SDL_touch.c \
-                        $(SDL_SRC_PATH)/events/SDL_windowevents.c \
-                        $(SDL_SRC_PATH)/file/SDL_rwops.c \
-                        $(SDL_SRC_PATH)/haptic/SDL_haptic.c \
-                        $(SDL_SRC_PATH)/haptic/dummy/SDL_syshaptic.c \
-                        $(SDL_SRC_PATH)/joystick/SDL_gamecontroller.c \
-                        $(SDL_SRC_PATH)/joystick/SDL_joystick.c \
-                        $(SDL_SRC_PATH)/joystick/android/SDL_sysjoystick.c \
-                        $(SDL_SRC_PATH)/loadso/dummy/SDL_sysloadso.c \
-			$(SDL_SRC_PATH)/power/SDL_power.c \
-                        $(SDL_SRC_PATH)/power/android/SDL_syspower.c \
-                        $(SDL_SRC_PATH)/filesystem/dummy/SDL_sysfilesystem.c \
-                        $(SDL_SRC_PATH)/render/SDL_render.c \
-                        $(SDL_SRC_PATH)/render/SDL_yuv_mmx.c \
-                        $(SDL_SRC_PATH)/render/SDL_yuv_sw.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_blendfillrect.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_blendline.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_blendpoint.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_drawline.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_drawpoint.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_render_sw.c \
-                        $(SDL_SRC_PATH)/render/software/SDL_rotate.c \
-			$(SDL_SRC_PATH)/render/opengles2/SDL_render_gles2.c \
-                        $(SDL_SRC_PATH)/render/opengles2/SDL_shaders_gles2.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_getenv.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_iconv.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_malloc.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_qsort.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_stdlib.c \
-                        $(SDL_SRC_PATH)/stdlib/SDL_string.c \
-                        $(SDL_SRC_PATH)/thread/SDL_thread.c \
-                        $(SDL_SRC_PATH)/thread/generic/SDL_sysmutex.c \
-                        $(SDL_SRC_PATH)/thread/generic/SDL_syssem.c \
-                        $(SDL_SRC_PATH)/thread/generic/SDL_systhread.c \
-                        $(SDL_SRC_PATH)/thread/generic/SDL_systls.c \
-			$(SDL_SRC_PATH)/thread/generic/SDL_syscond.c \
-                        $(SDL_SRC_PATH)/timer/SDL_timer.c \
-                        $(SDL_SRC_PATH)/timer/unix/SDL_systimer.c \
-                        $(SDL_SRC_PATH)/video/SDL_RLEaccel.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_0.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_1.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_A.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_N.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_auto.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_copy.c \
-                        $(SDL_SRC_PATH)/video/SDL_blit_slow.c \
-                        $(SDL_SRC_PATH)/video/SDL_bmp.c \
-                        $(SDL_SRC_PATH)/video/SDL_clipboard.c \
-                        $(SDL_SRC_PATH)/video/SDL_egl.c \
-                        $(SDL_SRC_PATH)/video/SDL_fillrect.c \
-                        $(SDL_SRC_PATH)/video/SDL_pixels.c \
-                        $(SDL_SRC_PATH)/video/SDL_rect.c \
-                        $(SDL_SRC_PATH)/video/SDL_shape.c \
-                        $(SDL_SRC_PATH)/video/SDL_stretch.c \
-                        $(SDL_SRC_PATH)/video/SDL_surface.c \
-                        $(SDL_SRC_PATH)/video/SDL_video.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidclipboard.c \
-			$(SDL_SRC_PATH)/video/android/SDL_androidevents.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidgl.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidkeyboard.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidtouch.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidvideo.c \
-                        $(SDL_SRC_PATH)/video/android/SDL_androidwindow.c 
-
 LOCAL_H264_DEC_FILES := $(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
                         $(H264_DEC_PATH)/umc_h264_dec_bitstream_cabac.cpp \
                         $(H264_DEC_PATH)/umc_h264_dec_conversion.cpp \
@@ -508,12 +412,12 @@ LOCAL_H264_DEC_FILES := $(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
                         $(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
                         $(H264_DEC_PATH)/umc_h264_thread.cpp
 
-#LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
+LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
 			$(OPAL_SRC_PATH)/player/udplistener.cxx \
 			$(OPAL_SRC_PATH)/player/audio.cxx
 
 #LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
-#LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
+LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
@@ -531,10 +435,9 @@ LOCAL_SRC_FILES := 	plasma.c \
 			$(OPAL_SRC_PATH)/player/yuv2rgb.cxx \
 			$(LOCAL_H261_FILES)
  
-#LOCAL_SRC_FILES += $(LOCAL_SDL_FILES) 
-#LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
-#LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
-	
+LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
+LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
+
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/../../ptlib/include \
@@ -544,7 +447,6 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/h264/umc \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(LOCAL_PATH)/../../opal/plugins/video/common \
-	$(LOCAL_PATH)/$(SDL_PATH)/include \
 	$(TARGET_C_INCLUDES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
@@ -564,3 +466,4 @@ $(call import-module,android/native_app_glue)
 #$(call import-module, libptlibs)
 #$(call import-module, libopals)
 ##################################################################
+
