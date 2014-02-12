@@ -65,9 +65,19 @@ static pthread_t baseThread;
   #define P_USE_THREAD_CANCEL 1
 #else
   static JavaVM * AndroidJavaVM;
+#if P_SDL
+#pragma message ("SDL video support linked")    
+    extern "C" { jint JNI_OnLoadSDL(JavaVM* vm, void* reserved); }
+#endif
   JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
   {
     AndroidJavaVM = vm;
+
+      // Call SDL
+#if P_SDL
+      JNI_OnLoadSDL(vm, reserved);
+#endif
+
     return JNI_VERSION_1_6;
   }
 #endif

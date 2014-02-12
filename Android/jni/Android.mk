@@ -109,7 +109,6 @@ LOCAL_SRC_FILES := \
 	$(PTCLIB_SRC_PATH)/threadpool.cxx \
 	$(PTCLIB_SRC_PATH)/url.cxx \
 	$(PTCLIB_SRC_PATH)/vartype.cxx \
-	$(PTCLIB_SRC_PATH)/vsdl.cxx \
 	$(PTCLIB_SRC_PATH)/vxml.cxx \
 	$(PTCLIB_SRC_PATH)/xmpp.cxx \
 	$(PTCLIB_SRC_PATH)/xmpp_c2s.cxx \
@@ -132,6 +131,7 @@ LOCAL_C_INCLUDES := \
 OPAL_SRC_PATH := ../../opal/src
 H264_SRC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec
 H264_DEC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_dec/src
+H261_SRC_PATH := ../../opal/plugins/video/H.261-vic
 
 AAC_SRC_PATH := $(OPAL_SRC_PATH)/codec/aac
 
@@ -293,6 +293,16 @@ LOCAL_SRC_FILES := \
 # $(H264_SRC_PATH)/ipp264codec.cpp 
 LOCAL_H264_FILES := $(H264_SRC_PATH)/h264decode.asm
 
+LOCAL_H261_FILES := 	$(H261_SRC_PATH)/h261vic.cxx \
+			$(H261_SRC_PATH)/vic/bv.c \
+			$(H261_SRC_PATH)/vic/dct.cxx \
+			$(H261_SRC_PATH)/vic/encoder-h261.cxx \
+			$(H261_SRC_PATH)/vic/huffcode.c \
+			$(H261_SRC_PATH)/vic/p64.cxx \
+			$(H261_SRC_PATH)/vic/p64encoder.cxx \
+			$(H261_SRC_PATH)/vic/transmitter.cxx \
+			$(H261_SRC_PATH)/vic/vid_coder.cxx
+
 LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
 			$(AAC_SRC_PATH)/codec/fixpt/decoder/aactabs.c \
 			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/pns.c \
@@ -371,7 +381,8 @@ LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
 SDL_PATH := SDL2-2.0.1
 SDL_SRC_PATH := $(SDL_PATH)/src
 
-LOCAL_SDL_FILES :=  $(SDL_SRC_PATH)/SDL.c \
+LOCAL_SDL_FILES :=  	$(PTCLIB_SRC_PATH)/vsdl.cxx \
+			$(SDL_SRC_PATH)/SDL.c \
 			$(SDL_SRC_PATH)/core/android/SDL_android.c \
 			$(SDL_SRC_PATH)/SDL_assert.c \
                         $(SDL_SRC_PATH)/SDL_error.c \
@@ -497,14 +508,12 @@ LOCAL_H264_DEC_FILES := $(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
                         $(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
                         $(H264_DEC_PATH)/umc_h264_thread.cpp
 
-LOCAL_PLAYER_FILES := 	$(OPAL_SRC_PATH)/player/codectest.cxx \
-			$(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
+#LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
 			$(OPAL_SRC_PATH)/player/udplistener.cxx \
-			$(OPAL_SRC_PATH)/player/audio.cxx \
-			$(OPAL_SRC_PATH)/player/yuv2rgb.cxx
+			$(OPAL_SRC_PATH)/player/audio.cxx
 
 #LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
-LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
+#LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
@@ -517,9 +526,14 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := libandopal
 LOCAL_SRC_FILES := opal-jni.cpp \
-        $(LOCAL_SDL_FILES) \
-		$(LOCAL_AAC_FILES) \
-		$(LOCAL_PLAYER_FILES)
+			$(OPAL_SRC_PATH)/player/codectest.cxx \
+			$(OPAL_SRC_PATH)/player/video.cxx \
+			$(OPAL_SRC_PATH)/player/yuv2rgb.cxx \
+			$(LOCAL_H261_FILES)
+ 
+#LOCAL_SRC_FILES += $(LOCAL_SDL_FILES) 
+#LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
+#LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
@@ -529,6 +543,7 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/umc \
 	$(LOCAL_PATH)/../../opal/include/h264/umc \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
+	$(LOCAL_PATH)/../../opal/plugins/video/common \
 	$(LOCAL_PATH)/$(SDL_PATH)/include \
 	$(TARGET_C_INCLUDES)
 

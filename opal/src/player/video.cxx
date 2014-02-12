@@ -18,6 +18,7 @@
 #include <player/video.h>
 #include <player/g2dUtil.h>
 
+#include <android/native_activity.h>
 #include <android_native_app_glue.h>
 
 #define FORCE_STATIC_PLUGIN 1
@@ -37,38 +38,31 @@ void yuv420_to_rgb32_clip(
 
 void yuv420_to_rgb32(const uchar* pYUV, uint width, uint height, uchar* pDst, int iPitchX, int iPitchY);
 
-extern "C" {
-    void android_main(struct android_app* state) {
-        while(1)
-        {
-            int ident;
-            int fdesc;
-            int events;
-            struct android_poll_source* source;
-            
-            while((ident = ALooper_pollAll(0, &fdesc, &events, (void**)&source)) >= 0)
-            {
-                // process this event
-                if (source)
-                    source->process(state, source);
-            }
-        }
-    }
-};
+ANativeWindow* _native_window = NULL;
+static PVideoOutputDevice_NativeWindow* _native_window_thisclass = NULL;
 
 PVideoOutputDevice_NativeWindow::PVideoOutputDevice_NativeWindow()
     : _pYUV420_Image(NULL)
     , _nMaxFrameSizeBytes(0)
     , _bFlipped(false)
-    , _window(NULL)
+    , _window(_native_window)
+    , _surface(NULL)
 {
 	// INIT HERE
     PVideoOutputDevice::SetFrameSize(352, 288);
+
+    if(_surface)
+    	delete _surface;
+    _surface = new uint8_t[frameWidth * frameHeight * 4];
+    memset(_surface, 0, frameWidth * frameHeight * 4);
+
+    _native_window_thisclass = this;
 }
 
 
 PVideoOutputDevice_NativeWindow::~PVideoOutputDevice_NativeWindow()
 {
+	delete _surface;
 	Close();
 }
 
@@ -94,6 +88,12 @@ PBoolean PVideoOutputDevice_NativeWindow::Open(const PString & name, PBoolean st
         deviceName = name;
     }
         
+
+    if(_window)
+    {
+    	ANativeWindow_setBuffersGeometry(_window, frameWidth, frameHeight, 1);
+    }
+
 	return startImmediate ? Start() : IsOpen();
 }
 
@@ -150,7 +150,12 @@ PBoolean PVideoOutputDevice_NativeWindow::SetFrameSize(unsigned width, unsigned 
         return PFalse;
     
     //	_wndVideoOutput.SetFrameSize(frameWidth, frameHeight);  
-    _nMaxFrameSizeBytes = (frameWidth*frameHeight*3)>>1;
+    _nMaxFrameSizeBytes = (frameWidth * frameHeight * 3)>>1;
+
+    if(_surface)
+    	delete _surface;
+    _surface = new uint8_t[frameWidth * frameHeight * 4];
+    memset(_surface, 0, frameWidth * frameHeight * 4);
 
 	return PTrue;
 }
@@ -174,6 +179,19 @@ PBoolean PVideoOutputDevice_NativeWindow::FrameComplete()
     rOut.right = frameWidth;
     rOut.bottom = frameHeight;
     
+	si.pImage = _surface;	// + (view->nHeight-1)*view->nWidth*4;
+	si.nWidth = frameWidth;
+	si.nHeight = frameHeight;
+	si.nImageSize = frameWidth * frameHeight * 4;
+	si.iPitchX = 4;
+	si.iPitchY = frameWidth * 4;	// -int(view->nWidth*4);
+
+    si.mViewX = 0;
+    si.mViewY = 0;
+
+    si.mViewWidth = frameWidth;
+    si.mViewHeight = frameHeight;
+
     yuv420_to_argb32_clip(pY, pU, pV, frameWidth, frameWidth, frameHeight,
                           si.pImage, si.iPitchX, si.iPitchY, rOut, rOut);
 	

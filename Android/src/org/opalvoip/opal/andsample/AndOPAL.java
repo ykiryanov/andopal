@@ -301,15 +301,24 @@ public class AndOPAL extends Activity
 
     public static native String TestPlayer(int bufferTime);
     public static native String TestRecorder(int bufferTime);
-    public static native String CodecTest(int bufferTime);
+    public static native String CodecTest(Window window);
 
     public void onTestAudio(MenuItem item)
     {
-        (new Thread(new Runnable() {
+        // get a reference of the activity
+        View view = new View(this);
+        Activity parent = (Activity) view.getContext();
+        // using the activity, get Window reference
+        final Window window = parent.getWindow();
+        // using the reference of the window, do whatever you want :D
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+      (new Thread(new Runnable() {
             public void run()
             {
                 OutputStatus("Testing audio player ... ");
-                OutputStatus(CodecTest(0));
+                OutputStatus(CodecTest(window));
                 /*OutputStatus(TestPlayer(m_audioBufferTime));
                 OutputStatus("Testing audio recorder ... ");
                 OutputStatus(TestRecorder(m_audioBufferTime));*/

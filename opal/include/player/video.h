@@ -155,6 +155,8 @@ protected:
     const BYTE*             _pYUV420_Image;
 	unsigned	            _nMaxFrameSizeBytes;
     bool                    _bFlipped;
+    uint8_t*        		_surface;
+
 };
 
 #endif // P_VIDEO

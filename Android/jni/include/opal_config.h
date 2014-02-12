@@ -429,6 +429,8 @@
 
 #define OPAL_VIDEO 1
 
+#define OPAL_STATIC_CODEC 1
+
 #endif // OPAL_BUILDOPTS_H
 
 

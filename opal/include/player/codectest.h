@@ -39,7 +39,7 @@ class Mpeg2TSListener;
 #undef USE_OPALRATECONTROLER
 #endif
 
-#define BONEPLAYER
+//#define BONEPLAYER
 
 
 struct IPlaybackSource
@@ -274,13 +274,13 @@ class VideoThread :
    PBoolean SetCodecOption(const char* szCodec, const char* szOption, const char* szValue);
 };
 
-class BoneCodecTest : public OpalManager,
-    public IPlaybackSource
+class BoneCodecTest : public OpalManager
+//    ,public IPlaybackSource
 {
     PCLASSINFO(BoneCodecTest, OpalManager)
 
 public:
-   BoneCodecTest(const PString& pstrArguments, long lReserved);
+   BoneCodecTest(const PString& pstrArguments, void* native_window);
    ~BoneCodecTest();
 
    PDECLARE_NOTIFIER(PThread, BoneCodecTest, MonitorMain);

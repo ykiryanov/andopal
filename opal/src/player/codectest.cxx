@@ -12,6 +12,7 @@
 #include <rtp/rtpconn.h>
 
 #include <codec/vidcodec.h>
+#include <codec/opalpluginmgr.h>
 
 #include <player/codectest.h>
 
@@ -20,6 +21,11 @@
 #include <player/udplistener.h>
 
 int codecTestTraceLevel = 5;
+
+extern "C" {
+unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
+struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
+};
 
 #ifdef BONEPLAYER
 #include <player/Mpeg2TS.h>
@@ -105,7 +111,10 @@ private:
 
 #endif
 
-BoneCodecTest::BoneCodecTest(const PString& pstrArguments, long res)
+#include <android/native_window.h>
+extern ANativeWindow* _native_window;
+
+BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
 : monitorThread(NULL),
 	m_audio(this, 0),
 	m_video(this, 0),
@@ -122,6 +131,17 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, long res)
     memset(m_pSyncPoint, 0, sizeof(m_pSyncPoint));
 	m_arguments = pstrArguments;
     
+	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
+    new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
+	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
+
+	printf("H.261 version: %d", Opal_StaticCodec_VIC_H261_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.261",
+			Opal_StaticCodec_VIC_H261_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
+
+	_native_window = (ANativeWindow*) native_window;
+
 	monitorThread = PThread::Create(PCREATE_NOTIFIER(MonitorMain), "Bone Codec Test Monitor");
 }
 

@@ -55,12 +55,15 @@
 #include <string.h>
 #include <algorithm>
 
+#pragma message("H.261 support enabled")
+
+#define P_FORCE_STATIC_PLUGIN 1
+
 #ifndef PLUGIN_CODEC_DLL_EXPORTS
 #include "plugin_config.h"
 #endif
 
 #include <codec/opalplugin.hpp>
-
 
 #if defined (_WIN32) || defined (_WIN32_WCE)
   #ifndef _WIN32_WCE
@@ -892,7 +895,7 @@ static struct PluginCodec_Option const * const xcifOptionTable[] = {
 };
 
 
-static struct PluginCodec_Definition h261CodecDefn[] =
+struct PluginCodec_Definition h261CodecDefn[] =
 {
   { 
     // Both QCIF and CIF (dynamic) encoder
@@ -970,9 +973,11 @@ static struct PluginCodec_Definition h261CodecDefn[] =
 
 
 extern "C" {
-  PLUGIN_CODEC_IMPLEMENT(VIC_H261)
-
-  PLUGIN_CODEC_DLL_API struct PluginCodec_Definition * PLUGIN_CODEC_GET_CODEC_FN(unsigned * count, unsigned /*version*/)
+//  PLUGIN_CODEC_IMPLEMENT(VIC_H261)
+//
+  unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion() { return PWLIB_PLUGIN_API_VERSION; }
+    
+  struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/)
   {
     *count = sizeof(h261CodecDefn) / sizeof(struct PluginCodec_Definition);
     return h261CodecDefn;

@@ -28,7 +28,8 @@
 #include <ptlib.h>
 #include <ptlib/sound.h>
 #include <ptclib/dtmf.h>
-#include <codectest.h>
+#include <opal.h>
+#include <player/codectest.h>
 
 // Include symbol hook so links in all the SWIG interface.
 extern int opal_java_swig_wrapper_link;
@@ -59,19 +60,18 @@ extern "C" {
     return env->NewStringUTF(result);
   }
 
-  jstring Java_org_opalvoip_opal_andsample_AndOPAL_CodecTest(JNIEnv* env, jclass clazz, jint bufferTime)
+  jstring Java_org_opalvoip_opal_andsample_AndOPAL_CodecTest(JNIEnv* env, jclass clazz, jclass window)
   {
 	JavaVM* jvm = NULL;
 	int gotVM = env->GetJavaVM(&jvm);
 
 	JNI_OnLoad(jvm, (void*) env);
-	SDL_Android_Init(env, clazz);
+//	SDL_Android_Init(env, clazz);
 
 //	BoneCodecTest* codecTest = new BoneCodecTest(env
 //     "--listen-address * --listen-port 5004 G.711-uLaw-64k YUV420P", 0L);
 	BoneCodecTest* codecTest = new BoneCodecTest(
-	 "--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 --display-device SDL "
-     "G.711-uLaw-64k YUV420P", 0L);
+	 "--grab-device Fake/BouncingBoxes --frame-size cif --frame-rate 30 --display-device NativeWindow G.711-uLaw-64k H.261", 0L);
     return env->NewStringUTF("OK");
   }
 
