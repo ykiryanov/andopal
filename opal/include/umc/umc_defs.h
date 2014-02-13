@@ -11,7 +11,10 @@
 #ifndef __UMC_DEFS_H__
 #define __UMC_DEFS_H__
 
+#ifndef LINUX32
 #define LINUX32
+#endif
+
 #define ARM
 
 // This file contains defines which switch on/off support of

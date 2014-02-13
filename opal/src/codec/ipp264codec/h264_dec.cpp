@@ -8,7 +8,11 @@
  * Contributor(s): Sergey Bezruchkin, sergey@dinsk.net and Yuri Kiryanov, yuri@dinsk.net
  */
 
-#include "stdafx.h"
+#include <opal.h>
+#include <codec/opalplugin.hpp>
+
+#include "rtpframe.h"
+
 #include "h264.h"
 
 #ifdef OSX32
@@ -117,7 +121,7 @@ bool H264Decoder::OpenCodec()
     _Decoder.SkipVideoFrame(7);
 #endif
 	
-	PTRACE(h264TraceLevel, D264_LOG, "Decoder Init status: " << _status << ". " << UMCStatusToText(_status) << "." << endl);
+	PTRACE(h264TraceLevel, D264_LOG, "Decoder Init status: " << _status << ". " << UMCStatusToText(_status) << "." << std::endl);
     _bInit = true;
     return true;
 }
@@ -141,7 +145,7 @@ bool H264Decoder::SetFrameSize()
     }	
 	_out.Init(_frameWidth, _frameHeight, UMC::YUV420, 8);	
 	
-	PTRACE(h264TraceLevel, D264_LOG, "Decoder SetFrameSize: width= " << _frameWidth << " height= " << _frameHeight << endl);		
+	PTRACE(h264TraceLevel, D264_LOG, "Decoder SetFrameSize: width= " << _frameWidth << " height= " << _frameHeight << std::endl);		
 	return true;
 }
 

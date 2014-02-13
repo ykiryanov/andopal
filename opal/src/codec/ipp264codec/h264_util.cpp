@@ -9,12 +9,9 @@
 #include "h264_util.h"
 #include "CodecUtil.h"
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(ANDROID)
 #include "TargetConditionals.h"
 #endif
-
-
-
 
 const Ipp16s g_QuantTable[52*16] = {
 0x000a,0x000d,0x000a,0x000d,0x000d,0x0010,0x000d,0x0010,0x000a,0x000d,0x000a,0x000d,0x000d,0x0010,0x000d,0x0010,

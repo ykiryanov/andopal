@@ -8,7 +8,11 @@
  * Contributor(s): Sergey Bezruchkin, sergey@dinsk.net and Yuri Kiryanov, yuri@dinsk.net
  */
 
-#include "stdafx.h"
+#include <opal.h>
+#include <codec/opalplugin.hpp>
+
+#include "rtpframe.h"
+
 #include "h264.h"
 
 #include <codec/opalplugin.hpp>
@@ -155,7 +159,7 @@ bool H264Encoder::OpenCodec()
 
 	_status = _Encoder.Init(&_params);
 
-	PTRACE(h264TraceLevel, D264_LOG, "Encoder Init status: " << _status << ". " <<  UMCStatusToText(_status) << "." << endl);
+	PTRACE(h264TraceLevel, D264_LOG, "Encoder Init status: " << _status << ". " <<  UMCStatusToText(_status) << "." << std::endl);
 
     if (_status != UMC::UMC_OK)
         return false;

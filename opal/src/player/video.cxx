@@ -187,7 +187,7 @@ PBoolean PVideoOutputDevice_NativeWindow::FrameComplete()
 	si.iPitchY = frameWidth * 4;	// -int(view->nWidth*4);
 
     si.mViewX = 0;
-    si.mViewY = 0;
+    si.mViewY = 200;
 
     si.mViewWidth = frameWidth;
     si.mViewHeight = frameHeight;

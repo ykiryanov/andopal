@@ -9,7 +9,7 @@
  */
 
 #ifndef PLUGIN_CODEC_DLL_EXPORTS
-#include "../../../opalvoip/opal/lib_iPhoneSimulator_x86/plugins/plugin_config.h"
+#include <plugin_config.h>
 #endif
 
 #include <codec/opalplugin.h>
@@ -17,7 +17,9 @@
 
 #include "h264.h"
 
+#ifndef PLUGINCODEC_CONTROL_LOG_FUNCTION_DEF
 PLUGINCODEC_CONTROL_LOG_FUNCTION_DEF
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

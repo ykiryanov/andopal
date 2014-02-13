@@ -10,7 +10,11 @@
 
 #ifndef __VM_TYPES_H__
 #define __VM_TYPES_H__
+
+#ifndef LINUX32
 #define LINUX32
+#endif
+
 #if (defined(LINUX32) || defined(OSX) || defined(FreeBSD) || defined(Solaris) || defined(B1)) && !defined(UNIX_ENVIRONMENT)
 #  define UNIX_ENVIRONMENT
 #endif

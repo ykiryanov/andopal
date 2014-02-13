@@ -128,6 +128,7 @@ LOCAL_C_INCLUDES := \
 OPAL_SRC_PATH := ../../opal/src
 H264_SRC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec
 H264_DEC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_dec/src
+H264_ENC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_enc/src
 H261_SRC_PATH := ../../opal/plugins/video/H.261-vic
 
 AAC_SRC_PATH := $(OPAL_SRC_PATH)/codec/aac
@@ -412,12 +413,35 @@ LOCAL_H264_DEC_FILES := $(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
                         $(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
                         $(H264_DEC_PATH)/umc_h264_thread.cpp
 
+LOCAL_UMC_FILES :=	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
+			$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_default_memory_allocator.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_dual_thread_codec.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_index.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_media_buffer.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_media_data.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_media_data_ex.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_muxer.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_par_reader.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_splitter.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_utils.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_video_data.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_video_decoder.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
+                        $(OPAL_SRC_PATH)/umc/umc_video_render.cpp
+
+LOCAL_IPP_FILES := 	$(OPAL_SRC_PATH)/ipp/ippslib.s
+
 LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
 			$(OPAL_SRC_PATH)/player/udplistener.cxx \
 			$(OPAL_SRC_PATH)/player/audio.cxx
 
-#LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
+LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
 LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
+LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
+LOCAL_PLAYER_FILES +=	$(LOCAL_IPP_FILES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
@@ -440,8 +464,10 @@ LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
+	. \
 	$(LOCAL_PATH)/../../ptlib/include \
 	$(LOCAL_PATH)/../../opal/include \
+	$(LOCAL_PATH)/../../opal/include/player \
 	$(LOCAL_PATH)/../../opal/include/ipp \
 	$(LOCAL_PATH)/../../opal/include/umc \
 	$(LOCAL_PATH)/../../opal/include/h264/umc \
@@ -454,6 +480,7 @@ LOCAL_STATIC_LIBRARIES += libopals
 LOCAL_STATIC_LIBRARIES += android_native_app_glue 
 
 LOCAL_CFLAGS += -DANDROID
+LOCAL_CFLAGS += -DLINUX32
 LOCAL_LDLIBS := -lOpenSLES -ldl -lc -lm -llog -lgcc -landroid -lEGL -lGLESv2
 #LOCAL_LDFLAGS := -nostdlib -Wl,--no-undefined 
 

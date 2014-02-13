@@ -1,4 +1,8 @@
-#include "stdafx.h"
+#include <opal.h>
+#include <codec/opalplugin.hpp>
+
+#include "rtpframe.h"
+
 #include "h264.h"
 
 #include <codec/opalplugin.hpp>

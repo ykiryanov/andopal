@@ -1,0 +1,3208 @@
+m4trace:/opt/local/share/aclocal/longlong.m4:17: -1- AC_DEFUN([AC_TYPE_LONG_LONG_INT], [
+  AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])
+  AC_CACHE_CHECK([for long long int], [ac_cv_type_long_long_int],
+     [ac_cv_type_long_long_int=yes
+      if test "x${ac_cv_prog_cc_c99-no}" = xno; then
+        ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
+        if test $ac_cv_type_long_long_int = yes; then
+          dnl Catch a bug in Tandem NonStop Kernel (OSS) cc -O circa 2004.
+          dnl If cross compiling, assume the bug is not important, since
+          dnl nobody cross compiles for this platform as far as we know.
+          AC_RUN_IFELSE(
+            [AC_LANG_PROGRAM(
+               [[@%:@include <limits.h>
+                 @%:@ifndef LLONG_MAX
+                 @%:@ define HALF \
+                          (1LL << (sizeof (long long int) * CHAR_BIT - 2))
+                 @%:@ define LLONG_MAX (HALF - 1 + HALF)
+                 @%:@endif]],
+               [[long long int n = 1;
+                 int i;
+                 for (i = 0; ; i++)
+                   {
+                     long long int m = n << i;
+                     if (m >> i != n)
+                       return 1;
+                     if (LLONG_MAX / 2 < m)
+                       break;
+                   }
+                 return 0;]])],
+            [],
+            [ac_cv_type_long_long_int=no],
+            [:])
+        fi
+      fi])
+  if test $ac_cv_type_long_long_int = yes; then
+    AC_DEFINE([HAVE_LONG_LONG_INT], [1],
+      [Define to 1 if the system has the type 'long long int'.])
+  fi
+])
+m4trace:/opt/local/share/aclocal/longlong.m4:67: -1- AC_DEFUN([AC_TYPE_UNSIGNED_LONG_LONG_INT], [
+  AC_CACHE_CHECK([for unsigned long long int],
+    [ac_cv_type_unsigned_long_long_int],
+    [ac_cv_type_unsigned_long_long_int=yes
+     if test "x${ac_cv_prog_cc_c99-no}" = xno; then
+       AC_LINK_IFELSE(
+         [_AC_TYPE_LONG_LONG_SNIPPET],
+         [],
+         [ac_cv_type_unsigned_long_long_int=no])
+     fi])
+  if test $ac_cv_type_unsigned_long_long_int = yes; then
+    AC_DEFINE([HAVE_UNSIGNED_LONG_LONG_INT], [1],
+      [Define to 1 if the system has the type 'unsigned long long int'.])
+  fi
+])
+m4trace:/opt/local/share/aclocal/longlong.m4:89: -1- AC_DEFUN([_AC_TYPE_LONG_LONG_SNIPPET], [
+  AC_LANG_PROGRAM(
+    [[/* For now, do not test the preprocessor; as of 2007 there are too many
+         implementations with broken preprocessors.  Perhaps this can
+         be revisited in 2012.  In the meantime, code should not expect
+         #if to work with literals wider than 32 bits.  */
+      /* Test literals.  */
+      long long int ll = 9223372036854775807ll;
+      long long int nll = -9223372036854775807LL;
+      unsigned long long int ull = 18446744073709551615ULL;
+      /* Test constant expressions.   */
+      typedef int a[((-9223372036854775807LL < 0 && 0 < 9223372036854775807ll)
+                     ? 1 : -1)];
+      typedef int b[(18446744073709551615ULL <= (unsigned long long int) -1
+                     ? 1 : -1)];
+      int i = 63;]],
+    [[/* Test availability of runtime routines for shift and division.  */
+      long long int llmax = 9223372036854775807ll;
+      unsigned long long int ullmax = 18446744073709551615ull;
+      return ((ll << 63) | (ll >> 63) | (ll < i) | (ll > i)
+              | (llmax / ll) | (llmax % ll)
+              | (ull << 63) | (ull >> 63) | (ull << i) | (ull >> i)
+              | (ullmax / ull) | (ullmax % ull));]])
+])
+m4trace:/opt/local/share/aclocal/pkg.m4:26: -1- AC_DEFUN([PKG_PROG_PKG_CONFIG], [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4_pattern_allow([^PKG_CONFIG(_PATH)?$])
+AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])dnl
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	AC_PATH_TOOL([PKG_CONFIG], [pkg-config])
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=m4_default([$1], [0.9.0])
+	AC_MSG_CHECKING([pkg-config is at least version $_pkg_min_version])
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_RESULT([no])
+		PKG_CONFIG=""
+	fi
+
+fi[]dnl
+])
+m4trace:/opt/local/share/aclocal/pkg.m4:56: -1- AC_DEFUN([PKG_CHECK_EXISTS], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+if test -n "$PKG_CONFIG" && \
+    AC_RUN_LOG([$PKG_CONFIG --exists --print-errors "$1"]); then
+  m4_ifval([$2], [$2], [:])
+m4_ifvaln([$3], [else
+  $3])dnl
+fi])
+m4trace:/opt/local/share/aclocal/pkg.m4:84: -1- AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi[]dnl
+])
+m4trace:/opt/local/share/aclocal/pkg.m4:104: -1- AC_DEFUN([PKG_CHECK_MODULES], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
+AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
+
+pkg_failed=no
+AC_MSG_CHECKING([for $1])
+
+_PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
+_PKG_CONFIG([$1][_LIBS], [libs], [$2])
+
+m4_define([_PKG_TEXT], [Alternatively, you may set the environment variables $1[]_CFLAGS
+and $1[]_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.])
+
+if test $pkg_failed = yes; then
+        _PKG_SHORT_ERRORS_SUPPORTED
+        if test $_pkg_short_errors_supported = yes; then
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "$2"`
+        else
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "$2"`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
+
+	ifelse([$4], , [AC_MSG_ERROR(dnl
+[Package requirements ($2) were not met:
+
+$$1_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+_PKG_TEXT
+])],
+		[AC_MSG_RESULT([no])
+                $4])
+elif test $pkg_failed = untried; then
+	ifelse([$4], , [AC_MSG_FAILURE(dnl
+[The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+_PKG_TEXT
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.])],
+		[$4])
+else
+	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
+	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
+        AC_MSG_RESULT([yes])
+	ifelse([$3], , :, [$3])
+fi[]dnl
+])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?A[CHUM]_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([_AC_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^AS_FLAGS$])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?m4_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^dnl$])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?AS_])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^SHELL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PATH_SEPARATOR$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^exec_prefix$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^prefix$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^program_transform_name$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^bindir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sbindir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^libexecdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^datarootdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^datadir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sysconfdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sharedstatedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^localstatedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^includedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^oldincludedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^docdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^infodir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^htmldir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^dvidir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^pdfdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^psdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^libdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^localedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^mandir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^DEFS$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_C$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_N$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_T$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^build_alias$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^host_alias$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^target_alias$])
+m4trace:configure.ac:20: -1- m4_include([make/ptlib.m4])
+m4trace:make/ptlib.m4:5: -1- m4_include([make/my_macros.m4])
+m4trace:make/my_macros.m4:9: -1- AC_DEFUN([MY_IFELSE], [
+   m4_ifnblank([$2$3], [AS_IF([test "x$m4_normalize($1)" = "xyes"], [$2], [$3])])
+])
+m4trace:make/my_macros.m4:15: -1- AC_DEFUN([MY_ARG_DEPENDENCY], [
+   m4_ifnblank([$1],[
+      if    test "x${enableval}" = "xyes" && \
+            test "x$m4_normalize($1)" != "x1" && \
+            test "x$m4_normalize($1)" != "xyes"; then
+         AC_MSG_RESULT([disabled due to disabled dependency $1=$$1])
+         enableval=no
+      fi
+   ])
+])
+m4trace:make/my_macros.m4:35: -1- AC_DEFUN([MY_ARG_ENABLE], [
+   AC_MSG_CHECKING([$2])
+
+   AC_ARG_ENABLE(
+      [$1],
+      [AC_HELP_STRING([--m4_bmatch([$2],[enable.*],[enable],[disable])-$1],
+                         m4_bmatch([$2],[enable.*],[],[disable ])[$2])],
+      [
+         if test "x$enableval" = "xno"; then
+            AC_MSG_RESULT([disabled by user])
+         fi
+      ],
+      [
+         enableval=m4_default([$3],m4_bmatch([$2],[enable.*],[no],[yes]))
+         if test "x$enableval" = "xno"; then
+            AC_MSG_RESULT([disabled by default])
+         fi
+      ]
+   )
+
+   MY_ARG_DEPENDENCY([$6])
+   MY_ARG_DEPENDENCY([$7])
+   MY_ARG_DEPENDENCY([$8])
+   MY_ARG_DEPENDENCY([$9])
+
+   if test "x${enableval}" = "xyes"; then
+      AC_MSG_RESULT([yes])
+   fi
+
+   MY_IFELSE([enableval], [$4], [$5])
+
+   enable_$1="$enableval"
+])
+m4trace:make/my_macros.m4:78: -1- AC_DEFUN([MY_COMPILE_IFELSE], [
+   oldCPPFLAGS="$CPPFLAGS"
+   CPPFLAGS="$CPPFLAGS $2"
+   AC_MSG_CHECKING([$1])
+   AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM([[$3]],[[$4]])],
+      [usable=yes],
+      [usable=no]
+   )
+   AC_MSG_RESULT($usable)
+   CPPFLAGS="$oldCPPFLAGS"
+   MY_IFELSE([usable], [$5], [$6])
+])
+m4trace:make/my_macros.m4:102: -1- AC_DEFUN([MY_LINK_IFELSE], [
+   oldCPPFLAGS="$CPPFLAGS"
+   oldLIBS="$LIBS"
+   CPPFLAGS="$CPPFLAGS $2"
+   LIBS="$3 $LIBS"
+   AC_MSG_CHECKING($1)
+   AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM([[$4]],[[$5]])],
+      [usable=yes],
+      [usable=no]
+   )
+   AC_MSG_RESULT($usable)
+   CPPFLAGS="$oldCPPFLAGS"
+   LIBS="$oldLIBS"
+   MY_IFELSE([usable], [$6], [$7])
+])
+m4trace:make/my_macros.m4:128: -1- AC_DEFUN([MY_PKG_CHECK_MODULE], [
+   PKG_CHECK_MODULES(
+      [$1],
+      [$2],
+      [MY_LINK_IFELSE(
+         [for $1 usability],
+         [$$1[_CFLAGS]],
+         [$$1[_LIBS]],
+         [$3],
+         [$4],
+         [
+            CPPFLAGS="$CPPFLAGS $$1[_CFLAGS]"
+            LIBS="$$1[_LIBS] $LIBS"
+         ]
+      )],
+      [usable=no]
+   )
+   MY_IFELSE([usable], [$5], [$6])
+])
+m4trace:make/my_macros.m4:155: -1- AC_DEFUN([MY_ADD_FLAGS], [
+   m4_ifnblank([$1], [LIBS="$1 $LIBS"])
+   m4_ifnblank([$2], [CPPFLAGS="$CPPFLAGS $2"])
+   m4_ifnblank([$3], [CFLAGS="$CPPFLAGS $3"])
+   m4_ifnblank([$4], [CXXFLAGS="$CPPFLAGS $4"])
+])
+m4trace:make/my_macros.m4:166: -1- AC_DEFUN([MY_ADD_MODULE_FLAGS], [
+   MY_ADD_FLAGS($$1[_LIBS], $$1[_CFLAGS])
+])
+m4trace:make/my_macros.m4:187: -1- AC_DEFUN([MY_MODULE_OPTION], [
+   AC_SUBST($1[_SYSTEM], "yes")
+
+   MY_ARG_ENABLE([$2], [$3], [${DEFAULT_$1:-yes}], [usable=yes], [usable=no], [$11], [$12], [$13], [$14])
+
+   if test "x$usable" = "xyes" ; then
+      m4_bmatch([$4], [.*local-source.*], [
+         AC_ARG_ENABLE(
+            [local$2],
+            [AC_HELP_STRING([--enable-local$2],[force use internal source for $3])],
+            [
+               if test "x$enableval" = "xyes" ; then
+                  $1[_SYSTEM]="no"
+                  AC_MSG_NOTICE(Forced use of internal source for $3)
+               else
+                  AC_MSG_NOTICE(Using system source for $3)
+               fi
+            ]
+         )
+      ])
+      if test "x$$1[_SYSTEM]" = "xyes" ; then
+         m4_ifnblank([$5$6],
+            [AC_ARG_WITH(
+               [$2-dir],
+               AS_HELP_STRING([--with-$2-dir=<dir>],[location for $3]),
+               [
+                  AC_MSG_NOTICE(Using directory $withval for $3)
+                  $1[_CFLAGS]="-I$withval/include $5"
+                  $1[_LIBS]="-L$withval/lib $6"
+               ],
+               [PKG_CHECK_MODULES(
+                  [$1],
+                  [m4_bpatsubsts([$4],[local-source], [])],
+                  [],
+                  [
+                     $1[_CFLAGS]="$5"
+                     $1[_LIBS]="$6"
+                  ]
+               )]
+            )],
+            [PKG_CHECK_MODULES(
+               [$1],
+               [m4_bpatsubsts([$4],[local-source], [])],
+               [],
+               [usable=no]
+            )]
+         )
+
+         if test "x$usable" = "xyes" ; then
+            MY_LINK_IFELSE(
+               [for $3 usability],
+               [$$1[_CFLAGS]],
+               [$$1[_LIBS]],
+               [$7],
+               [$8],
+               [MY_ADD_MODULE_FLAGS([$1])],
+               [usable=no]
+            )
+         fi
+
+         m4_bmatch([$4], [.*local-source.*], [
+            if test "x$usable" = "xno" ; then
+               $1[_SYSTEM]="no"
+               $1[_CFLAGS]=
+               $1[_LIBS]=
+               AC_MSG_NOTICE(Using internal source for $3)
+            fi
+         ])
+      fi
+   fi
+
+   AC_SUBST($1[_USABLE], $usable)
+
+   MY_IFELSE([usable], [$9], [$10])
+])
+m4trace:make/my_macros.m4:268: -1- AC_DEFUN([MY_CHECK_DLFCN], [
+   case "$target_os" in
+      cygwin* | mingw* )
+         usable=yes
+      ;;
+
+      *)
+         AC_CHECK_LIB(
+            [dl],
+            [dlopen],
+            [
+               usable=yes
+               DLFCN_LIBS="-ldl"
+            ],
+               [AC_CHECK_LIB(
+               [c],
+               [dlopen],
+               [
+                  usable=yes
+                  DLFCN_LIBS-"-lc"
+               ],
+               [usable=no]
+            )]
+         )
+      ;;
+   esac
+
+   MY_IFELSE([usable], [$1], [$2])
+])
+m4trace:make/my_macros.m4:303: -1- AC_DEFUN([MY_VERSION_FILE], [
+   major=`cat $1 | grep MAJOR_VERSION | cut -f3 -d' '`
+   minor=`cat $1 | grep MINOR_VERSION | cut -f3 -d' '`
+   build=`cat $1 | grep BUILD_NUMBER | cut -f3 -d' '`
+   stage=`cat $1 | grep BUILD_TYPE | cut -f 3 -d ' ' | sed 's/BetaCode/-beta/' | sed 's/AlphaCode/-alpha/' | sed 's/ReleaseCode/\./'`
+   version="${major}.${minor}.${build}"
+
+   if test -z "$major" -o -z "$minor" -o -z "$build"; then
+      AC_MSG_ERROR(Could not determine version number from $1)
+   fi
+
+   AC_SUBST($2[_MAJOR], $major)
+   AC_SUBST($2[_MINOR], $minor)
+   AC_SUBST($2[_BUILD], $build)
+   AC_SUBST($2[_STAGE], $stage)
+   AC_SUBST($2[_VERSION], "${major}.${minor}.${build}")
+
+   AC_DEFINE_UNQUOTED([$2[_MAJOR]],   [${major}], [Major version])
+   AC_DEFINE_UNQUOTED([$2[_MINOR]],   [${minor}], [Minor version])
+   AC_DEFINE_UNQUOTED([$2[_BUILD]],   [${build}], [Build number])
+   AC_DEFINE_UNQUOTED([$2[_VERSION]], ["$version"],[PTLib version])
+
+   AC_MSG_NOTICE("$2 version is $version")
+])
+m4trace:make/my_macros.m4:333: -1- PKG_PROG_PKG_CONFIG([])
+m4trace:make/my_macros.m4:333: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:make/my_macros.m4:333: -1- m4_pattern_allow([^PKG_CONFIG(_PATH)?$])
+m4trace:make/my_macros.m4:333: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:make/my_macros.m4:333: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:make/my_macros.m4:358: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: Unknown iOS variant \"${enable_ios}\" - use either iphone or simulator], [])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^build$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^build_cpu$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^build_vendor$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^build_os$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^host$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^host_cpu$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^host_vendor$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^host_os$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^target$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^target_cpu$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^target_vendor$])
+m4trace:make/my_macros.m4:360: -1- m4_pattern_allow([^target_os$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CFLAGS$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^LIBS$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^ac_ct_CC$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^EXEEXT$])
+m4trace:make/my_macros.m4:365: -1- m4_pattern_allow([^OBJEXT$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^CXX$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^CXXFLAGS$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^LIBS$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^CXX$])
+m4trace:make/my_macros.m4:366: -1- m4_pattern_allow([^ac_ct_CXX$])
+m4trace:make/my_macros.m4:377: -1- m4_pattern_allow([^LD$])
+m4trace:make/my_macros.m4:378: -1- m4_pattern_allow([^SHARED_CPPFLAGS$])
+m4trace:make/my_macros.m4:379: -1- m4_pattern_allow([^SHARED_LDFLAGS$])
+m4trace:make/my_macros.m4:380: -1- m4_pattern_allow([^SHAREDLIBEXT$])
+m4trace:make/my_macros.m4:381: -1- m4_pattern_allow([^STATICLIBEXT$])
+m4trace:make/my_macros.m4:382: -1- m4_pattern_allow([^ARFLAGS$])
+m4trace:make/my_macros.m4:385: -1- m4_pattern_allow([^LN_S$])
+m4trace:make/my_macros.m4:386: -1- m4_pattern_allow([^RANLIB$])
+m4trace:make/my_macros.m4:388: -1- m4_pattern_allow([^MKDIR_P$])
+m4trace:make/my_macros.m4:389: -1- m4_pattern_allow([^SVN$])
+m4trace:make/my_macros.m4:391: -1- m4_pattern_allow([^INSTALL_PROGRAM$])
+m4trace:make/my_macros.m4:391: -1- m4_pattern_allow([^INSTALL_SCRIPT$])
+m4trace:make/my_macros.m4:391: -1- m4_pattern_allow([^INSTALL_DATA$])
+m4trace:make/my_macros.m4:402: -1- m4_pattern_allow([^AR$])
+m4trace:make/my_macros.m4:404: -1- m4_pattern_allow([^AR$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^CPP$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^CPP$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^GREP$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^EGREP$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^STDC_HEADERS$])
+m4trace:make/my_macros.m4:409: -1- m4_pattern_allow([^SIZEOF_INT$])
+m4trace:make/my_macros.m4:410: -1- m4_pattern_allow([^int8_t$])
+m4trace:make/my_macros.m4:411: -1- m4_pattern_allow([^int16_t$])
+m4trace:make/my_macros.m4:412: -1- m4_pattern_allow([^int32_t$])
+m4trace:make/my_macros.m4:413: -1- m4_pattern_allow([^int64_t$])
+m4trace:make/my_macros.m4:414: -1- m4_pattern_allow([^HAVE_INTPTR_T$])
+m4trace:make/my_macros.m4:414: -1- m4_pattern_allow([^intptr_t$])
+m4trace:make/my_macros.m4:415: -1- m4_pattern_allow([^_UINT8_T$])
+m4trace:make/my_macros.m4:415: -1- m4_pattern_allow([^uint8_t$])
+m4trace:make/my_macros.m4:416: -1- m4_pattern_allow([^uint16_t$])
+m4trace:make/my_macros.m4:417: -1- m4_pattern_allow([^_UINT32_T$])
+m4trace:make/my_macros.m4:417: -1- m4_pattern_allow([^uint32_t$])
+m4trace:make/my_macros.m4:418: -1- m4_pattern_allow([^_UINT64_T$])
+m4trace:make/my_macros.m4:418: -1- m4_pattern_allow([^uint64_t$])
+m4trace:make/my_macros.m4:419: -1- m4_pattern_allow([^HAVE_UINTPTR_T$])
+m4trace:make/my_macros.m4:419: -1- m4_pattern_allow([^uintptr_t$])
+m4trace:make/my_macros.m4:420: -1- AC_TYPE_LONG_LONG_INT([])
+m4trace:make/my_macros.m4:420: -1- AC_TYPE_UNSIGNED_LONG_LONG_INT
+m4trace:make/my_macros.m4:420: -1- _AC_TYPE_LONG_LONG_SNIPPET
+m4trace:make/my_macros.m4:420: -1- m4_pattern_allow([^HAVE_UNSIGNED_LONG_LONG_INT$])
+m4trace:make/my_macros.m4:420: -1- m4_pattern_allow([^HAVE_LONG_LONG_INT$])
+m4trace:make/my_macros.m4:421: -1- AC_TYPE_UNSIGNED_LONG_LONG_INT([])
+m4trace:make/my_macros.m4:421: -1- _AC_TYPE_LONG_LONG_SNIPPET
+m4trace:make/my_macros.m4:421: -1- m4_pattern_allow([^HAVE_UNSIGNED_LONG_LONG_INT$])
+m4trace:make/my_macros.m4:422: -1- m4_pattern_allow([^HAVE_LONG_DOUBLE$])
+m4trace:make/my_macros.m4:483: -1- m4_pattern_allow([^RANLIB$])
+m4trace:make/my_macros.m4:521: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me:${as_lineno-$LINENO}: WARNING: Operating system \"$target_os\" not recognized - proceed with caution!], [])
+m4trace:make/my_macros.m4:521: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me: WARNING: Operating system \"$target_os\" not recognized - proceed with caution!], [])
+m4trace:make/my_macros.m4:585: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me:${as_lineno-$LINENO}: WARNING: CPU \"$target_cpu\" not recognized - assuming 32 bit], [])
+m4trace:make/my_macros.m4:585: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me: WARNING: CPU \"$target_cpu\" not recognized - assuming 32 bit], [])
+m4trace:make/my_macros.m4:613: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me:${as_lineno-$LINENO}: using \"$target_os\" release \"$target_release\" on \"$target_cpu\"], [])
+m4trace:make/my_macros.m4:613: -1- _m4_warn([obsolete], [back quotes and double quotes must not be escaped in: $as_me: using \"$target_os\" release \"$target_release\" on \"$target_cpu\"], [])
+m4trace:make/my_macros.m4:619: -1- m4_pattern_allow([^DEBUG_CPPFLAGS$])
+m4trace:make/my_macros.m4:620: -1- MY_COMPILE_IFELSE([debug build -g3 -ggdb -O0], [-g3 -ggdb -O0], [], [], [DEBUG_CFLAGS="$DEBUG_CFLAGS -g3 -ggdb -O0"], [DEBUG_CFLAGS="$DEBUG_CFLAGS -g"
+])
+m4trace:make/my_macros.m4:620: -1- MY_IFELSE([usable], [DEBUG_CFLAGS="$DEBUG_CFLAGS -g3 -ggdb -O0"], [DEBUG_CFLAGS="$DEBUG_CFLAGS -g"
+])
+m4trace:make/my_macros.m4:628: -1- m4_pattern_allow([^DEBUG_CFLAGS$])
+m4trace:make/my_macros.m4:630: -1- m4_pattern_allow([^OPT_CPPFLAGS$])
+m4trace:make/my_macros.m4:631: -1- MY_COMPILE_IFELSE([optimised build -O3], [-O3], [], [], [OPT_CFLAGS="$OPT_FLAGS -O3"], [OPT_CFLAGS="$OPT_FLAGS -O2"
+])
+m4trace:make/my_macros.m4:631: -1- MY_IFELSE([usable], [OPT_CFLAGS="$OPT_FLAGS -O3"], [OPT_CFLAGS="$OPT_FLAGS -O2"
+])
+m4trace:make/my_macros.m4:639: -1- m4_pattern_allow([^OPT_CFLAGS$])
+m4trace:make/ptlib.m4:12: -1- AC_DEFUN([PTLIB_SUBST], [
+   m4_ifnblank([$2], [HAS_$1=$2])
+
+   if test "x$HAS_$1" = "xyes" ; then
+      HAS_$1=1
+   fi
+
+   if test "x$HAS_$1" = "x0" || test "x$HAS_$1" = "xno" ; then
+      HAS_$1=
+   fi
+
+   AC_SUBST([HAS_$1])
+
+   if test "x$HAS_$1" = "x1" ; then
+      PTLIB_$1=yes
+      AC_DEFINE(P_$1, 1)
+   else
+      PTLIB_$1=no
+   fi
+
+   AC_SUBST([PTLIB_$1])
+])
+m4trace:make/ptlib.m4:42: -1- AC_DEFUN([PTLIB_SIMPLE_OPTION], [
+   MY_ARG_ENABLE(
+      [$1],
+      [$3],
+      [${DEFAULT_$2:-yes}],
+      [PTLIB_SUBST($2, 1)],
+      [HAS_$2=],
+      [$4],
+      [$5],
+      [$6]
+   )
+])
+m4trace:make/ptlib.m4:69: -1- AC_DEFUN([PTLIB_MODULE_OPTION], [
+   MY_MODULE_OPTION([$1],[$2],[$3],[$4],[$5],[$6],[$7],[$8],[$9],[$10],[$11])
+   PTLIB_SUBST([$1], [$$1[_USABLE]])
+])
+m4trace:configure.ac:21: -1- m4_include([make/m4_ax_pthread.m4])
+m4trace:make/m4_ax_pthread.m4:87: -1- AU_DEFUN([ACX_PTHREAD], [m4_if($#, 0, [AX_PTHREAD], [AX_PTHREAD($@)])])
+m4trace:make/m4_ax_pthread.m4:87: -1- AC_DEFUN([ACX_PTHREAD], [AC_DIAGNOSE([obsolete], [The macro `ACX_PTHREAD' is obsolete.
+You should run autoupdate.])dnl
+m4_if($#, 0, [AX_PTHREAD], [AX_PTHREAD($@)])])
+m4trace:make/m4_ax_pthread.m4:88: -1- AC_DEFUN([AX_PTHREAD], [
+AC_REQUIRE([AC_CANONICAL_HOST])
+AC_LANG_PUSH([C])
+ax_pthread_ok=no
+
+# We used to check for pthread.h first, but this fails if pthread.h
+# requires special compiler flags (e.g. on True64 or Sequent).
+# It gets checked for in the link test anyway.
+
+# First of all, check if the user has set any of the PTHREAD_LIBS,
+# etcetera environment variables, and if threads linking works using
+# them:
+if test x"$PTHREAD_LIBS$PTHREAD_CFLAGS" != x; then
+        save_CFLAGS="$CFLAGS"
+        CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+        save_LIBS="$LIBS"
+        LIBS="$PTHREAD_LIBS $LIBS"
+        AC_MSG_CHECKING([for pthread_join in LIBS=$PTHREAD_LIBS with CFLAGS=$PTHREAD_CFLAGS])
+        AC_TRY_LINK_FUNC(pthread_join, ax_pthread_ok=yes)
+        AC_MSG_RESULT($ax_pthread_ok)
+        if test x"$ax_pthread_ok" = xno; then
+                PTHREAD_LIBS=""
+                PTHREAD_CFLAGS=""
+        fi
+        LIBS="$save_LIBS"
+        CFLAGS="$save_CFLAGS"
+fi
+
+# We must check for the threads library under a number of different
+# names; the ordering is very important because some systems
+# (e.g. DEC) have both -lpthread and -lpthreads, where one of the
+# libraries is broken (non-POSIX).
+
+# Create a list of thread flags to try.  Items starting with a "-" are
+# C compiler flags, and other items are library names, except for "none"
+# which indicates that we try without any flags at all, and "pthread-config"
+# which is a program returning the flags for the Pth emulation library.
+
+ax_pthread_flags="pthreads none -Kthread -kthread lthread -pthread -pthreads -mthreads pthread --thread-safe -mt pthread-config"
+
+# The ordering *is* (sometimes) important.  Some notes on the
+# individual items follow:
+
+# pthreads: AIX (must check this before -lpthread)
+# none: in case threads are in libc; should be tried before -Kthread and
+#       other compiler flags to prevent continual compiler warnings
+# -Kthread: Sequent (threads in libc, but -Kthread needed for pthread.h)
+# -kthread: FreeBSD kernel threads (preferred to -pthread since SMP-able)
+# lthread: LinuxThreads port on FreeBSD (also preferred to -pthread)
+# -pthread: Linux/gcc (kernel threads), BSD/gcc (userland threads)
+# -pthreads: Solaris/gcc
+# -mthreads: Mingw32/gcc, Lynx/gcc
+# -mt: Sun Workshop C (may only link SunOS threads [-lthread], but it
+#      doesn't hurt to check since this sometimes defines pthreads too;
+#      also defines -D_REENTRANT)
+#      ... -mt is also the pthreads flag for HP/aCC
+# pthread: Linux, etcetera
+# --thread-safe: KAI C++
+# pthread-config: use pthread-config program (for GNU Pth library)
+
+case ${host_os} in
+        solaris*)
+
+        # On Solaris (at least, for some versions), libc contains stubbed
+        # (non-functional) versions of the pthreads routines, so link-based
+        # tests will erroneously succeed.  (We need to link with -pthreads/-mt/
+        # -lpthread.)  (The stubs are missing pthread_cleanup_push, or rather
+        # a function called by this macro, so we could check for that, but
+        # who knows whether they'll stub that too in a future libc.)  So,
+        # we'll just look for -pthreads and -lpthread first:
+
+        ax_pthread_flags="-pthreads pthread -mt -pthread $ax_pthread_flags"
+        ;;
+
+        darwin*)
+        ax_pthread_flags="-pthread $ax_pthread_flags"
+        ;;
+esac
+
+if test x"$ax_pthread_ok" = xno; then
+for flag in $ax_pthread_flags; do
+
+        case $flag in
+                none)
+                AC_MSG_CHECKING([whether pthreads work without any flags])
+                ;;
+
+                -*)
+                AC_MSG_CHECKING([whether pthreads work with $flag])
+                PTHREAD_CFLAGS="$flag"
+                ;;
+
+                pthread-config)
+                AC_CHECK_PROG(ax_pthread_config, pthread-config, yes, no)
+                if test x"$ax_pthread_config" = xno; then continue; fi
+                PTHREAD_CFLAGS="`pthread-config --cflags`"
+                PTHREAD_LIBS="`pthread-config --ldflags` `pthread-config --libs`"
+                ;;
+
+                *)
+                AC_MSG_CHECKING([for the pthreads library -l$flag])
+                PTHREAD_LIBS="-l$flag"
+                ;;
+        esac
+
+        save_LIBS="$LIBS"
+        save_CFLAGS="$CFLAGS"
+        LIBS="$PTHREAD_LIBS $LIBS"
+        CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+
+        # Check for various functions.  We must include pthread.h,
+        # since some functions may be macros.  (On the Sequent, we
+        # need a special flag -Kthread to make this header compile.)
+        # We check for pthread_join because it is in -lpthread on IRIX
+        # while pthread_create is in libc.  We check for pthread_attr_init
+        # due to DEC craziness with -lpthreads.  We check for
+        # pthread_cleanup_push because it is one of the few pthread
+        # functions on Solaris that doesn't have a non-functional libc stub.
+        # We try pthread_create on general principles.
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <pthread.h>
+                        static void routine(void *a) { a = 0; }
+                        static void *start_routine(void *a) { return a; }],
+                       [pthread_t th; pthread_attr_t attr;
+                        pthread_create(&th, 0, start_routine, 0);
+                        pthread_join(th, 0);
+                        pthread_attr_init(&attr);
+                        pthread_cleanup_push(routine, 0);
+                        pthread_cleanup_pop(0) /* ; */])],
+                [ax_pthread_ok=yes],
+                [])
+
+        LIBS="$save_LIBS"
+        CFLAGS="$save_CFLAGS"
+
+        AC_MSG_RESULT($ax_pthread_ok)
+        if test "x$ax_pthread_ok" = xyes; then
+                break;
+        fi
+
+        PTHREAD_LIBS=""
+        PTHREAD_CFLAGS=""
+done
+fi
+
+# Various other checks:
+if test "x$ax_pthread_ok" = xyes; then
+        save_LIBS="$LIBS"
+        LIBS="$PTHREAD_LIBS $LIBS"
+        save_CFLAGS="$CFLAGS"
+        CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+
+        # Detect AIX lossage: JOINABLE attribute is called UNDETACHED.
+        AC_MSG_CHECKING([for joinable pthread attribute])
+        attr_name=unknown
+        for attr in PTHREAD_CREATE_JOINABLE PTHREAD_CREATE_UNDETACHED; do
+            AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <pthread.h>],
+                           [int attr = $attr; return attr /* ; */])],
+                [attr_name=$attr; break],
+                [])
+        done
+        AC_MSG_RESULT($attr_name)
+        if test "$attr_name" != PTHREAD_CREATE_JOINABLE; then
+            AC_DEFINE_UNQUOTED(PTHREAD_CREATE_JOINABLE, $attr_name,
+                               [Define to necessary symbol if this constant
+                                uses a non-standard name on your system.])
+        fi
+
+        AC_MSG_CHECKING([if more special flags are required for pthreads])
+        flag=no
+        case ${host_os} in
+            aix* | freebsd* | darwin*) flag="-D_THREAD_SAFE";;
+            osf* | hpux*) flag="-D_REENTRANT";;
+            solaris*)
+            if test "$GCC" = "yes"; then
+                flag="-D_REENTRANT"
+            else
+                flag="-mt -D_REENTRANT"
+            fi
+            ;;
+        esac
+        AC_MSG_RESULT(${flag})
+        if test "x$flag" != xno; then
+            PTHREAD_CFLAGS="$flag $PTHREAD_CFLAGS"
+        fi
+
+        AC_CACHE_CHECK([for PTHREAD_PRIO_INHERIT],
+            ax_cv_PTHREAD_PRIO_INHERIT, [
+                AC_LINK_IFELSE([
+                    AC_LANG_PROGRAM([[#include <pthread.h>]], [[int i = PTHREAD_PRIO_INHERIT;]])],
+                    [ax_cv_PTHREAD_PRIO_INHERIT=yes],
+                    [ax_cv_PTHREAD_PRIO_INHERIT=no])
+            ])
+        AS_IF([test "x$ax_cv_PTHREAD_PRIO_INHERIT" = "xyes"],
+            AC_DEFINE([HAVE_PTHREAD_PRIO_INHERIT], 1, [Have PTHREAD_PRIO_INHERIT.]))
+
+        LIBS="$save_LIBS"
+        CFLAGS="$save_CFLAGS"
+
+        # More AIX lossage: compile with *_r variant
+        if test "x$GCC" != xyes; then
+            case $host_os in
+                aix*)
+                AS_CASE(["x/$CC"],
+                  [x*/c89|x*/c89_128|x*/c99|x*/c99_128|x*/cc|x*/cc128|x*/xlc|x*/xlc_v6|x*/xlc128|x*/xlc128_v6],
+                  [#handle absolute path differently from PATH based program lookup
+                   AS_CASE(["x$CC"],
+                     [x/*],
+                     [AS_IF([AS_EXECUTABLE_P([${CC}_r])],[PTHREAD_CC="${CC}_r"])],
+                     [AC_CHECK_PROGS([PTHREAD_CC],[${CC}_r],[$CC])])])
+                ;;
+            esac
+        fi
+fi
+
+test -n "$PTHREAD_CC" || PTHREAD_CC="$CC"
+
+AC_SUBST(PTHREAD_LIBS)
+AC_SUBST(PTHREAD_CFLAGS)
+AC_SUBST(PTHREAD_CC)
+
+# Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
+if test x"$ax_pthread_ok" = xyes; then
+        ifelse([$1],,AC_DEFINE(HAVE_PTHREAD,1,[Define if you have POSIX threads libraries and header files.]),[$1])
+        :
+else
+        ax_pthread_ok=no
+        $2
+fi
+AC_LANG_POP
+])
+m4trace:configure.ac:121: -1- MY_COMPILE_IFELSE([for upad128_t], [], [#include <sys/types.h>], [upad128_t upad; upad._q = 0.0;], [AC_DEFINE(P_HAS_UPAD128_T)
+      ])
+m4trace:configure.ac:121: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_UPAD128_T)
+      ], [])
+m4trace:configure.ac:121: -1- m4_pattern_allow([^P_HAS_UPAD128_T$])
+m4trace:configure.ac:178: -1- m4_pattern_allow([^P_64BIT$])
+m4trace:configure.ac:183: -1- m4_pattern_allow([^P_LPIA$])
+m4trace:configure.ac:202: -1- m4_pattern_allow([^makedir$])
+m4trace:configure.ac:213: -1- MY_VERSION_FILE([$VERSION_DIR/version.h], [PTLIB])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_MAJOR$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_MINOR$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_BUILD$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_STAGE$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_VERSION$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_MAJOR$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_MINOR$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_BUILD$])
+m4trace:configure.ac:213: -1- m4_pattern_allow([^PTLIB_VERSION$])
+m4trace:configure.ac:220: -1- m4_pattern_allow([^BISON$])
+m4trace:configure.ac:249: -1- MY_COMPILE_IFELSE([compiler -fno-diagnostics-show-caret], [-Werror -fno-diagnostics-show-caret], [], [], [CPPFLAGS="$CPPFLAGS -fno-diagnostics-show-caret"
+])
+m4trace:configure.ac:249: -1- MY_IFELSE([usable], [CPPFLAGS="$CPPFLAGS -fno-diagnostics-show-caret"
+], [])
+m4trace:configure.ac:257: -1- MY_COMPILE_IFELSE([compiler -fno-caret-diagnostics], [-Werror -fno-caret-diagnostics], [], [], [CPPFLAGS="$CPPFLAGS -fno-caret-diagnostics"
+])
+m4trace:configure.ac:257: -1- MY_IFELSE([usable], [CPPFLAGS="$CPPFLAGS -fno-caret-diagnostics"
+], [])
+m4trace:configure.ac:265: -1- MY_COMPILE_IFELSE([compiler -Wno-pragma-messages], [-Werror -Wno-#pragma-messages], [], [], [CPPFLAGS="$CPPFLAGS -Wno-\#pragma-messages"
+])
+m4trace:configure.ac:265: -1- MY_IFELSE([usable], [CPPFLAGS="$CPPFLAGS -Wno-\#pragma-messages"
+], [])
+m4trace:configure.ac:273: -1- MY_COMPILE_IFELSE([compiler -felide-constructors], [-Werror -felide-constructors], [], [], [CXXFLAGS="$CXXFLAGS -felide-constructors"
+])
+m4trace:configure.ac:273: -1- MY_IFELSE([usable], [CXXFLAGS="$CXXFLAGS -felide-constructors"
+], [])
+m4trace:configure.ac:281: -1- MY_COMPILE_IFELSE([compiler -Wreorder], [-Werror -Wreorder], [], [], [CXXFLAGS="$CXXFLAGS -Wreorder"
+])
+m4trace:configure.ac:281: -1- MY_IFELSE([usable], [CXXFLAGS="$CXXFLAGS -Wreorder"
+], [])
+m4trace:configure.ac:293: -1- MY_COMPILE_IFELSE([compiler -Wno-deprecated-declarations], [-Werror -Wno-deprecated-declarations], [], [], [CPPFLAGS="$CPPFLAGS -Wno-deprecated-declarations"
+   ])
+m4trace:configure.ac:293: -1- MY_IFELSE([usable], [CPPFLAGS="$CPPFLAGS -Wno-deprecated-declarations"
+   ], [])
+m4trace:configure.ac:334: -1- PTLIB_SIMPLE_OPTION([exceptions], [EXCEPTIONS], [enable C++ exceptions])
+m4trace:configure.ac:334: -1- MY_ARG_ENABLE([exceptions], [enable C++ exceptions], [${DEFAULT_EXCEPTIONS:-yes}], [PTLIB_SUBST(EXCEPTIONS, 1)], [HAS_EXCEPTIONS=], [], [], [
+   ])
+m4trace:configure.ac:334: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:334: the top level])
+m4trace:configure.ac:334: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:334: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:334: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:334: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:334: -1- MY_IFELSE([enableval], [PTLIB_SUBST(EXCEPTIONS, 1)], [HAS_EXCEPTIONS=])
+m4trace:configure.ac:334: -1- PTLIB_SUBST([EXCEPTIONS], [1])
+m4trace:configure.ac:334: -1- m4_pattern_allow([^HAS_EXCEPTIONS$])
+m4trace:configure.ac:334: -1- m4_pattern_allow([^P_EXCEPTIONS$])
+m4trace:configure.ac:334: -1- m4_pattern_allow([^PTLIB_EXCEPTIONS$])
+m4trace:configure.ac:358: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:358: the top level])
+m4trace:configure.ac:358: -1- m4_pattern_allow([^P_GNU_ALLOCATOR$])
+m4trace:configure.ac:368: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:368: the top level])
+m4trace:configure.ac:368: -1- m4_pattern_allow([^P_GNU_ALLOCATOR$])
+m4trace:configure.ac:368: -1- _m4_warn([obsolete], [The macro `AC_ERROR' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/oldnames.m4:34: AC_ERROR is expanded from...
+../../lib/m4sugar/m4sh.m4:639: AS_IF is expanded from...
+../../lib/autoconf/general.m4:2590: _AC_COMPILE_IFELSE is expanded from...
+../../lib/autoconf/general.m4:2606: AC_COMPILE_IFELSE is expanded from...
+../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:368: the top level])
+m4trace:configure.ac:384: -1- _m4_warn([obsolete], [The macro `AC_ERROR' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/oldnames.m4:34: AC_ERROR is expanded from...
+configure.ac:384: the top level])
+m4trace:configure.ac:394: -1- m4_pattern_allow([^WORDS_BIGENDIAN$])
+m4trace:configure.ac:394: -1- m4_pattern_allow([^AC_APPLE_UNIVERSAL_BUILD$])
+m4trace:configure.ac:396: -1- m4_pattern_allow([^PBYTE_ORDER$])
+m4trace:configure.ac:398: -1- m4_pattern_allow([^PBYTE_ORDER$])
+m4trace:configure.ac:404: -1- m4_pattern_allow([^USE_SYSTEM_SWAB$])
+m4trace:configure.ac:410: -1- m4_pattern_allow([^CXXCPP$])
+m4trace:configure.ac:410: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:410: -1- m4_pattern_allow([^CXXCPP$])
+m4trace:configure.ac:414: -1- m4_pattern_allow([^HAVE_NET_IF_H$])
+m4trace:configure.ac:420: -1- MY_COMPILE_IFELSE([if readdir_r has 2 parms], [], [
+      #define _POSIX_PTHREAD_SEMANTICS
+      #include <dirent.h>
+   ], [
+      DIR *s;
+      struct dirent * e;
+      readdir_r(s, e);
+   ], [P_HAS_POSIX_READDIR_R=2], [
+      MY_COMPILE_IFELSE(
+         [if readdir_r has 3 parms],
+         [],
+         [#include <dirent.h>],
+         [
+            DIR *s;
+            struct dirent * e;
+            struct dirent * p;
+            readdir_r(s, e, &p);
+         ],
+         [P_HAS_POSIX_READDIR_R=3],
+         [P_HAS_POSIX_READDIR_R=0]
+      )
+   
+])
+m4trace:configure.ac:420: -1- MY_IFELSE([usable], [P_HAS_POSIX_READDIR_R=2], [
+      MY_COMPILE_IFELSE(
+         [if readdir_r has 3 parms],
+         [],
+         [#include <dirent.h>],
+         [
+            DIR *s;
+            struct dirent * e;
+            struct dirent * p;
+            readdir_r(s, e, &p);
+         ],
+         [P_HAS_POSIX_READDIR_R=3],
+         [P_HAS_POSIX_READDIR_R=0]
+      )
+   
+])
+m4trace:configure.ac:420: -1- MY_COMPILE_IFELSE([if readdir_r has 3 parms], [], [#include <dirent.h>], [
+            DIR *s;
+            struct dirent * e;
+            struct dirent * p;
+            readdir_r(s, e, &p);
+         ], [P_HAS_POSIX_READDIR_R=3], [P_HAS_POSIX_READDIR_R=0
+      ])
+m4trace:configure.ac:420: -1- MY_IFELSE([usable], [P_HAS_POSIX_READDIR_R=3], [P_HAS_POSIX_READDIR_R=0
+      ])
+m4trace:configure.ac:449: -1- m4_pattern_allow([^P_HAS_POSIX_READDIR_R$])
+m4trace:configure.ac:456: -1- MY_COMPILE_IFELSE([for recvmsg], [], [
+      #include <sys/types.h>
+      #include <sys/socket.h>
+      #include <netinet/in.h>
+   ], [
+      struct msghdr *msg;
+      recvmsg(0, msg, 0);
+   ], [AC_DEFINE(P_HAS_RECVMSG, 1)
+])
+m4trace:configure.ac:456: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RECVMSG, 1)
+], [])
+m4trace:configure.ac:456: -1- m4_pattern_allow([^P_HAS_RECVMSG$])
+m4trace:configure.ac:475: -1- MY_COMPILE_IFELSE([for rt_msghdr], [], [
+      #include <net/route.h>
+   ], [
+      struct rt_msghdr msg;
+      msg.rtm_msglen = 0;
+   ], [AC_DEFINE(P_HAS_RT_MSGHDR, 1)
+])
+m4trace:configure.ac:475: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RT_MSGHDR, 1)
+], [])
+m4trace:configure.ac:475: -1- m4_pattern_allow([^P_HAS_RT_MSGHDR$])
+m4trace:configure.ac:492: -1- MY_COMPILE_IFELSE([for recvmsg flag MSG_ERRQUEUE], [], [
+      #include <sys/types.h>
+      #include <sys/socket.h>
+      #include <netinet/in.h>
+   ], [
+      int fd = -1;
+      msghdr readData;
+      recvmsg(fd, &readData, MSG_ERRQUEUE);
+   ], [AC_DEFINE(P_HAS_RECVMSG_MSG_ERRQUEUE, 1)
+])
+m4trace:configure.ac:492: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RECVMSG_MSG_ERRQUEUE, 1)
+], [])
+m4trace:configure.ac:492: -1- m4_pattern_allow([^P_HAS_RECVMSG_MSG_ERRQUEUE$])
+m4trace:configure.ac:512: -1- MY_COMPILE_IFELSE([for sockopt option IP_RECVERR], [], [
+      #include <sys/types.h>
+      #include <sys/socket.h>
+      #include <netinet/in.h>
+   ], [
+      int fd = -1;
+      int v = 1;
+      setsockopt(fd, IPPROTO_IP, IP_RECVERR, &v, sizeof(v));
+   ], [AC_DEFINE(P_HAS_RECVMSG_IP_RECVERR, 1)
+])
+m4trace:configure.ac:512: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RECVMSG_IP_RECVERR, 1)
+], [])
+m4trace:configure.ac:512: -1- m4_pattern_allow([^P_HAS_RECVMSG_IP_RECVERR$])
+m4trace:configure.ac:532: -1- MY_COMPILE_IFELSE([for getpwuid_r with 4 arguments], [], [
+      #include <sys/types.h>
+      #include <pwd.h>
+   ], [
+      uid_t uid;
+      struct passwd * pwd;
+      char * buffer;
+      size_t bufsize; 
+      getpwuid_r(uid, pwd, buffer, bufsize);
+   ], [AC_DEFINE(P_GETPWUID_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getpwuid_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ],
+      [
+         uid_t uid;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwuid_r(uid, pwd, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETPWUID_R5, 1)]
+   )
+])
+m4trace:configure.ac:532: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETPWUID_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getpwuid_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ],
+      [
+         uid_t uid;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwuid_r(uid, pwd, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETPWUID_R5, 1)]
+   )
+])
+m4trace:configure.ac:532: -1- m4_pattern_allow([^P_GETPWUID_R4$])
+m4trace:configure.ac:532: -1- MY_COMPILE_IFELSE([for getpwuid_r with 5 arguments], [], [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ], [
+         uid_t uid;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwuid_r(uid, pwd, buffer, bufsize, &result);
+      ], [AC_DEFINE(P_GETPWUID_R5, 1)
+   ])
+m4trace:configure.ac:532: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETPWUID_R5, 1)
+   ], [])
+m4trace:configure.ac:532: -1- m4_pattern_allow([^P_GETPWUID_R5$])
+m4trace:configure.ac:570: -1- MY_COMPILE_IFELSE([for getgrgid_r with 4 arguments], [], [
+      #include <sys/types.h>
+      #include <grp.h>
+   ], [
+      gid_t gid;
+      struct group * grp;
+      char * buffer;
+      size_t bufsize; 
+      getgrgid_r(gid, grp, buffer, bufsize);
+   ], [AC_DEFINE(P_GETGRGID_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getgrgid_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <grp.h>
+      ],
+      [
+         gid_t gid;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrgid_r(gid, grp, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETGRGID_R5, 1)]
+   )
+])
+m4trace:configure.ac:570: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETGRGID_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getgrgid_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <grp.h>
+      ],
+      [
+         gid_t gid;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrgid_r(gid, grp, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETGRGID_R5, 1)]
+   )
+])
+m4trace:configure.ac:570: -1- m4_pattern_allow([^P_GETGRGID_R4$])
+m4trace:configure.ac:570: -1- MY_COMPILE_IFELSE([for getgrgid_r with 5 arguments], [], [
+         #include <sys/types.h>
+         #include <grp.h>
+      ], [
+         gid_t gid;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrgid_r(gid, grp, buffer, bufsize, &result);
+      ], [AC_DEFINE(P_GETGRGID_R5, 1)
+   ])
+m4trace:configure.ac:570: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETGRGID_R5, 1)
+   ], [])
+m4trace:configure.ac:570: -1- m4_pattern_allow([^P_GETGRGID_R5$])
+m4trace:configure.ac:608: -1- MY_COMPILE_IFELSE([for getpwnam_r with 4 arguments], [], [
+      #include <sys/types.h>
+      #include <pwd.h>
+   ], [
+      const char * name;
+      struct passwd * pwd;
+      char * buffer;
+      size_t bufsize; 
+      getpwnam_r(name, pwd, buffer, bufsize);
+   ], [AC_DEFINE(P_GETPWNAM_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getpwnam_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ],
+      [
+         const char * name;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwnam_r(name, pwd, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETPWNAM_R5, 1)]
+   )
+])
+m4trace:configure.ac:608: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETPWNAM_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getpwnam_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ],
+      [
+         const char * name;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwnam_r(name, pwd, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETPWNAM_R5, 1)]
+   )
+])
+m4trace:configure.ac:608: -1- m4_pattern_allow([^P_GETPWNAM_R4$])
+m4trace:configure.ac:608: -1- MY_COMPILE_IFELSE([for getpwnam_r with 5 arguments], [], [
+         #include <sys/types.h>
+         #include <pwd.h>
+      ], [
+         const char * name;
+         struct passwd * pwd;
+         char * buffer;
+         size_t bufsize;
+         struct passwd *result;
+         getpwnam_r(name, pwd, buffer, bufsize, &result);
+      ], [AC_DEFINE(P_GETPWNAM_R5, 1)
+   ])
+m4trace:configure.ac:608: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETPWNAM_R5, 1)
+   ], [])
+m4trace:configure.ac:608: -1- m4_pattern_allow([^P_GETPWNAM_R5$])
+m4trace:configure.ac:646: -1- MY_COMPILE_IFELSE([for getgrnam_r with 4 arguments], [], [
+      #include <sys/types.h>
+      #include <grp.h>
+   ], [
+      const char * name;
+      struct group * grp;
+      char * buffer;
+      size_t bufsize; 
+      getgrnam_r(name, pwd, buffer, bufsize);
+   ], [AC_DEFINE(P_GETGRNAM_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getgrnam_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <grp.h>
+      ],
+      [
+         const char * name;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrnam_r(name, grp, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETGRNAM_R5, 1)]
+  )
+])
+m4trace:configure.ac:646: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETGRNAM_R4, 1)], [MY_COMPILE_IFELSE(
+      [for getgrnam_r with 5 arguments],
+      [],
+      [
+         #include <sys/types.h>
+         #include <grp.h>
+      ],
+      [
+         const char * name;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrnam_r(name, grp, buffer, bufsize, &result);
+      ],
+      [AC_DEFINE(P_GETGRNAM_R5, 1)]
+  )
+])
+m4trace:configure.ac:646: -1- m4_pattern_allow([^P_GETGRNAM_R4$])
+m4trace:configure.ac:646: -1- MY_COMPILE_IFELSE([for getgrnam_r with 5 arguments], [], [
+         #include <sys/types.h>
+         #include <grp.h>
+      ], [
+         const char * name;
+         struct group * grp;
+         char * buffer;
+         size_t bufsize;
+         struct group *result;
+         getgrnam_r(name, grp, buffer, bufsize, &result);
+      ], [AC_DEFINE(P_GETGRNAM_R5, 1)
+  ])
+m4trace:configure.ac:646: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETGRNAM_R5, 1)
+  ], [])
+m4trace:configure.ac:646: -1- m4_pattern_allow([^P_GETGRNAM_R5$])
+m4trace:configure.ac:683: -1- MY_COMPILE_IFELSE([if setpgrp takes no parameters], [], [#include <unistd.h>], [pid_t p = setpgrp();], [AC_DEFINE(P_SETPGRP_NOPARM, 1)
+])
+m4trace:configure.ac:683: -1- MY_IFELSE([usable], [AC_DEFINE(P_SETPGRP_NOPARM, 1)
+], [])
+m4trace:configure.ac:683: -1- m4_pattern_allow([^P_SETPGRP_NOPARM$])
+m4trace:configure.ac:701: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:701: the top level])
+m4trace:configure.ac:701: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+../../lib/m4sugar/m4sh.m4:639: AS_IF is expanded from...
+../../lib/autoconf/general.m4:2590: _AC_COMPILE_IFELSE is expanded from...
+../../lib/autoconf/general.m4:2606: AC_COMPILE_IFELSE is expanded from...
+../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:701: the top level])
+m4trace:configure.ac:717: -1- m4_pattern_allow([^P_ATOMICITY_HEADER$])
+m4trace:configure.ac:720: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:720: the top level])
+m4trace:configure.ac:720: -1- m4_pattern_allow([^P_ATOMICITY_NAMESPACE$])
+m4trace:configure.ac:734: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
+configure.ac:734: the top level])
+m4trace:configure.ac:734: -1- m4_pattern_allow([^P_ATOMICITY_HAS_OR$])
+m4trace:configure.ac:753: -1- AX_PTHREAD([], [AC_MSG_ERROR(Must have pthreads!)])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^ax_pthread_config$])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^PTHREAD_CREATE_JOINABLE$])
+m4trace:configure.ac:753: -2- m4_pattern_allow([^HAVE_PTHREAD_PRIO_INHERIT$])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^PTHREAD_CC$])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^PTHREAD_LIBS$])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^PTHREAD_CFLAGS$])
+m4trace:configure.ac:753: -1- m4_pattern_allow([^PTHREAD_CC$])
+m4trace:configure.ac:753: -2- m4_pattern_allow([^HAVE_PTHREAD$])
+m4trace:configure.ac:756: -1- m4_pattern_allow([^P_PTHREADS$])
+m4trace:configure.ac:767: -1- m4_pattern_allow([^P_NO_PTHREAD_KILL$])
+m4trace:configure.ac:788: -1- MY_COMPILE_IFELSE([if has Unix semaphores], [], [#include <semaphore.h>], [
+      sem_t *s;
+      sem_init(s, 0, 0);
+   ], [
+      AC_DEFINE(P_HAS_SEMAPHORES)
+
+      MY_COMPILE_IFELSE(
+         [if named semaphores are available],
+         [],
+         [#include <semaphore.h>],
+         [sem_t *s = sem_open("test", O_CREAT)],
+         [AC_DEFINE(P_HAS_NAMED_SEMAPHORES)]
+      )
+
+      MY_COMPILE_IFELSE(
+         [if has sem_timedwait],
+         [],
+         [#include <semaphore.h>],
+         [
+            sem_t *s;
+            const struct timespec * t;
+            sem_timedwait(s, t);
+         ],
+         [AC_DEFINE(P_HAS_SEMAPHORES_XPG6, 1, "Supports XPG6 Semaphores")]
+      )
+   
+])
+m4trace:configure.ac:788: -1- MY_IFELSE([usable], [
+      AC_DEFINE(P_HAS_SEMAPHORES)
+
+      MY_COMPILE_IFELSE(
+         [if named semaphores are available],
+         [],
+         [#include <semaphore.h>],
+         [sem_t *s = sem_open("test", O_CREAT)],
+         [AC_DEFINE(P_HAS_NAMED_SEMAPHORES)]
+      )
+
+      MY_COMPILE_IFELSE(
+         [if has sem_timedwait],
+         [],
+         [#include <semaphore.h>],
+         [
+            sem_t *s;
+            const struct timespec * t;
+            sem_timedwait(s, t);
+         ],
+         [AC_DEFINE(P_HAS_SEMAPHORES_XPG6, 1, "Supports XPG6 Semaphores")]
+      )
+   
+], [])
+m4trace:configure.ac:788: -1- m4_pattern_allow([^P_HAS_SEMAPHORES$])
+m4trace:configure.ac:788: -1- MY_COMPILE_IFELSE([if named semaphores are available], [], [#include <semaphore.h>], [sem_t *s = sem_open("test", O_CREAT)], [AC_DEFINE(P_HAS_NAMED_SEMAPHORES)
+      ])
+m4trace:configure.ac:788: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_NAMED_SEMAPHORES)
+      ], [])
+m4trace:configure.ac:788: -1- m4_pattern_allow([^P_HAS_NAMED_SEMAPHORES$])
+m4trace:configure.ac:788: -1- MY_COMPILE_IFELSE([if has sem_timedwait], [], [#include <semaphore.h>], [
+            sem_t *s;
+            const struct timespec * t;
+            sem_timedwait(s, t);
+         ], [AC_DEFINE(P_HAS_SEMAPHORES_XPG6, 1, "Supports XPG6 Semaphores")
+      ])
+m4trace:configure.ac:788: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_SEMAPHORES_XPG6, 1, "Supports XPG6 Semaphores")
+      ], [])
+m4trace:configure.ac:788: -1- m4_pattern_allow([^P_HAS_SEMAPHORES_XPG6$])
+m4trace:configure.ac:825: -1- MY_COMPILE_IFELSE([if has pthread_mutex_timedlock], [], [#include <pthread.h>], [pthread_mutex_timedlock(NULL, NULL)], [AC_DEFINE(P_PTHREADS_XPG6, 1, "XPG6 compliant pthreads found")
+])
+m4trace:configure.ac:825: -1- MY_IFELSE([usable], [AC_DEFINE(P_PTHREADS_XPG6, 1, "XPG6 compliant pthreads found")
+], [])
+m4trace:configure.ac:825: -1- m4_pattern_allow([^P_PTHREADS_XPG6$])
+m4trace:configure.ac:836: -1- MY_COMPILE_IFELSE([if has NP recursive mutexes], [], [#include <pthread.h>], [
+      pthread_mutexattr_t attr;
+      pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+   ], [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 1)], [MY_COMPILE_IFELSE(
+      [if has recursive mutexes],
+      [],
+      [#include <pthread.h>],
+      [
+         pthread_mutexattr_t attr;
+         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+      ],
+      [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 2)]
+   )
+])
+m4trace:configure.ac:836: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 1)], [MY_COMPILE_IFELSE(
+      [if has recursive mutexes],
+      [],
+      [#include <pthread.h>],
+      [
+         pthread_mutexattr_t attr;
+         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+      ],
+      [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 2)]
+   )
+])
+m4trace:configure.ac:836: -1- m4_pattern_allow([^P_HAS_RECURSIVE_MUTEX$])
+m4trace:configure.ac:836: -1- MY_COMPILE_IFELSE([if has recursive mutexes], [], [#include <pthread.h>], [
+         pthread_mutexattr_t attr;
+         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+      ], [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 2)
+   ])
+m4trace:configure.ac:836: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_RECURSIVE_MUTEX, 2)
+   ], [])
+m4trace:configure.ac:836: -1- m4_pattern_allow([^P_HAS_RECURSIVE_MUTEX$])
+m4trace:configure.ac:861: -1- MY_COMPILE_IFELSE([for gethostbyaddr_r], [], [#include <netdb.h>], [
+      const void *addr;
+      socklen_t len;
+      int type;
+      struct hostent *ret;
+      char *buf;
+      size_t buflen;
+      struct hostent **result;
+      int *h_errnop;
+      gethostbyaddr_r(addr, len, type, ret, buf, buflen, result, h_errnop);
+   ], [AC_DEFINE(P_GETHOSTBYNAME_R, 1)
+])
+m4trace:configure.ac:861: -1- MY_IFELSE([usable], [AC_DEFINE(P_GETHOSTBYNAME_R, 1)
+], [])
+m4trace:configure.ac:861: -1- m4_pattern_allow([^P_GETHOSTBYNAME_R$])
+m4trace:configure.ac:883: -1- MY_COMPILE_IFELSE([for NetLink support], [], [
+      #include <asm/types.h>
+      #include <sys/socket.h>
+      #include <linux/netlink.h>
+      #include <linux/rtnetlink.h>
+      #include <linux/genetlink.h>
+   ], [
+      struct sockaddr_nl sa;
+      sa.nl_family = AF_NETLINK;
+      sa.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR;
+      int fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+   ], [AC_DEFINE(P_HAS_NETLINK, 1)
+])
+m4trace:configure.ac:883: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_NETLINK, 1)
+], [])
+m4trace:configure.ac:883: -1- m4_pattern_allow([^P_HAS_NETLINK$])
+m4trace:configure.ac:919: -1- MY_COMPILE_IFELSE([for IPv6 support], [], [
+         #include <sys/types.h>
+         #include <sys/socket.h>
+         #include <netinet/in.h>
+         #include <netdb.h>
+      ], [
+         struct sockaddr_in6 s;
+         s.sin6_scope_id = 0;
+         getnameinfo(0, 0, 0, 0, 0, 0, 0);
+      ], [
+         HAS_IPV6=1
+         AC_DEFINE(P_HAS_IPV6, 1, "IPV6 enabled")
+      
+   ])
+m4trace:configure.ac:919: -1- MY_IFELSE([usable], [
+         HAS_IPV6=1
+         AC_DEFINE(P_HAS_IPV6, 1, "IPV6 enabled")
+      
+   ], [])
+m4trace:configure.ac:919: -1- m4_pattern_allow([^P_HAS_IPV6$])
+m4trace:configure.ac:940: -1- PTLIB_SUBST([IPV6])
+m4trace:configure.ac:940: -1- m4_pattern_allow([^HAS_IPV6$])
+m4trace:configure.ac:940: -1- m4_pattern_allow([^P_IPV6$])
+m4trace:configure.ac:940: -1- m4_pattern_allow([^PTLIB_IPV6$])
+m4trace:configure.ac:943: -1- MY_COMPILE_IFELSE([for inet_ntop], [], [
+      #include <sys/types.h>
+      #include <netinet/in.h>
+      #include <arpa/inet.h>
+   ], [
+      int af;
+      void * src;
+      char * dst;
+      socklen_t len;
+      inet_ntop(af, src, dst, len);
+   ], [AC_DEFINE(P_HAS_INET_NTOP, 1)
+])
+m4trace:configure.ac:943: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_INET_NTOP, 1)
+], [])
+m4trace:configure.ac:943: -1- m4_pattern_allow([^P_HAS_INET_NTOP$])
+m4trace:configure.ac:962: -1- MY_COMPILE_IFELSE([for IPV6_ADD_MEMBERSHIP], [], [#include <netinet/in.h>], [int x = IPV6_ADD_MEMBERSHIP;], [AC_DEFINE(P_HAS_IPV6_ADD_MEMBERSHIP, 1)
+])
+m4trace:configure.ac:962: -1- MY_IFELSE([usable], [AC_DEFINE(P_HAS_IPV6_ADD_MEMBERSHIP, 1)
+], [])
+m4trace:configure.ac:962: -1- m4_pattern_allow([^P_HAS_IPV6_ADD_MEMBERSHIP$])
+m4trace:configure.ac:974: -1- m4_pattern_allow([^HAVE_AIO_H$])
+m4trace:configure.ac:974: -1- m4_pattern_allow([^P_HAS_AIO$])
+m4trace:configure.ac:986: -1- m4_pattern_allow([^HAVE_WCHAR_H$])
+m4trace:configure.ac:986: -1- m4_pattern_allow([^P_HAS_WCHAR$])
+m4trace:configure.ac:986: -1- m4_pattern_allow([^P_HAS_WOSTREAM$])
+m4trace:configure.ac:1001: -1- m4_pattern_allow([^PMEMORY_CHECK$])
+m4trace:configure.ac:1037: -1- m4_pattern_allow([^HAS_REGEX$])
+m4trace:configure.ac:1037: -1- m4_pattern_allow([^P_REGEX$])
+m4trace:configure.ac:1049: -1- PTLIB_SUBST([REGEX])
+m4trace:configure.ac:1049: -1- m4_pattern_allow([^HAS_REGEX$])
+m4trace:configure.ac:1049: -1- m4_pattern_allow([^P_REGEX$])
+m4trace:configure.ac:1049: -1- m4_pattern_allow([^PTLIB_REGEX$])
+m4trace:configure.ac:1081: -1- m4_pattern_allow([^P_HAS_RES_NINIT$])
+m4trace:configure.ac:1081: -1- MY_LINK_IFELSE([for res_ninit in -lresolv], [], [-lresolv], [
+            #include <netinet/in.h>
+            #include <resolv.h>
+         ], [
+            res_state p;
+            res_ninit(p);
+         ], [
+            HAS_DNS_RESOLVER=1
+            AC_DEFINE(P_HAS_RES_NINIT, 1)
+            LIBS="-lresolv $LIBS"
+         ], [AC_CHECK_FUNC(
+            [res_search],
+            [HAS_DNS_RESOLVER=1],
+            [MY_LINK_IFELSE(
+               [for res_search in -lresolv],
+               [],
+               [-lresolv],
+               [
+                  #include <netinet/in.h>
+                  #include <resolv.h>
+               ],
+               [res_search(NULL, 0, 0, NULL, 0)],
+               [
+                  HAS_DNS_RESOLVER=1
+                  LIBS="-lresolv $LIBS"
+               ],
+               [AC_SEARCH_LIBS(
+                  [__res_search],
+                  [resolv],
+                  [HAS_DNS_RESOLVER=1]
+                  [AC_CHECK_HEADER(
+                     [windns.h],
+                     [
+                        HAS_DNS_RESOLVER=1
+                        LIBS="-ldnsapi $LIBS"
+                     ],
+                     [],
+                     [#include <windows.h>]
+                  )]
+               )]
+            )]
+         )
+      ])
+m4trace:configure.ac:1081: -1- MY_IFELSE([usable], [
+            HAS_DNS_RESOLVER=1
+            AC_DEFINE(P_HAS_RES_NINIT, 1)
+            LIBS="-lresolv $LIBS"
+         ], [AC_CHECK_FUNC(
+            [res_search],
+            [HAS_DNS_RESOLVER=1],
+            [MY_LINK_IFELSE(
+               [for res_search in -lresolv],
+               [],
+               [-lresolv],
+               [
+                  #include <netinet/in.h>
+                  #include <resolv.h>
+               ],
+               [res_search(NULL, 0, 0, NULL, 0)],
+               [
+                  HAS_DNS_RESOLVER=1
+                  LIBS="-lresolv $LIBS"
+               ],
+               [AC_SEARCH_LIBS(
+                  [__res_search],
+                  [resolv],
+                  [HAS_DNS_RESOLVER=1]
+                  [AC_CHECK_HEADER(
+                     [windns.h],
+                     [
+                        HAS_DNS_RESOLVER=1
+                        LIBS="-ldnsapi $LIBS"
+                     ],
+                     [],
+                     [#include <windows.h>]
+                  )]
+               )]
+            )]
+         )
+      ])
+m4trace:configure.ac:1081: -1- m4_pattern_allow([^P_HAS_RES_NINIT$])
+m4trace:configure.ac:1081: -1- MY_LINK_IFELSE([for res_search in -lresolv], [], [-lresolv], [
+                  #include <netinet/in.h>
+                  #include <resolv.h>
+               ], [res_search(NULL, 0, 0, NULL, 0)], [
+                  HAS_DNS_RESOLVER=1
+                  LIBS="-lresolv $LIBS"
+               ], [AC_SEARCH_LIBS(
+                  [__res_search],
+                  [resolv],
+                  [HAS_DNS_RESOLVER=1]
+                  [AC_CHECK_HEADER(
+                     [windns.h],
+                     [
+                        HAS_DNS_RESOLVER=1
+                        LIBS="-ldnsapi $LIBS"
+                     ],
+                     [],
+                     [#include <windows.h>]
+                  )]
+               )
+            ])
+m4trace:configure.ac:1081: -1- MY_IFELSE([usable], [
+                  HAS_DNS_RESOLVER=1
+                  LIBS="-lresolv $LIBS"
+               ], [AC_SEARCH_LIBS(
+                  [__res_search],
+                  [resolv],
+                  [HAS_DNS_RESOLVER=1]
+                  [AC_CHECK_HEADER(
+                     [windns.h],
+                     [
+                        HAS_DNS_RESOLVER=1
+                        LIBS="-ldnsapi $LIBS"
+                     ],
+                     [],
+                     [#include <windows.h>]
+                  )]
+               )
+            ])
+m4trace:configure.ac:1140: -1- m4_pattern_allow([^P_DNS_RESOLVER$])
+m4trace:configure.ac:1141: -1- PTLIB_SUBST([DNS_RESOLVER], [$HAS_DNS_RESOLVER])
+m4trace:configure.ac:1141: -1- m4_pattern_allow([^HAS_DNS_RESOLVER$])
+m4trace:configure.ac:1141: -1- m4_pattern_allow([^P_DNS_RESOLVER$])
+m4trace:configure.ac:1141: -1- m4_pattern_allow([^PTLIB_DNS_RESOLVER$])
+m4trace:configure.ac:1167: -1- MY_LINK_IFELSE([for PCAP support], [], [-lpcap], [#include <pcap/pcap.h>], [pcap_t *h], [
+         AC_DEFINE(P_PCAP, 1, "PCAP found")
+         LIBS="-lpcap $LIBS"
+         HAS_PCAP=1
+      
+   ])
+m4trace:configure.ac:1167: -1- MY_IFELSE([usable], [
+         AC_DEFINE(P_PCAP, 1, "PCAP found")
+         LIBS="-lpcap $LIBS"
+         HAS_PCAP=1
+      
+   ], [])
+m4trace:configure.ac:1167: -1- m4_pattern_allow([^P_PCAP$])
+m4trace:configure.ac:1181: -1- PTLIB_SUBST([PCAP])
+m4trace:configure.ac:1181: -1- m4_pattern_allow([^HAS_PCAP$])
+m4trace:configure.ac:1181: -1- m4_pattern_allow([^P_PCAP$])
+m4trace:configure.ac:1181: -1- m4_pattern_allow([^PTLIB_PCAP$])
+m4trace:configure.ac:1198: -1- PTLIB_MODULE_OPTION([LIBJPEG], [libjpeg], [libJPEG support], [libjpeg], [], [-ljpeg], [
+      #include <stdio.h>
+      #include <jpeglib.h>
+   ], [
+     struct jpeg_decompress_struct d;
+     unsigned char * b;
+     unsigned long s;
+     jpeg_mem_src(&d, b, s);
+   
+])
+m4trace:configure.ac:1198: -1- MY_MODULE_OPTION([LIBJPEG], [libjpeg], [libJPEG support], [libjpeg], [], [-ljpeg], [
+      #include <stdio.h>
+      #include <jpeglib.h>
+   ], [
+     struct jpeg_decompress_struct d;
+     unsigned char * b;
+     unsigned long s;
+     jpeg_mem_src(&d, b, s);
+   
+], [], [], [])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^LIBJPEG_SYSTEM$])
+m4trace:configure.ac:1198: -1- MY_ARG_ENABLE([libjpeg], [libJPEG support], [${DEFAULT_LIBJPEG:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1198: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1198: the top level])
+m4trace:configure.ac:1198: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1198: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1198: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1198: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1198: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1198: -1- PKG_CHECK_MODULES([LIBJPEG], [m4_bpatsubsts([libjpeg],[local-source], [])], [], [
+                     LIBJPEG[_CFLAGS]=""
+                     LIBJPEG[_LIBS]="-ljpeg"
+                  
+               ])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^LIBJPEG_CFLAGS$])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^LIBJPEG_LIBS$])
+m4trace:configure.ac:1198: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([libjpeg],[local-source], [])], [pkg_cv_[]LIBJPEG_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([libjpeg],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1198: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([libjpeg],[local-source], [])], [pkg_cv_[]LIBJPEG_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([libjpeg],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1198: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1198: -1- MY_LINK_IFELSE([for libJPEG support usability], [$LIBJPEG[_CFLAGS]], [$LIBJPEG[_LIBS]], [
+      #include <stdio.h>
+      #include <jpeglib.h>
+   ], [
+     struct jpeg_decompress_struct d;
+     unsigned char * b;
+     unsigned long s;
+     jpeg_mem_src(&d, b, s);
+   
+], [MY_ADD_MODULE_FLAGS([LIBJPEG])], [usable=no
+            ])
+m4trace:configure.ac:1198: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([LIBJPEG])], [usable=no
+            ])
+m4trace:configure.ac:1198: -1- MY_ADD_MODULE_FLAGS([LIBJPEG])
+m4trace:configure.ac:1198: -1- MY_ADD_FLAGS([$LIBJPEG_LIBS], [$LIBJPEG_CFLAGS])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^LIBJPEG_USABLE$])
+m4trace:configure.ac:1198: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1198: -1- PTLIB_SUBST([LIBJPEG], [$LIBJPEG[_USABLE]])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^HAS_LIBJPEG$])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^P_LIBJPEG$])
+m4trace:configure.ac:1198: -1- m4_pattern_allow([^PTLIB_LIBJPEG$])
+m4trace:configure.ac:1223: -1- MY_ARG_ENABLE([mlib], [SUN mlib support], [$DEFAULT_MLIB], [AC_CHECK_LIB(
+      [mlib],
+      [mlib_VideoColorJFIFYCC2RGB420_Nearest],
+      [
+         AC_DEFINE(P_MEDIALIB)
+         LIBS="-lmlib $LIBS"
+      ]
+   )
+])
+m4trace:configure.ac:1223: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+configure.ac:1223: the top level])
+m4trace:configure.ac:1223: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1223: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1223: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1223: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1223: -1- MY_IFELSE([enableval], [AC_CHECK_LIB(
+      [mlib],
+      [mlib_VideoColorJFIFYCC2RGB420_Nearest],
+      [
+         AC_DEFINE(P_MEDIALIB)
+         LIBS="-lmlib $LIBS"
+      ]
+   )
+], [])
+m4trace:configure.ac:1223: -1- m4_pattern_allow([^P_MEDIALIB$])
+m4trace:configure.ac:1276: -1- m4_pattern_allow([^P_SASL$])
+m4trace:configure.ac:1276: -1- m4_pattern_allow([^P_SASL$])
+m4trace:configure.ac:1300: -1- m4_pattern_allow([^P_HAS_SASL_SASL_H$])
+m4trace:configure.ac:1304: -1- PTLIB_SUBST([SASL2])
+m4trace:configure.ac:1304: -1- m4_pattern_allow([^HAS_SASL2$])
+m4trace:configure.ac:1304: -1- m4_pattern_allow([^P_SASL2$])
+m4trace:configure.ac:1304: -1- m4_pattern_allow([^PTLIB_SASL2$])
+m4trace:configure.ac:1305: -1- PTLIB_SUBST([SASL])
+m4trace:configure.ac:1305: -1- m4_pattern_allow([^HAS_SASL$])
+m4trace:configure.ac:1305: -1- m4_pattern_allow([^P_SASL$])
+m4trace:configure.ac:1305: -1- m4_pattern_allow([^PTLIB_SASL$])
+m4trace:configure.ac:1322: -1- PTLIB_MODULE_OPTION([OPENLDAP], [openldap], [Open LDAP support], [ldap], [], [-lldap], [#include <ldap.h>], [ldap_init("localhost", 1234)], [], [], [HAS_DNS_RESOLVER
+])
+m4trace:configure.ac:1322: -1- MY_MODULE_OPTION([OPENLDAP], [openldap], [Open LDAP support], [ldap], [], [-lldap], [#include <ldap.h>], [ldap_init("localhost", 1234)], [], [], [HAS_DNS_RESOLVER
+])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^OPENLDAP_SYSTEM$])
+m4trace:configure.ac:1322: -1- MY_ARG_ENABLE([openldap], [Open LDAP support], [${DEFAULT_OPENLDAP:-yes}], [usable=yes], [usable=no], [HAS_DNS_RESOLVER
+], [], [], [])
+m4trace:configure.ac:1322: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1322: the top level])
+m4trace:configure.ac:1322: -1- MY_ARG_DEPENDENCY([HAS_DNS_RESOLVER
+])
+m4trace:configure.ac:1322: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1322: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1322: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1322: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1322: -1- PKG_CHECK_MODULES([OPENLDAP], [m4_bpatsubsts([ldap],[local-source], [])], [], [
+                     OPENLDAP[_CFLAGS]=""
+                     OPENLDAP[_LIBS]="-lldap"
+                  
+               ])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^OPENLDAP_CFLAGS$])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^OPENLDAP_LIBS$])
+m4trace:configure.ac:1322: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([ldap],[local-source], [])], [pkg_cv_[]OPENLDAP_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([ldap],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1322: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([ldap],[local-source], [])], [pkg_cv_[]OPENLDAP_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([ldap],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1322: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1322: -1- MY_LINK_IFELSE([for Open LDAP support usability], [$OPENLDAP[_CFLAGS]], [$OPENLDAP[_LIBS]], [#include <ldap.h>], [ldap_init("localhost", 1234)], [MY_ADD_MODULE_FLAGS([OPENLDAP])], [usable=no
+            ])
+m4trace:configure.ac:1322: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([OPENLDAP])], [usable=no
+            ])
+m4trace:configure.ac:1322: -1- MY_ADD_MODULE_FLAGS([OPENLDAP])
+m4trace:configure.ac:1322: -1- MY_ADD_FLAGS([$OPENLDAP_LIBS], [$OPENLDAP_CFLAGS])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^OPENLDAP_USABLE$])
+m4trace:configure.ac:1322: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1322: -1- PTLIB_SUBST([OPENLDAP], [$OPENLDAP[_USABLE]])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^HAS_OPENLDAP$])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^P_OPENLDAP$])
+m4trace:configure.ac:1322: -1- m4_pattern_allow([^PTLIB_OPENLDAP$])
+m4trace:configure.ac:1380: -1- PTLIB_MODULE_OPTION([OPENSSL], [openssl], [OpenSSL support], [openssl], [], [], [#include <openssl/ssl.h>], [TLSv1_method()], [
+      MY_COMPILE_IFELSE(
+         [for OPENSSL const arg to d2i_AutoPrivateKey],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/evp.h>],
+         [
+            EVP_PKEY **a;
+            const unsigned char **p;
+            long l;
+            d2i_AutoPrivateKey(a, p, l);
+         ],
+         [AC_DEFINE([P_SSL_USE_CONST], [1], [SSL with const])]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL AES header],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/aes.h>],
+         [],
+         [
+            AC_DEFINE([P_SSL_AES], [1],[openssl with AES yes])
+            HAS_SSL_AES=1
+         ]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL d2i_DHparams_bio new variant],
+         [$OPENSSL_CFLAGS],
+         [
+            #include <openssl/dh.h>
+            #include <openssl/asn1.h>
+         ],
+         [
+            BIO * in;
+            d2i_DHparams_bio(in, NULL);
+         ],
+         [],
+         [AC_DEFINE(P_d2i_DHparams_bio_OLD, 1)]
+      )
+   
+])
+m4trace:configure.ac:1380: -1- MY_MODULE_OPTION([OPENSSL], [openssl], [OpenSSL support], [openssl], [], [], [#include <openssl/ssl.h>], [TLSv1_method()], [
+      MY_COMPILE_IFELSE(
+         [for OPENSSL const arg to d2i_AutoPrivateKey],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/evp.h>],
+         [
+            EVP_PKEY **a;
+            const unsigned char **p;
+            long l;
+            d2i_AutoPrivateKey(a, p, l);
+         ],
+         [AC_DEFINE([P_SSL_USE_CONST], [1], [SSL with const])]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL AES header],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/aes.h>],
+         [],
+         [
+            AC_DEFINE([P_SSL_AES], [1],[openssl with AES yes])
+            HAS_SSL_AES=1
+         ]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL d2i_DHparams_bio new variant],
+         [$OPENSSL_CFLAGS],
+         [
+            #include <openssl/dh.h>
+            #include <openssl/asn1.h>
+         ],
+         [
+            BIO * in;
+            d2i_DHparams_bio(in, NULL);
+         ],
+         [],
+         [AC_DEFINE(P_d2i_DHparams_bio_OLD, 1)]
+      )
+   
+], [], [])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^OPENSSL_SYSTEM$])
+m4trace:configure.ac:1380: -1- MY_ARG_ENABLE([openssl], [OpenSSL support], [${DEFAULT_OPENSSL:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1380: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1380: the top level])
+m4trace:configure.ac:1380: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1380: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1380: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1380: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1380: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1380: -1- PKG_CHECK_MODULES([OPENSSL], [m4_bpatsubsts([openssl],[local-source], [])], [], [usable=no
+            ])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^OPENSSL_CFLAGS$])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^OPENSSL_LIBS$])
+m4trace:configure.ac:1380: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([openssl],[local-source], [])], [pkg_cv_[]OPENSSL_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([openssl],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1380: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([openssl],[local-source], [])], [pkg_cv_[]OPENSSL_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([openssl],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1380: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1380: -1- MY_LINK_IFELSE([for OpenSSL support usability], [$OPENSSL[_CFLAGS]], [$OPENSSL[_LIBS]], [#include <openssl/ssl.h>], [TLSv1_method()], [MY_ADD_MODULE_FLAGS([OPENSSL])], [usable=no
+            ])
+m4trace:configure.ac:1380: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([OPENSSL])], [usable=no
+            ])
+m4trace:configure.ac:1380: -1- MY_ADD_MODULE_FLAGS([OPENSSL])
+m4trace:configure.ac:1380: -1- MY_ADD_FLAGS([$OPENSSL_LIBS], [$OPENSSL_CFLAGS])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^OPENSSL_USABLE$])
+m4trace:configure.ac:1380: -1- MY_IFELSE([usable], [
+      MY_COMPILE_IFELSE(
+         [for OPENSSL const arg to d2i_AutoPrivateKey],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/evp.h>],
+         [
+            EVP_PKEY **a;
+            const unsigned char **p;
+            long l;
+            d2i_AutoPrivateKey(a, p, l);
+         ],
+         [AC_DEFINE([P_SSL_USE_CONST], [1], [SSL with const])]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL AES header],
+         [$OPENSSL_CFLAGS],
+         [#include <openssl/aes.h>],
+         [],
+         [
+            AC_DEFINE([P_SSL_AES], [1],[openssl with AES yes])
+            HAS_SSL_AES=1
+         ]
+      )
+
+      MY_COMPILE_IFELSE(
+         [for OPENSSL d2i_DHparams_bio new variant],
+         [$OPENSSL_CFLAGS],
+         [
+            #include <openssl/dh.h>
+            #include <openssl/asn1.h>
+         ],
+         [
+            BIO * in;
+            d2i_DHparams_bio(in, NULL);
+         ],
+         [],
+         [AC_DEFINE(P_d2i_DHparams_bio_OLD, 1)]
+      )
+   
+], [])
+m4trace:configure.ac:1380: -1- MY_COMPILE_IFELSE([for OPENSSL const arg to d2i_AutoPrivateKey], [$OPENSSL_CFLAGS], [#include <openssl/evp.h>], [
+            EVP_PKEY **a;
+            const unsigned char **p;
+            long l;
+            d2i_AutoPrivateKey(a, p, l);
+         ], [AC_DEFINE([P_SSL_USE_CONST], [1], [SSL with const])
+      ])
+m4trace:configure.ac:1380: -1- MY_IFELSE([usable], [AC_DEFINE([P_SSL_USE_CONST], [1], [SSL with const])
+      ], [])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^P_SSL_USE_CONST$])
+m4trace:configure.ac:1380: -1- MY_COMPILE_IFELSE([for OPENSSL AES header], [$OPENSSL_CFLAGS], [#include <openssl/aes.h>], [], [
+            AC_DEFINE([P_SSL_AES], [1],[openssl with AES yes])
+            HAS_SSL_AES=1
+         
+      ])
+m4trace:configure.ac:1380: -1- MY_IFELSE([usable], [
+            AC_DEFINE([P_SSL_AES], [1],[openssl with AES yes])
+            HAS_SSL_AES=1
+         
+      ], [])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^P_SSL_AES$])
+m4trace:configure.ac:1380: -1- MY_COMPILE_IFELSE([for OPENSSL d2i_DHparams_bio new variant], [$OPENSSL_CFLAGS], [
+            #include <openssl/dh.h>
+            #include <openssl/asn1.h>
+         ], [
+            BIO * in;
+            d2i_DHparams_bio(in, NULL);
+         ], [], [AC_DEFINE(P_d2i_DHparams_bio_OLD, 1)
+      ])
+m4trace:configure.ac:1380: -1- MY_IFELSE([usable], [], [AC_DEFINE(P_d2i_DHparams_bio_OLD, 1)
+      ])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^P_d2i_DHparams_bio_OLD$])
+m4trace:configure.ac:1380: -1- PTLIB_SUBST([OPENSSL], [$OPENSSL[_USABLE]])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^HAS_OPENSSL$])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^P_OPENSSL$])
+m4trace:configure.ac:1380: -1- m4_pattern_allow([^PTLIB_OPENSSL$])
+m4trace:configure.ac:1429: -1- PTLIB_SUBST([SSL_AES])
+m4trace:configure.ac:1429: -1- m4_pattern_allow([^HAS_SSL_AES$])
+m4trace:configure.ac:1429: -1- m4_pattern_allow([^P_SSL_AES$])
+m4trace:configure.ac:1429: -1- m4_pattern_allow([^PTLIB_SSL_AES$])
+m4trace:configure.ac:1465: -1- PTLIB_MODULE_OPTION([EXPAT], [expat], [expat XML support], [expat], [], [-lexpat], [#include <expat.h>], [XML_ParserCreate(NULL)
+])
+m4trace:configure.ac:1465: -1- MY_MODULE_OPTION([EXPAT], [expat], [expat XML support], [expat], [], [-lexpat], [#include <expat.h>], [XML_ParserCreate(NULL)
+], [], [], [])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^EXPAT_SYSTEM$])
+m4trace:configure.ac:1465: -1- MY_ARG_ENABLE([expat], [expat XML support], [${DEFAULT_EXPAT:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1465: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1465: the top level])
+m4trace:configure.ac:1465: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1465: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1465: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1465: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1465: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1465: -1- PKG_CHECK_MODULES([EXPAT], [m4_bpatsubsts([expat],[local-source], [])], [], [
+                     EXPAT[_CFLAGS]=""
+                     EXPAT[_LIBS]="-lexpat"
+                  
+               ])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^EXPAT_CFLAGS$])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^EXPAT_LIBS$])
+m4trace:configure.ac:1465: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([expat],[local-source], [])], [pkg_cv_[]EXPAT_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([expat],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1465: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([expat],[local-source], [])], [pkg_cv_[]EXPAT_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([expat],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1465: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1465: -1- MY_LINK_IFELSE([for expat XML support usability], [$EXPAT[_CFLAGS]], [$EXPAT[_LIBS]], [#include <expat.h>], [XML_ParserCreate(NULL)
+], [MY_ADD_MODULE_FLAGS([EXPAT])], [usable=no
+            ])
+m4trace:configure.ac:1465: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([EXPAT])], [usable=no
+            ])
+m4trace:configure.ac:1465: -1- MY_ADD_MODULE_FLAGS([EXPAT])
+m4trace:configure.ac:1465: -1- MY_ADD_FLAGS([$EXPAT_LIBS], [$EXPAT_CFLAGS])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^EXPAT_USABLE$])
+m4trace:configure.ac:1465: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1465: -1- PTLIB_SUBST([EXPAT], [$EXPAT[_USABLE]])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^HAS_EXPAT$])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^P_EXPAT$])
+m4trace:configure.ac:1465: -1- m4_pattern_allow([^PTLIB_EXPAT$])
+m4trace:configure.ac:1488: -1- PTLIB_MODULE_OPTION([LUA], [lua], [Lua script support], [$LUA_PKG], [], [], [#include <lua.h>], [lua_newstate(NULL, NULL)
+])
+m4trace:configure.ac:1488: -1- MY_MODULE_OPTION([LUA], [lua], [Lua script support], [$LUA_PKG], [], [], [#include <lua.h>], [lua_newstate(NULL, NULL)
+], [], [], [])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^LUA_SYSTEM$])
+m4trace:configure.ac:1488: -1- MY_ARG_ENABLE([lua], [Lua script support], [${DEFAULT_LUA:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1488: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1488: the top level])
+m4trace:configure.ac:1488: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1488: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1488: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1488: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1488: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1488: -1- PKG_CHECK_MODULES([LUA], [m4_bpatsubsts([$LUA_PKG],[local-source], [])], [], [usable=no
+            ])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^LUA_CFLAGS$])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^LUA_LIBS$])
+m4trace:configure.ac:1488: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([$LUA_PKG],[local-source], [])], [pkg_cv_[]LUA_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([$LUA_PKG],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1488: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([$LUA_PKG],[local-source], [])], [pkg_cv_[]LUA_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([$LUA_PKG],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1488: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1488: -1- MY_LINK_IFELSE([for Lua script support usability], [$LUA[_CFLAGS]], [$LUA[_LIBS]], [#include <lua.h>], [lua_newstate(NULL, NULL)
+], [MY_ADD_MODULE_FLAGS([LUA])], [usable=no
+            ])
+m4trace:configure.ac:1488: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([LUA])], [usable=no
+            ])
+m4trace:configure.ac:1488: -1- MY_ADD_MODULE_FLAGS([LUA])
+m4trace:configure.ac:1488: -1- MY_ADD_FLAGS([$LUA_LIBS], [$LUA_CFLAGS])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^LUA_USABLE$])
+m4trace:configure.ac:1488: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1488: -1- PTLIB_SUBST([LUA], [$LUA[_USABLE]])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^HAS_LUA$])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^P_LUA$])
+m4trace:configure.ac:1488: -1- m4_pattern_allow([^PTLIB_LUA$])
+m4trace:configure.ac:1508: -1- PTLIB_MODULE_OPTION([V8], [v8], [V8 Javascript script support], [v8], [], [-lv8], [#include <v8.h>], [int i = v8::HandleScope::NumberOfHandles()], [MY_COMPILE_IFELSE(
+      [V8 Javascript API needs Isolate],
+      [$V8_CFLAGS],
+      [#include <v8.h>],
+      [
+         v8::Isolate * isolate;
+         v8::HandleScope::HandleScope scope(isolate);
+      ],
+      [AC_DEFINE(P_V8_NEED_ISOLATE)]
+   )
+])
+m4trace:configure.ac:1508: -1- MY_MODULE_OPTION([V8], [v8], [V8 Javascript script support], [v8], [], [-lv8], [#include <v8.h>], [int i = v8::HandleScope::NumberOfHandles()], [MY_COMPILE_IFELSE(
+      [V8 Javascript API needs Isolate],
+      [$V8_CFLAGS],
+      [#include <v8.h>],
+      [
+         v8::Isolate * isolate;
+         v8::HandleScope::HandleScope scope(isolate);
+      ],
+      [AC_DEFINE(P_V8_NEED_ISOLATE)]
+   )
+], [], [])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^V8_SYSTEM$])
+m4trace:configure.ac:1508: -1- MY_ARG_ENABLE([v8], [V8 Javascript script support], [${DEFAULT_V8:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1508: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1508: the top level])
+m4trace:configure.ac:1508: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1508: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1508: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1508: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1508: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1508: -1- PKG_CHECK_MODULES([V8], [m4_bpatsubsts([v8],[local-source], [])], [], [
+                     V8[_CFLAGS]=""
+                     V8[_LIBS]="-lv8"
+                  
+               ])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^V8_CFLAGS$])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^V8_LIBS$])
+m4trace:configure.ac:1508: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([v8],[local-source], [])], [pkg_cv_[]V8_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([v8],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1508: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([v8],[local-source], [])], [pkg_cv_[]V8_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([v8],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1508: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1508: -1- MY_LINK_IFELSE([for V8 Javascript script support usability], [$V8[_CFLAGS]], [$V8[_LIBS]], [#include <v8.h>], [int i = v8::HandleScope::NumberOfHandles()], [MY_ADD_MODULE_FLAGS([V8])], [usable=no
+            ])
+m4trace:configure.ac:1508: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([V8])], [usable=no
+            ])
+m4trace:configure.ac:1508: -1- MY_ADD_MODULE_FLAGS([V8])
+m4trace:configure.ac:1508: -1- MY_ADD_FLAGS([$V8_LIBS], [$V8_CFLAGS])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^V8_USABLE$])
+m4trace:configure.ac:1508: -1- MY_IFELSE([usable], [MY_COMPILE_IFELSE(
+      [V8 Javascript API needs Isolate],
+      [$V8_CFLAGS],
+      [#include <v8.h>],
+      [
+         v8::Isolate * isolate;
+         v8::HandleScope::HandleScope scope(isolate);
+      ],
+      [AC_DEFINE(P_V8_NEED_ISOLATE)]
+   )
+], [])
+m4trace:configure.ac:1508: -1- MY_COMPILE_IFELSE([V8 Javascript API needs Isolate], [$V8_CFLAGS], [#include <v8.h>], [
+         v8::Isolate * isolate;
+         v8::HandleScope::HandleScope scope(isolate);
+      ], [AC_DEFINE(P_V8_NEED_ISOLATE)
+   ])
+m4trace:configure.ac:1508: -1- MY_IFELSE([usable], [AC_DEFINE(P_V8_NEED_ISOLATE)
+   ], [])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^P_V8_NEED_ISOLATE$])
+m4trace:configure.ac:1508: -1- PTLIB_SUBST([V8], [$V8[_USABLE]])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^HAS_V8$])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^P_V8$])
+m4trace:configure.ac:1508: -1- m4_pattern_allow([^PTLIB_V8$])
+m4trace:configure.ac:1535: -1- PTLIB_SIMPLE_OPTION([configfile], [CONFIG_FILE], [config file support])
+m4trace:configure.ac:1535: -1- MY_ARG_ENABLE([configfile], [config file support], [${DEFAULT_CONFIG_FILE:-yes}], [PTLIB_SUBST(CONFIG_FILE, 1)], [HAS_CONFIG_FILE=], [], [], [
+   ])
+m4trace:configure.ac:1535: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1535: the top level])
+m4trace:configure.ac:1535: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1535: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1535: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1535: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1535: -1- MY_IFELSE([enableval], [PTLIB_SUBST(CONFIG_FILE, 1)], [HAS_CONFIG_FILE=])
+m4trace:configure.ac:1535: -1- PTLIB_SUBST([CONFIG_FILE], [1])
+m4trace:configure.ac:1535: -1- m4_pattern_allow([^HAS_CONFIG_FILE$])
+m4trace:configure.ac:1535: -1- m4_pattern_allow([^P_CONFIG_FILE$])
+m4trace:configure.ac:1535: -1- m4_pattern_allow([^PTLIB_CONFIG_FILE$])
+m4trace:configure.ac:1542: -1- PTLIB_SIMPLE_OPTION([url], [URL], [URL support])
+m4trace:configure.ac:1542: -1- MY_ARG_ENABLE([url], [URL support], [${DEFAULT_URL:-yes}], [PTLIB_SUBST(URL, 1)], [HAS_URL=], [], [], [
+   ])
+m4trace:configure.ac:1542: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1542: the top level])
+m4trace:configure.ac:1542: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1542: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1542: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1542: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1542: -1- MY_IFELSE([enableval], [PTLIB_SUBST(URL, 1)], [HAS_URL=])
+m4trace:configure.ac:1542: -1- PTLIB_SUBST([URL], [1])
+m4trace:configure.ac:1542: -1- m4_pattern_allow([^HAS_URL$])
+m4trace:configure.ac:1542: -1- m4_pattern_allow([^P_URL$])
+m4trace:configure.ac:1542: -1- m4_pattern_allow([^PTLIB_URL$])
+m4trace:configure.ac:1550: -1- PTLIB_SIMPLE_OPTION([http], [HTTP], [HTTP support], [HAS_URL])
+m4trace:configure.ac:1550: -1- MY_ARG_ENABLE([http], [HTTP support], [${DEFAULT_HTTP:-yes}], [PTLIB_SUBST(HTTP, 1)], [HAS_HTTP=], [HAS_URL], [], [
+   ])
+m4trace:configure.ac:1550: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1550: the top level])
+m4trace:configure.ac:1550: -1- MY_ARG_DEPENDENCY([HAS_URL])
+m4trace:configure.ac:1550: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1550: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1550: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1550: -1- MY_IFELSE([enableval], [PTLIB_SUBST(HTTP, 1)], [HAS_HTTP=])
+m4trace:configure.ac:1550: -1- PTLIB_SUBST([HTTP], [1])
+m4trace:configure.ac:1550: -1- m4_pattern_allow([^HAS_HTTP$])
+m4trace:configure.ac:1550: -1- m4_pattern_allow([^P_HTTP$])
+m4trace:configure.ac:1550: -1- m4_pattern_allow([^PTLIB_HTTP$])
+m4trace:configure.ac:1558: -1- PTLIB_SIMPLE_OPTION([httpforms], [HTTPFORMS], [HTTP forms support], [HAS_HTTP], [HAS_CONFIG_FILE])
+m4trace:configure.ac:1558: -1- MY_ARG_ENABLE([httpforms], [HTTP forms support], [${DEFAULT_HTTPFORMS:-yes}], [PTLIB_SUBST(HTTPFORMS, 1)], [HAS_HTTPFORMS=], [HAS_HTTP], [HAS_CONFIG_FILE], [
+   ])
+m4trace:configure.ac:1558: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1558: the top level])
+m4trace:configure.ac:1558: -1- MY_ARG_DEPENDENCY([HAS_HTTP])
+m4trace:configure.ac:1558: -1- MY_ARG_DEPENDENCY([HAS_CONFIG_FILE])
+m4trace:configure.ac:1558: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1558: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1558: -1- MY_IFELSE([enableval], [PTLIB_SUBST(HTTPFORMS, 1)], [HAS_HTTPFORMS=])
+m4trace:configure.ac:1558: -1- PTLIB_SUBST([HTTPFORMS], [1])
+m4trace:configure.ac:1558: -1- m4_pattern_allow([^HAS_HTTPFORMS$])
+m4trace:configure.ac:1558: -1- m4_pattern_allow([^P_HTTPFORMS$])
+m4trace:configure.ac:1558: -1- m4_pattern_allow([^PTLIB_HTTPFORMS$])
+m4trace:configure.ac:1567: -1- PTLIB_SIMPLE_OPTION([httpsvc], [HTTPSVC], [HTTP server support], [HAS_HTTPFORMS])
+m4trace:configure.ac:1567: -1- MY_ARG_ENABLE([httpsvc], [HTTP server support], [${DEFAULT_HTTPSVC:-yes}], [PTLIB_SUBST(HTTPSVC, 1)], [HAS_HTTPSVC=], [HAS_HTTPFORMS], [], [
+   ])
+m4trace:configure.ac:1567: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1567: the top level])
+m4trace:configure.ac:1567: -1- MY_ARG_DEPENDENCY([HAS_HTTPFORMS])
+m4trace:configure.ac:1567: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1567: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1567: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1567: -1- MY_IFELSE([enableval], [PTLIB_SUBST(HTTPSVC, 1)], [HAS_HTTPSVC=])
+m4trace:configure.ac:1567: -1- PTLIB_SUBST([HTTPSVC], [1])
+m4trace:configure.ac:1567: -1- m4_pattern_allow([^HAS_HTTPSVC$])
+m4trace:configure.ac:1567: -1- m4_pattern_allow([^P_HTTPSVC$])
+m4trace:configure.ac:1567: -1- m4_pattern_allow([^PTLIB_HTTPSVC$])
+m4trace:configure.ac:1575: -1- PTLIB_SIMPLE_OPTION([ssdp], [SSDP], [SSDP support], [HAS_HTTP])
+m4trace:configure.ac:1575: -1- MY_ARG_ENABLE([ssdp], [SSDP support], [${DEFAULT_SSDP:-yes}], [PTLIB_SUBST(SSDP, 1)], [HAS_SSDP=], [HAS_HTTP], [], [
+   ])
+m4trace:configure.ac:1575: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1575: the top level])
+m4trace:configure.ac:1575: -1- MY_ARG_DEPENDENCY([HAS_HTTP])
+m4trace:configure.ac:1575: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1575: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1575: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1575: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SSDP, 1)], [HAS_SSDP=])
+m4trace:configure.ac:1575: -1- PTLIB_SUBST([SSDP], [1])
+m4trace:configure.ac:1575: -1- m4_pattern_allow([^HAS_SSDP$])
+m4trace:configure.ac:1575: -1- m4_pattern_allow([^P_SSDP$])
+m4trace:configure.ac:1575: -1- m4_pattern_allow([^PTLIB_SSDP$])
+m4trace:configure.ac:1582: -1- PTLIB_SIMPLE_OPTION([vcard], [VCARD], [VCard support], [HAS_URL])
+m4trace:configure.ac:1582: -1- MY_ARG_ENABLE([vcard], [VCard support], [${DEFAULT_VCARD:-yes}], [PTLIB_SUBST(VCARD, 1)], [HAS_VCARD=], [HAS_URL], [], [
+   ])
+m4trace:configure.ac:1582: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1582: the top level])
+m4trace:configure.ac:1582: -1- MY_ARG_DEPENDENCY([HAS_URL])
+m4trace:configure.ac:1582: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1582: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1582: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1582: -1- MY_IFELSE([enableval], [PTLIB_SUBST(VCARD, 1)], [HAS_VCARD=])
+m4trace:configure.ac:1582: -1- PTLIB_SUBST([VCARD], [1])
+m4trace:configure.ac:1582: -1- m4_pattern_allow([^HAS_VCARD$])
+m4trace:configure.ac:1582: -1- m4_pattern_allow([^P_VCARD$])
+m4trace:configure.ac:1582: -1- m4_pattern_allow([^PTLIB_VCARD$])
+m4trace:configure.ac:1591: -1- PTLIB_SIMPLE_OPTION([jabber], [JABBER], [Jabber support], [HAS_EXPAT])
+m4trace:configure.ac:1591: -1- MY_ARG_ENABLE([jabber], [Jabber support], [${DEFAULT_JABBER:-yes}], [PTLIB_SUBST(JABBER, 1)], [HAS_JABBER=], [HAS_EXPAT], [], [
+   ])
+m4trace:configure.ac:1591: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1591: the top level])
+m4trace:configure.ac:1591: -1- MY_ARG_DEPENDENCY([HAS_EXPAT])
+m4trace:configure.ac:1591: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1591: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1591: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1591: -1- MY_IFELSE([enableval], [PTLIB_SUBST(JABBER, 1)], [HAS_JABBER=])
+m4trace:configure.ac:1591: -1- PTLIB_SUBST([JABBER], [1])
+m4trace:configure.ac:1591: -1- m4_pattern_allow([^HAS_JABBER$])
+m4trace:configure.ac:1591: -1- m4_pattern_allow([^P_JABBER$])
+m4trace:configure.ac:1591: -1- m4_pattern_allow([^PTLIB_JABBER$])
+m4trace:configure.ac:1602: -1- PTLIB_SIMPLE_OPTION([tts], [TTS], [Text-To-Speech server support])
+m4trace:configure.ac:1602: -1- MY_ARG_ENABLE([tts], [Text-To-Speech server support], [${DEFAULT_TTS:-yes}], [PTLIB_SUBST(TTS, 1)], [HAS_TTS=], [], [], [
+   ])
+m4trace:configure.ac:1602: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1602: the top level])
+m4trace:configure.ac:1602: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1602: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1602: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1602: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1602: -1- MY_IFELSE([enableval], [PTLIB_SUBST(TTS, 1)], [HAS_TTS=])
+m4trace:configure.ac:1602: -1- PTLIB_SUBST([TTS], [1])
+m4trace:configure.ac:1602: -1- m4_pattern_allow([^HAS_TTS$])
+m4trace:configure.ac:1602: -1- m4_pattern_allow([^P_TTS$])
+m4trace:configure.ac:1602: -1- m4_pattern_allow([^PTLIB_TTS$])
+m4trace:configure.ac:1611: -1- PTLIB_SIMPLE_OPTION([vxml], [VXML], [VXML support], [HAS_EXPAT], [HAS_HTTP], [HAS_TTS])
+m4trace:configure.ac:1611: -1- MY_ARG_ENABLE([vxml], [VXML support], [${DEFAULT_VXML:-yes}], [PTLIB_SUBST(VXML, 1)], [HAS_VXML=], [HAS_EXPAT], [HAS_HTTP], [HAS_TTS
+   ])
+m4trace:configure.ac:1611: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1611: the top level])
+m4trace:configure.ac:1611: -1- MY_ARG_DEPENDENCY([HAS_EXPAT])
+m4trace:configure.ac:1611: -1- MY_ARG_DEPENDENCY([HAS_HTTP])
+m4trace:configure.ac:1611: -1- MY_ARG_DEPENDENCY([HAS_TTS
+   ])
+m4trace:configure.ac:1611: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1611: -1- MY_IFELSE([enableval], [PTLIB_SUBST(VXML, 1)], [HAS_VXML=])
+m4trace:configure.ac:1611: -1- PTLIB_SUBST([VXML], [1])
+m4trace:configure.ac:1611: -1- m4_pattern_allow([^HAS_VXML$])
+m4trace:configure.ac:1611: -1- m4_pattern_allow([^P_VXML$])
+m4trace:configure.ac:1611: -1- m4_pattern_allow([^PTLIB_VXML$])
+m4trace:configure.ac:1620: -1- PTLIB_SIMPLE_OPTION([xmlrpc], [XMLRPC], [XMLRPC support], [HAS_EXPAT], [HAS_HTTP])
+m4trace:configure.ac:1620: -1- MY_ARG_ENABLE([xmlrpc], [XMLRPC support], [${DEFAULT_XMLRPC:-yes}], [PTLIB_SUBST(XMLRPC, 1)], [HAS_XMLRPC=], [HAS_EXPAT], [HAS_HTTP], [
+   ])
+m4trace:configure.ac:1620: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1620: the top level])
+m4trace:configure.ac:1620: -1- MY_ARG_DEPENDENCY([HAS_EXPAT])
+m4trace:configure.ac:1620: -1- MY_ARG_DEPENDENCY([HAS_HTTP])
+m4trace:configure.ac:1620: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1620: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1620: -1- MY_IFELSE([enableval], [PTLIB_SUBST(XMLRPC, 1)], [HAS_XMLRPC=])
+m4trace:configure.ac:1620: -1- PTLIB_SUBST([XMLRPC], [1])
+m4trace:configure.ac:1620: -1- m4_pattern_allow([^HAS_XMLRPC$])
+m4trace:configure.ac:1620: -1- m4_pattern_allow([^P_XMLRPC$])
+m4trace:configure.ac:1620: -1- m4_pattern_allow([^PTLIB_XMLRPC$])
+m4trace:configure.ac:1629: -1- PTLIB_SIMPLE_OPTION([soap], [SOAP], [SOAP support], [HAS_EXPAT], [HAS_HTTP])
+m4trace:configure.ac:1629: -1- MY_ARG_ENABLE([soap], [SOAP support], [${DEFAULT_SOAP:-yes}], [PTLIB_SUBST(SOAP, 1)], [HAS_SOAP=], [HAS_EXPAT], [HAS_HTTP], [
+   ])
+m4trace:configure.ac:1629: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1629: the top level])
+m4trace:configure.ac:1629: -1- MY_ARG_DEPENDENCY([HAS_EXPAT])
+m4trace:configure.ac:1629: -1- MY_ARG_DEPENDENCY([HAS_HTTP])
+m4trace:configure.ac:1629: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1629: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1629: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SOAP, 1)], [HAS_SOAP=])
+m4trace:configure.ac:1629: -1- PTLIB_SUBST([SOAP], [1])
+m4trace:configure.ac:1629: -1- m4_pattern_allow([^HAS_SOAP$])
+m4trace:configure.ac:1629: -1- m4_pattern_allow([^P_SOAP$])
+m4trace:configure.ac:1629: -1- m4_pattern_allow([^PTLIB_SOAP$])
+m4trace:configure.ac:1640: -1- PTLIB_SIMPLE_OPTION([asn], [ASN], [ASN decoding/encoding support])
+m4trace:configure.ac:1640: -1- MY_ARG_ENABLE([asn], [ASN decoding/encoding support], [${DEFAULT_ASN:-yes}], [PTLIB_SUBST(ASN, 1)], [HAS_ASN=], [], [], [
+   ])
+m4trace:configure.ac:1640: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1640: the top level])
+m4trace:configure.ac:1640: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1640: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1640: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1640: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1640: -1- MY_IFELSE([enableval], [PTLIB_SUBST(ASN, 1)], [HAS_ASN=])
+m4trace:configure.ac:1640: -1- PTLIB_SUBST([ASN], [1])
+m4trace:configure.ac:1640: -1- m4_pattern_allow([^HAS_ASN$])
+m4trace:configure.ac:1640: -1- m4_pattern_allow([^P_ASN$])
+m4trace:configure.ac:1640: -1- m4_pattern_allow([^PTLIB_ASN$])
+m4trace:configure.ac:1648: -1- PTLIB_SIMPLE_OPTION([nat], [NAT], [NAT traversal support])
+m4trace:configure.ac:1648: -1- MY_ARG_ENABLE([nat], [NAT traversal support], [${DEFAULT_NAT:-yes}], [PTLIB_SUBST(NAT, 1)], [HAS_NAT=], [], [], [
+   ])
+m4trace:configure.ac:1648: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1648: the top level])
+m4trace:configure.ac:1648: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1648: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1648: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1648: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1648: -1- MY_IFELSE([enableval], [PTLIB_SUBST(NAT, 1)], [HAS_NAT=])
+m4trace:configure.ac:1648: -1- PTLIB_SUBST([NAT], [1])
+m4trace:configure.ac:1648: -1- m4_pattern_allow([^HAS_NAT$])
+m4trace:configure.ac:1648: -1- m4_pattern_allow([^P_NAT$])
+m4trace:configure.ac:1648: -1- m4_pattern_allow([^PTLIB_NAT$])
+m4trace:configure.ac:1657: -1- PTLIB_SIMPLE_OPTION([stun], [STUN], [STUN support], [HAS_NAT])
+m4trace:configure.ac:1657: -1- MY_ARG_ENABLE([stun], [STUN support], [${DEFAULT_STUN:-yes}], [PTLIB_SUBST(STUN, 1)], [HAS_STUN=], [HAS_NAT], [], [
+   ])
+m4trace:configure.ac:1657: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1657: the top level])
+m4trace:configure.ac:1657: -1- MY_ARG_DEPENDENCY([HAS_NAT])
+m4trace:configure.ac:1657: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1657: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1657: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1657: -1- MY_IFELSE([enableval], [PTLIB_SUBST(STUN, 1)], [HAS_STUN=])
+m4trace:configure.ac:1657: -1- PTLIB_SUBST([STUN], [1])
+m4trace:configure.ac:1657: -1- m4_pattern_allow([^HAS_STUN$])
+m4trace:configure.ac:1657: -1- m4_pattern_allow([^P_STUN$])
+m4trace:configure.ac:1657: -1- m4_pattern_allow([^PTLIB_STUN$])
+m4trace:configure.ac:1658: -1- PTLIB_SIMPLE_OPTION([stunsrvr], [STUNSRVR], [STUN server support], [HAS_NAT])
+m4trace:configure.ac:1658: -1- MY_ARG_ENABLE([stunsrvr], [STUN server support], [${DEFAULT_STUNSRVR:-yes}], [PTLIB_SUBST(STUNSRVR, 1)], [HAS_STUNSRVR=], [HAS_NAT], [], [
+   ])
+m4trace:configure.ac:1658: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1658: the top level])
+m4trace:configure.ac:1658: -1- MY_ARG_DEPENDENCY([HAS_NAT])
+m4trace:configure.ac:1658: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1658: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1658: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1658: -1- MY_IFELSE([enableval], [PTLIB_SUBST(STUNSRVR, 1)], [HAS_STUNSRVR=])
+m4trace:configure.ac:1658: -1- PTLIB_SUBST([STUNSRVR], [1])
+m4trace:configure.ac:1658: -1- m4_pattern_allow([^HAS_STUNSRVR$])
+m4trace:configure.ac:1658: -1- m4_pattern_allow([^P_STUNSRVR$])
+m4trace:configure.ac:1658: -1- m4_pattern_allow([^PTLIB_STUNSRVR$])
+m4trace:configure.ac:1665: -1- PTLIB_SIMPLE_OPTION([pipechan], [PIPECHAN], [sub-process (PPipeChannel) support])
+m4trace:configure.ac:1665: -1- MY_ARG_ENABLE([pipechan], [sub-process (PPipeChannel) support], [${DEFAULT_PIPECHAN:-yes}], [PTLIB_SUBST(PIPECHAN, 1)], [HAS_PIPECHAN=], [], [], [
+   ])
+m4trace:configure.ac:1665: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1665: the top level])
+m4trace:configure.ac:1665: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1665: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1665: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1665: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1665: -1- MY_IFELSE([enableval], [PTLIB_SUBST(PIPECHAN, 1)], [HAS_PIPECHAN=])
+m4trace:configure.ac:1665: -1- PTLIB_SUBST([PIPECHAN], [1])
+m4trace:configure.ac:1665: -1- m4_pattern_allow([^HAS_PIPECHAN$])
+m4trace:configure.ac:1665: -1- m4_pattern_allow([^P_PIPECHAN$])
+m4trace:configure.ac:1665: -1- m4_pattern_allow([^PTLIB_PIPECHAN$])
+m4trace:configure.ac:1672: -1- PTLIB_SIMPLE_OPTION([dtmf], [DTMF], [DTMF protocol support])
+m4trace:configure.ac:1672: -1- MY_ARG_ENABLE([dtmf], [DTMF protocol support], [${DEFAULT_DTMF:-yes}], [PTLIB_SUBST(DTMF, 1)], [HAS_DTMF=], [], [], [
+   ])
+m4trace:configure.ac:1672: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1672: the top level])
+m4trace:configure.ac:1672: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1672: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1672: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1672: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1672: -1- MY_IFELSE([enableval], [PTLIB_SUBST(DTMF, 1)], [HAS_DTMF=])
+m4trace:configure.ac:1672: -1- PTLIB_SUBST([DTMF], [1])
+m4trace:configure.ac:1672: -1- m4_pattern_allow([^HAS_DTMF$])
+m4trace:configure.ac:1672: -1- m4_pattern_allow([^P_DTMF$])
+m4trace:configure.ac:1672: -1- m4_pattern_allow([^PTLIB_DTMF$])
+m4trace:configure.ac:1679: -1- PTLIB_SIMPLE_OPTION([socks], [SOCKS], [SOCKS protocol support])
+m4trace:configure.ac:1679: -1- MY_ARG_ENABLE([socks], [SOCKS protocol support], [${DEFAULT_SOCKS:-yes}], [PTLIB_SUBST(SOCKS, 1)], [HAS_SOCKS=], [], [], [
+   ])
+m4trace:configure.ac:1679: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1679: the top level])
+m4trace:configure.ac:1679: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1679: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1679: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1679: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1679: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SOCKS, 1)], [HAS_SOCKS=])
+m4trace:configure.ac:1679: -1- PTLIB_SUBST([SOCKS], [1])
+m4trace:configure.ac:1679: -1- m4_pattern_allow([^HAS_SOCKS$])
+m4trace:configure.ac:1679: -1- m4_pattern_allow([^P_SOCKS$])
+m4trace:configure.ac:1679: -1- m4_pattern_allow([^PTLIB_SOCKS$])
+m4trace:configure.ac:1686: -1- PTLIB_SIMPLE_OPTION([ftp], [FTP], [FTP protocol support])
+m4trace:configure.ac:1686: -1- MY_ARG_ENABLE([ftp], [FTP protocol support], [${DEFAULT_FTP:-yes}], [PTLIB_SUBST(FTP, 1)], [HAS_FTP=], [], [], [
+   ])
+m4trace:configure.ac:1686: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1686: the top level])
+m4trace:configure.ac:1686: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1686: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1686: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1686: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1686: -1- MY_IFELSE([enableval], [PTLIB_SUBST(FTP, 1)], [HAS_FTP=])
+m4trace:configure.ac:1686: -1- PTLIB_SUBST([FTP], [1])
+m4trace:configure.ac:1686: -1- m4_pattern_allow([^HAS_FTP$])
+m4trace:configure.ac:1686: -1- m4_pattern_allow([^P_FTP$])
+m4trace:configure.ac:1686: -1- m4_pattern_allow([^PTLIB_FTP$])
+m4trace:configure.ac:1693: -1- PTLIB_SIMPLE_OPTION([snmp], [SNMP], [SNMP protocol support])
+m4trace:configure.ac:1693: -1- MY_ARG_ENABLE([snmp], [SNMP protocol support], [${DEFAULT_SNMP:-yes}], [PTLIB_SUBST(SNMP, 1)], [HAS_SNMP=], [], [], [
+   ])
+m4trace:configure.ac:1693: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1693: the top level])
+m4trace:configure.ac:1693: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1693: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1693: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1693: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1693: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SNMP, 1)], [HAS_SNMP=])
+m4trace:configure.ac:1693: -1- PTLIB_SUBST([SNMP], [1])
+m4trace:configure.ac:1693: -1- m4_pattern_allow([^HAS_SNMP$])
+m4trace:configure.ac:1693: -1- m4_pattern_allow([^P_SNMP$])
+m4trace:configure.ac:1693: -1- m4_pattern_allow([^PTLIB_SNMP$])
+m4trace:configure.ac:1700: -1- PTLIB_SIMPLE_OPTION([telnet], [TELNET], [TELNET protocol support])
+m4trace:configure.ac:1700: -1- MY_ARG_ENABLE([telnet], [TELNET protocol support], [${DEFAULT_TELNET:-yes}], [PTLIB_SUBST(TELNET, 1)], [HAS_TELNET=], [], [], [
+   ])
+m4trace:configure.ac:1700: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1700: the top level])
+m4trace:configure.ac:1700: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1700: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1700: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1700: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1700: -1- MY_IFELSE([enableval], [PTLIB_SUBST(TELNET, 1)], [HAS_TELNET=])
+m4trace:configure.ac:1700: -1- PTLIB_SUBST([TELNET], [1])
+m4trace:configure.ac:1700: -1- m4_pattern_allow([^HAS_TELNET$])
+m4trace:configure.ac:1700: -1- m4_pattern_allow([^P_TELNET$])
+m4trace:configure.ac:1700: -1- m4_pattern_allow([^PTLIB_TELNET$])
+m4trace:configure.ac:1707: -1- PTLIB_SIMPLE_OPTION([cli], [CLI], [command line interpreter support])
+m4trace:configure.ac:1707: -1- MY_ARG_ENABLE([cli], [command line interpreter support], [${DEFAULT_CLI:-yes}], [PTLIB_SUBST(CLI, 1)], [HAS_CLI=], [], [], [
+   ])
+m4trace:configure.ac:1707: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1707: the top level])
+m4trace:configure.ac:1707: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1707: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1707: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1707: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1707: -1- MY_IFELSE([enableval], [PTLIB_SUBST(CLI, 1)], [HAS_CLI=])
+m4trace:configure.ac:1707: -1- PTLIB_SUBST([CLI], [1])
+m4trace:configure.ac:1707: -1- m4_pattern_allow([^HAS_CLI$])
+m4trace:configure.ac:1707: -1- m4_pattern_allow([^P_CLI$])
+m4trace:configure.ac:1707: -1- m4_pattern_allow([^PTLIB_CLI$])
+m4trace:configure.ac:1714: -1- PTLIB_SIMPLE_OPTION([remconn], [REMCONN], [remote connection support], [HAS_CONFIG_FILE], [HAS_PIPECHAN])
+m4trace:configure.ac:1714: -1- MY_ARG_ENABLE([remconn], [remote connection support], [${DEFAULT_REMCONN:-yes}], [PTLIB_SUBST(REMCONN, 1)], [HAS_REMCONN=], [HAS_CONFIG_FILE], [HAS_PIPECHAN], [
+   ])
+m4trace:configure.ac:1714: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1714: the top level])
+m4trace:configure.ac:1714: -1- MY_ARG_DEPENDENCY([HAS_CONFIG_FILE])
+m4trace:configure.ac:1714: -1- MY_ARG_DEPENDENCY([HAS_PIPECHAN])
+m4trace:configure.ac:1714: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1714: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1714: -1- MY_IFELSE([enableval], [PTLIB_SUBST(REMCONN, 1)], [HAS_REMCONN=])
+m4trace:configure.ac:1714: -1- PTLIB_SUBST([REMCONN], [1])
+m4trace:configure.ac:1714: -1- m4_pattern_allow([^HAS_REMCONN$])
+m4trace:configure.ac:1714: -1- m4_pattern_allow([^P_REMCONN$])
+m4trace:configure.ac:1714: -1- m4_pattern_allow([^PTLIB_REMCONN$])
+m4trace:configure.ac:1721: -1- PTLIB_SIMPLE_OPTION([serial], [SERIAL], [serial port support])
+m4trace:configure.ac:1721: -1- MY_ARG_ENABLE([serial], [serial port support], [${DEFAULT_SERIAL:-yes}], [PTLIB_SUBST(SERIAL, 1)], [HAS_SERIAL=], [], [], [
+   ])
+m4trace:configure.ac:1721: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1721: the top level])
+m4trace:configure.ac:1721: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1721: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1721: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1721: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1721: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SERIAL, 1)], [HAS_SERIAL=])
+m4trace:configure.ac:1721: -1- PTLIB_SUBST([SERIAL], [1])
+m4trace:configure.ac:1721: -1- m4_pattern_allow([^HAS_SERIAL$])
+m4trace:configure.ac:1721: -1- m4_pattern_allow([^P_SERIAL$])
+m4trace:configure.ac:1721: -1- m4_pattern_allow([^PTLIB_SERIAL$])
+m4trace:configure.ac:1728: -1- PTLIB_SIMPLE_OPTION([pop3smtp], [POP3SMTP], [POP3/SMTP support])
+m4trace:configure.ac:1728: -1- MY_ARG_ENABLE([pop3smtp], [POP3/SMTP support], [${DEFAULT_POP3SMTP:-yes}], [PTLIB_SUBST(POP3SMTP, 1)], [HAS_POP3SMTP=], [], [], [
+   ])
+m4trace:configure.ac:1728: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1728: the top level])
+m4trace:configure.ac:1728: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1728: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1728: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1728: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1728: -1- MY_IFELSE([enableval], [PTLIB_SUBST(POP3SMTP, 1)], [HAS_POP3SMTP=])
+m4trace:configure.ac:1728: -1- PTLIB_SUBST([POP3SMTP], [1])
+m4trace:configure.ac:1728: -1- m4_pattern_allow([^HAS_POP3SMTP$])
+m4trace:configure.ac:1728: -1- m4_pattern_allow([^P_POP3SMTP$])
+m4trace:configure.ac:1728: -1- m4_pattern_allow([^PTLIB_POP3SMTP$])
+m4trace:configure.ac:1735: -1- PTLIB_SIMPLE_OPTION([audio], [AUDIO], [audio support])
+m4trace:configure.ac:1735: -1- MY_ARG_ENABLE([audio], [audio support], [${DEFAULT_AUDIO:-yes}], [PTLIB_SUBST(AUDIO, 1)], [HAS_AUDIO=], [], [], [
+   ])
+m4trace:configure.ac:1735: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1735: the top level])
+m4trace:configure.ac:1735: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1735: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1735: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1735: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1735: -1- MY_IFELSE([enableval], [PTLIB_SUBST(AUDIO, 1)], [HAS_AUDIO=])
+m4trace:configure.ac:1735: -1- PTLIB_SUBST([AUDIO], [1])
+m4trace:configure.ac:1735: -1- m4_pattern_allow([^HAS_AUDIO$])
+m4trace:configure.ac:1735: -1- m4_pattern_allow([^P_AUDIO$])
+m4trace:configure.ac:1735: -1- m4_pattern_allow([^PTLIB_AUDIO$])
+m4trace:configure.ac:1742: -1- PTLIB_SIMPLE_OPTION([wavfile], [WAVFILE], [WAVFILE support], [HAS_AUDIO])
+m4trace:configure.ac:1742: -1- MY_ARG_ENABLE([wavfile], [WAVFILE support], [${DEFAULT_WAVFILE:-yes}], [PTLIB_SUBST(WAVFILE, 1)], [HAS_WAVFILE=], [HAS_AUDIO], [], [
+   ])
+m4trace:configure.ac:1742: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1742: the top level])
+m4trace:configure.ac:1742: -1- MY_ARG_DEPENDENCY([HAS_AUDIO])
+m4trace:configure.ac:1742: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1742: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1742: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1742: -1- MY_IFELSE([enableval], [PTLIB_SUBST(WAVFILE, 1)], [HAS_WAVFILE=])
+m4trace:configure.ac:1742: -1- PTLIB_SUBST([WAVFILE], [1])
+m4trace:configure.ac:1742: -1- m4_pattern_allow([^HAS_WAVFILE$])
+m4trace:configure.ac:1742: -1- m4_pattern_allow([^P_WAVFILE$])
+m4trace:configure.ac:1742: -1- m4_pattern_allow([^PTLIB_WAVFILE$])
+m4trace:configure.ac:1761: -1- PTLIB_SIMPLE_OPTION([video], [VIDEO], [video device support])
+m4trace:configure.ac:1761: -1- MY_ARG_ENABLE([video], [video device support], [${DEFAULT_VIDEO:-yes}], [PTLIB_SUBST(VIDEO, 1)], [HAS_VIDEO=], [], [], [
+   ])
+m4trace:configure.ac:1761: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1761: the top level])
+m4trace:configure.ac:1761: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1761: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1761: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1761: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1761: -1- MY_IFELSE([enableval], [PTLIB_SUBST(VIDEO, 1)], [HAS_VIDEO=])
+m4trace:configure.ac:1761: -1- PTLIB_SUBST([VIDEO], [1])
+m4trace:configure.ac:1761: -1- m4_pattern_allow([^HAS_VIDEO$])
+m4trace:configure.ac:1761: -1- m4_pattern_allow([^P_VIDEO$])
+m4trace:configure.ac:1761: -1- m4_pattern_allow([^PTLIB_VIDEO$])
+m4trace:configure.ac:1764: -1- m4_pattern_allow([^NO_VIDEO_CAPTURE$])
+m4trace:configure.ac:1772: -1- PTLIB_SIMPLE_OPTION([vidfile], [VIDFILE], [video file support], [HAS_VIDEO])
+m4trace:configure.ac:1772: -1- MY_ARG_ENABLE([vidfile], [video file support], [${DEFAULT_VIDFILE:-yes}], [PTLIB_SUBST(VIDFILE, 1)], [HAS_VIDFILE=], [HAS_VIDEO], [], [
+   ])
+m4trace:configure.ac:1772: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1772: the top level])
+m4trace:configure.ac:1772: -1- MY_ARG_DEPENDENCY([HAS_VIDEO])
+m4trace:configure.ac:1772: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1772: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1772: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1772: -1- MY_IFELSE([enableval], [PTLIB_SUBST(VIDFILE, 1)], [HAS_VIDFILE=])
+m4trace:configure.ac:1772: -1- PTLIB_SUBST([VIDFILE], [1])
+m4trace:configure.ac:1772: -1- m4_pattern_allow([^HAS_VIDFILE$])
+m4trace:configure.ac:1772: -1- m4_pattern_allow([^P_VIDFILE$])
+m4trace:configure.ac:1772: -1- m4_pattern_allow([^PTLIB_VIDFILE$])
+m4trace:configure.ac:1779: -1- PTLIB_SIMPLE_OPTION([ffvdev], [FFVDEV], [FFMpeg video file support], [HAS_VIDEO], [HAS_PIPECHAN])
+m4trace:configure.ac:1779: -1- MY_ARG_ENABLE([ffvdev], [FFMpeg video file support], [${DEFAULT_FFVDEV:-yes}], [PTLIB_SUBST(FFVDEV, 1)], [HAS_FFVDEV=], [HAS_VIDEO], [HAS_PIPECHAN], [
+   ])
+m4trace:configure.ac:1779: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1779: the top level])
+m4trace:configure.ac:1779: -1- MY_ARG_DEPENDENCY([HAS_VIDEO])
+m4trace:configure.ac:1779: -1- MY_ARG_DEPENDENCY([HAS_PIPECHAN])
+m4trace:configure.ac:1779: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1779: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1779: -1- MY_IFELSE([enableval], [PTLIB_SUBST(FFVDEV, 1)], [HAS_FFVDEV=])
+m4trace:configure.ac:1779: -1- PTLIB_SUBST([FFVDEV], [1])
+m4trace:configure.ac:1779: -1- m4_pattern_allow([^HAS_FFVDEV$])
+m4trace:configure.ac:1779: -1- m4_pattern_allow([^P_FFVDEV$])
+m4trace:configure.ac:1779: -1- m4_pattern_allow([^PTLIB_FFVDEV$])
+m4trace:configure.ac:1786: -1- PTLIB_SIMPLE_OPTION([appshare], [APPSHARE], [application sharing support], [HAS_VIDEO])
+m4trace:configure.ac:1786: -1- MY_ARG_ENABLE([appshare], [application sharing support], [${DEFAULT_APPSHARE:-yes}], [PTLIB_SUBST(APPSHARE, 1)], [HAS_APPSHARE=], [HAS_VIDEO], [], [
+   ])
+m4trace:configure.ac:1786: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1786: the top level])
+m4trace:configure.ac:1786: -1- MY_ARG_DEPENDENCY([HAS_VIDEO])
+m4trace:configure.ac:1786: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1786: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1786: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1786: -1- MY_IFELSE([enableval], [PTLIB_SUBST(APPSHARE, 1)], [HAS_APPSHARE=])
+m4trace:configure.ac:1786: -1- PTLIB_SUBST([APPSHARE], [1])
+m4trace:configure.ac:1786: -1- m4_pattern_allow([^HAS_APPSHARE$])
+m4trace:configure.ac:1786: -1- m4_pattern_allow([^P_APPSHARE$])
+m4trace:configure.ac:1786: -1- m4_pattern_allow([^PTLIB_APPSHARE$])
+m4trace:configure.ac:1791: -1- PTLIB_SIMPLE_OPTION([shmvideo], [SHM_VIDEO], [shared memory video devices])
+m4trace:configure.ac:1791: -1- MY_ARG_ENABLE([shmvideo], [shared memory video devices], [${DEFAULT_SHM_VIDEO:-yes}], [PTLIB_SUBST(SHM_VIDEO, 1)], [HAS_SHM_VIDEO=], [], [], [
+   ])
+m4trace:configure.ac:1791: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1791: the top level])
+m4trace:configure.ac:1791: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1791: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1791: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1791: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1791: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SHM_VIDEO, 1)], [HAS_SHM_VIDEO=])
+m4trace:configure.ac:1791: -1- PTLIB_SUBST([SHM_VIDEO], [1])
+m4trace:configure.ac:1791: -1- m4_pattern_allow([^HAS_SHM_VIDEO$])
+m4trace:configure.ac:1791: -1- m4_pattern_allow([^P_SHM_VIDEO$])
+m4trace:configure.ac:1791: -1- m4_pattern_allow([^PTLIB_SHM_VIDEO$])
+m4trace:configure.ac:1796: -1- PTLIB_SIMPLE_OPTION([shmvideo], [SHM_VIDEO], [shared memory video devices])
+m4trace:configure.ac:1796: -1- MY_ARG_ENABLE([shmvideo], [shared memory video devices], [${DEFAULT_SHM_VIDEO:-yes}], [PTLIB_SUBST(SHM_VIDEO, 1)], [HAS_SHM_VIDEO=], [], [], [
+   ])
+m4trace:configure.ac:1796: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1796: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1796: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1796: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1796: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SHM_VIDEO, 1)], [HAS_SHM_VIDEO=])
+m4trace:configure.ac:1796: -1- PTLIB_SUBST([SHM_VIDEO], [1])
+m4trace:configure.ac:1796: -1- m4_pattern_allow([^HAS_SHM_VIDEO$])
+m4trace:configure.ac:1796: -1- m4_pattern_allow([^P_SHM_VIDEO$])
+m4trace:configure.ac:1796: -1- m4_pattern_allow([^PTLIB_SHM_VIDEO$])
+m4trace:configure.ac:1807: -1- PTLIB_MODULE_OPTION([CURSES], [curses], [disable Curses (text mode windows) support], [ncurses], [], [], [#include <ncurses.h>], [initscr()
+])
+m4trace:configure.ac:1807: -1- MY_MODULE_OPTION([CURSES], [curses], [disable Curses (text mode windows) support], [ncurses], [], [], [#include <ncurses.h>], [initscr()
+], [], [], [])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^CURSES_SYSTEM$])
+m4trace:configure.ac:1807: -1- MY_ARG_ENABLE([curses], [disable Curses (text mode windows) support], [${DEFAULT_CURSES:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1807: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1807: the top level])
+m4trace:configure.ac:1807: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1807: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1807: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1807: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1807: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1807: -1- PKG_CHECK_MODULES([CURSES], [m4_bpatsubsts([ncurses],[local-source], [])], [], [usable=no
+            ])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^CURSES_CFLAGS$])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^CURSES_LIBS$])
+m4trace:configure.ac:1807: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([ncurses],[local-source], [])], [pkg_cv_[]CURSES_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([ncurses],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1807: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([ncurses],[local-source], [])], [pkg_cv_[]CURSES_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([ncurses],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1807: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1807: -1- MY_LINK_IFELSE([for disable Curses (text mode windows) support usability], [$CURSES[_CFLAGS]], [$CURSES[_LIBS]], [#include <ncurses.h>], [initscr()
+], [MY_ADD_MODULE_FLAGS([CURSES])], [usable=no
+            ])
+m4trace:configure.ac:1807: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([CURSES])], [usable=no
+            ])
+m4trace:configure.ac:1807: -1- MY_ADD_MODULE_FLAGS([CURSES])
+m4trace:configure.ac:1807: -1- MY_ADD_FLAGS([$CURSES_LIBS], [$CURSES_CFLAGS])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^CURSES_USABLE$])
+m4trace:configure.ac:1807: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1807: -1- PTLIB_SUBST([CURSES], [$CURSES[_USABLE]])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^HAS_CURSES$])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^P_CURSES$])
+m4trace:configure.ac:1807: -1- m4_pattern_allow([^PTLIB_CURSES$])
+m4trace:configure.ac:1832: -1- PTLIB_MODULE_OPTION([SDL], [sdl], [disable libSDL (video display) support], [sdl], [], [], [
+      #include <SDL.h>
+      #undef main
+   ], [SDL_Init(SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE)], [], [], [HAS_VIDEO
+])
+m4trace:configure.ac:1832: -1- MY_MODULE_OPTION([SDL], [sdl], [disable libSDL (video display) support], [sdl], [], [], [
+      #include <SDL.h>
+      #undef main
+   ], [SDL_Init(SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE)], [], [], [HAS_VIDEO
+])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^SDL_SYSTEM$])
+m4trace:configure.ac:1832: -1- MY_ARG_ENABLE([sdl], [disable libSDL (video display) support], [${DEFAULT_SDL:-yes}], [usable=yes], [usable=no], [HAS_VIDEO
+], [], [], [])
+m4trace:configure.ac:1832: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1832: the top level])
+m4trace:configure.ac:1832: -1- MY_ARG_DEPENDENCY([HAS_VIDEO
+])
+m4trace:configure.ac:1832: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1832: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1832: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1832: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1832: -1- PKG_CHECK_MODULES([SDL], [m4_bpatsubsts([sdl],[local-source], [])], [], [usable=no
+            ])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^SDL_CFLAGS$])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^SDL_LIBS$])
+m4trace:configure.ac:1832: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([sdl],[local-source], [])], [pkg_cv_[]SDL_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([sdl],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1832: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([sdl],[local-source], [])], [pkg_cv_[]SDL_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([sdl],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1832: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1832: -1- MY_LINK_IFELSE([for disable libSDL (video display) support usability], [$SDL[_CFLAGS]], [$SDL[_LIBS]], [
+      #include <SDL.h>
+      #undef main
+   ], [SDL_Init(SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE)], [MY_ADD_MODULE_FLAGS([SDL])], [usable=no
+            ])
+m4trace:configure.ac:1832: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([SDL])], [usable=no
+            ])
+m4trace:configure.ac:1832: -1- MY_ADD_MODULE_FLAGS([SDL])
+m4trace:configure.ac:1832: -1- MY_ADD_FLAGS([$SDL_LIBS], [$SDL_CFLAGS])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^SDL_USABLE$])
+m4trace:configure.ac:1832: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1832: -1- PTLIB_SUBST([SDL], [$SDL[_USABLE]])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^HAS_SDL$])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^P_SDL$])
+m4trace:configure.ac:1832: -1- m4_pattern_allow([^PTLIB_SDL$])
+m4trace:configure.ac:1859: -1- PTLIB_MODULE_OPTION([GSTREAMER], [gstreamer], [GStreamer support], [gstreamer-app-0.10], [], [], [#include <gst/gst.h>], [gst_version_string()
+])
+m4trace:configure.ac:1859: -1- MY_MODULE_OPTION([GSTREAMER], [gstreamer], [GStreamer support], [gstreamer-app-0.10], [], [], [#include <gst/gst.h>], [gst_version_string()
+], [], [], [])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^GSTREAMER_SYSTEM$])
+m4trace:configure.ac:1859: -1- MY_ARG_ENABLE([gstreamer], [GStreamer support], [${DEFAULT_GSTREAMER:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1859: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1859: the top level])
+m4trace:configure.ac:1859: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1859: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1859: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1859: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1859: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1859: -1- PKG_CHECK_MODULES([GSTREAMER], [m4_bpatsubsts([gstreamer-app-0.10],[local-source], [])], [], [usable=no
+            ])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^GSTREAMER_CFLAGS$])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^GSTREAMER_LIBS$])
+m4trace:configure.ac:1859: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([gstreamer-app-0.10],[local-source], [])], [pkg_cv_[]GSTREAMER_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([gstreamer-app-0.10],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1859: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([gstreamer-app-0.10],[local-source], [])], [pkg_cv_[]GSTREAMER_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([gstreamer-app-0.10],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1859: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1859: -1- MY_LINK_IFELSE([for GStreamer support usability], [$GSTREAMER[_CFLAGS]], [$GSTREAMER[_LIBS]], [#include <gst/gst.h>], [gst_version_string()
+], [MY_ADD_MODULE_FLAGS([GSTREAMER])], [usable=no
+            ])
+m4trace:configure.ac:1859: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([GSTREAMER])], [usable=no
+            ])
+m4trace:configure.ac:1859: -1- MY_ADD_MODULE_FLAGS([GSTREAMER])
+m4trace:configure.ac:1859: -1- MY_ADD_FLAGS([$GSTREAMER_LIBS], [$GSTREAMER_CFLAGS])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^GSTREAMER_USABLE$])
+m4trace:configure.ac:1859: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1859: -1- PTLIB_SUBST([GSTREAMER], [$GSTREAMER[_USABLE]])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^HAS_GSTREAMER$])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^P_GSTREAMER$])
+m4trace:configure.ac:1859: -1- m4_pattern_allow([^PTLIB_GSTREAMER$])
+m4trace:configure.ac:1881: -1- PTLIB_MODULE_OPTION([ODBC], [odbc], [ODBC database support], [odbc], [], [-lodbc], [#include <sql.h>], [SQLFreeHandle(0, 0)], [], [PTLIB_MODULE_OPTION(
+      [ODBC],
+      [odbc],
+      [unixODBC database support],
+      [unixODBC],
+      [],
+      [-lodbc],
+      [#include <sql.h>],
+      [SQLFreeHandle(0, 0)]
+   )
+])
+m4trace:configure.ac:1881: -1- MY_MODULE_OPTION([ODBC], [odbc], [ODBC database support], [odbc], [], [-lodbc], [#include <sql.h>], [SQLFreeHandle(0, 0)], [], [PTLIB_MODULE_OPTION(
+      [ODBC],
+      [odbc],
+      [unixODBC database support],
+      [unixODBC],
+      [],
+      [-lodbc],
+      [#include <sql.h>],
+      [SQLFreeHandle(0, 0)]
+   )
+], [])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_SYSTEM$])
+m4trace:configure.ac:1881: -1- MY_ARG_ENABLE([odbc], [ODBC database support], [${DEFAULT_ODBC:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1881: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1881: the top level])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1881: -1- PKG_CHECK_MODULES([ODBC], [m4_bpatsubsts([odbc],[local-source], [])], [], [
+                     ODBC[_CFLAGS]=""
+                     ODBC[_LIBS]="-lodbc"
+                  
+               ])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_CFLAGS$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_LIBS$])
+m4trace:configure.ac:1881: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([odbc],[local-source], [])], [pkg_cv_[]ODBC_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([odbc],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1881: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([odbc],[local-source], [])], [pkg_cv_[]ODBC_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([odbc],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1881: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1881: -1- MY_LINK_IFELSE([for ODBC database support usability], [$ODBC[_CFLAGS]], [$ODBC[_LIBS]], [#include <sql.h>], [SQLFreeHandle(0, 0)], [MY_ADD_MODULE_FLAGS([ODBC])], [usable=no
+            ])
+m4trace:configure.ac:1881: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([ODBC])], [usable=no
+            ])
+m4trace:configure.ac:1881: -1- MY_ADD_MODULE_FLAGS([ODBC])
+m4trace:configure.ac:1881: -1- MY_ADD_FLAGS([$ODBC_LIBS], [$ODBC_CFLAGS])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_USABLE$])
+m4trace:configure.ac:1881: -1- MY_IFELSE([usable], [], [PTLIB_MODULE_OPTION(
+      [ODBC],
+      [odbc],
+      [unixODBC database support],
+      [unixODBC],
+      [],
+      [-lodbc],
+      [#include <sql.h>],
+      [SQLFreeHandle(0, 0)]
+   )
+])
+m4trace:configure.ac:1881: -1- PTLIB_MODULE_OPTION([ODBC], [odbc], [unixODBC database support], [unixODBC], [], [-lodbc], [#include <sql.h>], [SQLFreeHandle(0, 0)
+   ])
+m4trace:configure.ac:1881: -1- MY_MODULE_OPTION([ODBC], [odbc], [unixODBC database support], [unixODBC], [], [-lodbc], [#include <sql.h>], [SQLFreeHandle(0, 0)
+   ], [], [], [])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_SYSTEM$])
+m4trace:configure.ac:1881: -1- MY_ARG_ENABLE([odbc], [unixODBC database support], [${DEFAULT_ODBC:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:1881: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+../../lib/m4sugar/m4sh.m4:639: AS_IF is expanded from...
+make/my_macros.m4:9: MY_IFELSE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:1881: the top level])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1881: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:1881: -1- PKG_CHECK_MODULES([ODBC], [m4_bpatsubsts([unixODBC],[local-source], [])], [], [
+                     ODBC[_CFLAGS]=""
+                     ODBC[_LIBS]="-lodbc"
+                  
+               ])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_CFLAGS$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_LIBS$])
+m4trace:configure.ac:1881: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([unixODBC],[local-source], [])], [pkg_cv_[]ODBC_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([unixODBC],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1881: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([unixODBC],[local-source], [])], [pkg_cv_[]ODBC_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([unixODBC],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:1881: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:1881: -1- MY_LINK_IFELSE([for unixODBC database support usability], [$ODBC[_CFLAGS]], [$ODBC[_LIBS]], [#include <sql.h>], [SQLFreeHandle(0, 0)
+   ], [MY_ADD_MODULE_FLAGS([ODBC])], [usable=no
+            ])
+m4trace:configure.ac:1881: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([ODBC])], [usable=no
+            ])
+m4trace:configure.ac:1881: -1- MY_ADD_MODULE_FLAGS([ODBC])
+m4trace:configure.ac:1881: -1- MY_ADD_FLAGS([$ODBC_LIBS], [$ODBC_CFLAGS])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^ODBC_USABLE$])
+m4trace:configure.ac:1881: -1- MY_IFELSE([usable], [], [])
+m4trace:configure.ac:1881: -1- PTLIB_SUBST([ODBC], [$ODBC[_USABLE]])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^HAS_ODBC$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^P_ODBC$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^PTLIB_ODBC$])
+m4trace:configure.ac:1881: -1- PTLIB_SUBST([ODBC], [$ODBC[_USABLE]])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^HAS_ODBC$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^P_ODBC$])
+m4trace:configure.ac:1881: -1- m4_pattern_allow([^PTLIB_ODBC$])
+m4trace:configure.ac:1904: -1- MY_COMPILE_IFELSE([ODBC defines Windows types], [$ODBC_CFLAGS], [#include <sqltypes.h>], [BYTE b], [AC_DEFINE(P_ODBC_DEFINES_WINDOWS_TYPES, 1)
+   ])
+m4trace:configure.ac:1904: -1- MY_IFELSE([usable], [AC_DEFINE(P_ODBC_DEFINES_WINDOWS_TYPES, 1)
+   ], [])
+m4trace:configure.ac:1904: -1- m4_pattern_allow([^P_ODBC_DEFINES_WINDOWS_TYPES$])
+m4trace:configure.ac:1919: -1- PTLIB_SIMPLE_OPTION([vfw], [VFW_CAPTURE], [enable video for windows capture], [HAS_VIDEO])
+m4trace:configure.ac:1919: -1- MY_ARG_ENABLE([vfw], [enable video for windows capture], [${DEFAULT_VFW_CAPTURE:-yes}], [PTLIB_SUBST(VFW_CAPTURE, 1)], [HAS_VFW_CAPTURE=], [HAS_VIDEO], [], [
+   ])
+m4trace:configure.ac:1919: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1919: the top level])
+m4trace:configure.ac:1919: -1- MY_ARG_DEPENDENCY([HAS_VIDEO])
+m4trace:configure.ac:1919: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1919: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1919: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1919: -1- MY_IFELSE([enableval], [PTLIB_SUBST(VFW_CAPTURE, 1)], [HAS_VFW_CAPTURE=])
+m4trace:configure.ac:1919: -1- PTLIB_SUBST([VFW_CAPTURE], [1])
+m4trace:configure.ac:1919: -1- m4_pattern_allow([^HAS_VFW_CAPTURE$])
+m4trace:configure.ac:1919: -1- m4_pattern_allow([^P_VFW_CAPTURE$])
+m4trace:configure.ac:1919: -1- m4_pattern_allow([^PTLIB_VFW_CAPTURE$])
+m4trace:configure.ac:1936: -1- m4_pattern_allow([^HAVE_CONTROL_H$])
+m4trace:configure.ac:1937: -1- m4_pattern_allow([^HAVE_DDRAW_H$])
+m4trace:configure.ac:1938: -1- m4_pattern_allow([^HAVE_DSHOW_H$])
+m4trace:configure.ac:1939: -1- m4_pattern_allow([^HAVE_DSOUND_H$])
+m4trace:configure.ac:1940: -1- m4_pattern_allow([^HAVE_STRMIF_H$])
+m4trace:configure.ac:1950: -1- m4_pattern_allow([^P_DIRECTSHOW$])
+m4trace:configure.ac:1951: -1- m4_pattern_allow([^P_DIRECTX$])
+m4trace:configure.ac:1952: -1- m4_pattern_allow([^P_DIRECTSOUND$])
+m4trace:configure.ac:1961: -1- m4_pattern_allow([^NO_VIDEO_CAPTURE$])
+m4trace:configure.ac:1965: -1- m4_pattern_allow([^HAS_DIRECTSHOW$])
+m4trace:configure.ac:1966: -1- m4_pattern_allow([^HAS_DIRECTSOUND$])
+m4trace:configure.ac:1972: -1- MY_CHECK_DLFCN([
+   MY_ADD_MODULE_FLAGS([DLFCN])
+   PTLIB_SUBST([DYNALINK], 1)
+])
+m4trace:configure.ac:1972: -1- MY_IFELSE([usable], [
+   MY_ADD_MODULE_FLAGS([DLFCN])
+   PTLIB_SUBST([DYNALINK], 1)
+], [])
+m4trace:configure.ac:1972: -1- MY_ADD_MODULE_FLAGS([DLFCN])
+m4trace:configure.ac:1972: -1- MY_ADD_FLAGS([$DLFCN_LIBS], [$DLFCN_CFLAGS])
+m4trace:configure.ac:1972: -1- PTLIB_SUBST([DYNALINK], [1])
+m4trace:configure.ac:1972: -1- m4_pattern_allow([^HAS_DYNALINK$])
+m4trace:configure.ac:1972: -1- m4_pattern_allow([^P_DYNALINK$])
+m4trace:configure.ac:1972: -1- m4_pattern_allow([^PTLIB_DYNALINK$])
+m4trace:configure.ac:1985: -1- PTLIB_SIMPLE_OPTION([plugins], [PLUGINS], [plugin support])
+m4trace:configure.ac:1985: -1- MY_ARG_ENABLE([plugins], [plugin support], [${DEFAULT_PLUGINS:-yes}], [PTLIB_SUBST(PLUGINS, 1)], [HAS_PLUGINS=], [], [], [
+   ])
+m4trace:configure.ac:1985: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:1985: the top level])
+m4trace:configure.ac:1985: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1985: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1985: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:1985: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:1985: -1- MY_IFELSE([enableval], [PTLIB_SUBST(PLUGINS, 1)], [HAS_PLUGINS=])
+m4trace:configure.ac:1985: -1- PTLIB_SUBST([PLUGINS], [1])
+m4trace:configure.ac:1985: -1- m4_pattern_allow([^HAS_PLUGINS$])
+m4trace:configure.ac:1985: -1- m4_pattern_allow([^P_PLUGINS$])
+m4trace:configure.ac:1985: -1- m4_pattern_allow([^PTLIB_PLUGINS$])
+m4trace:configure.ac:1995: -1- m4_pattern_allow([^PTLIB_PLUGIN_DIR$])
+m4trace:configure.ac:2016: -1- m4_pattern_allow([^P_DEFAULT_PLUGIN_DIR$])
+m4trace:configure.ac:2052: -1- m4_pattern_allow([^HAS_ALSA$])
+m4trace:configure.ac:2069: -1- MY_PKG_CHECK_MODULE([ESD], [esound], [#include <esd.h>], [esd_get_server_info(0)], [PTLIB_SUBST([ESD], [yes])
+         ])
+m4trace:configure.ac:2069: -1- PKG_CHECK_MODULES([ESD], [esound], [MY_LINK_IFELSE(
+         [for ESD usability],
+         [$ESD[_CFLAGS]],
+         [$ESD[_LIBS]],
+         [#include <esd.h>],
+         [esd_get_server_info(0)],
+         [
+            CPPFLAGS="$CPPFLAGS $ESD[_CFLAGS]"
+            LIBS="$ESD[_LIBS] $LIBS"
+         ]
+      )], [usable=no
+   ])
+m4trace:configure.ac:2069: -1- m4_pattern_allow([^ESD_CFLAGS$])
+m4trace:configure.ac:2069: -1- m4_pattern_allow([^ESD_LIBS$])
+m4trace:configure.ac:2069: -1- PKG_CHECK_EXISTS([esound], [pkg_cv_[]ESD_CFLAGS=`$PKG_CONFIG --[]cflags "esound" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:2069: -1- PKG_CHECK_EXISTS([esound], [pkg_cv_[]ESD_LIBS=`$PKG_CONFIG --[]libs "esound" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:2069: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:2069: -1- MY_LINK_IFELSE([for ESD usability], [$ESD[_CFLAGS]], [$ESD[_LIBS]], [#include <esd.h>], [esd_get_server_info(0)], [
+            CPPFLAGS="$CPPFLAGS $ESD[_CFLAGS]"
+            LIBS="$ESD[_LIBS] $LIBS"
+         
+      ])
+m4trace:configure.ac:2069: -1- MY_IFELSE([usable], [
+            CPPFLAGS="$CPPFLAGS $ESD[_CFLAGS]"
+            LIBS="$ESD[_LIBS] $LIBS"
+         
+      ], [])
+m4trace:configure.ac:2069: -1- MY_IFELSE([usable], [PTLIB_SUBST([ESD], [yes])
+         ], [])
+m4trace:configure.ac:2069: -1- PTLIB_SUBST([ESD], [yes])
+m4trace:configure.ac:2069: -1- m4_pattern_allow([^HAS_ESD$])
+m4trace:configure.ac:2069: -1- m4_pattern_allow([^P_ESD$])
+m4trace:configure.ac:2069: -1- m4_pattern_allow([^PTLIB_ESD$])
+m4trace:configure.ac:2086: -1- m4_pattern_allow([^HAS_OSS$])
+m4trace:configure.ac:2103: -1- MY_LINK_IFELSE([for PCAP support], [], [-lpulse], [#include <pulse/context.h>], [pa_context * conteext = pa_context_new(NULL, "conf")], [
+               AC_SUBST(HAS_PULSE, 1)
+               PTLIB_PULSE=yes
+            
+         ])
+m4trace:configure.ac:2103: -1- MY_IFELSE([usable], [
+               AC_SUBST(HAS_PULSE, 1)
+               PTLIB_PULSE=yes
+            
+         ], [])
+m4trace:configure.ac:2103: -1- m4_pattern_allow([^HAS_PULSE$])
+m4trace:configure.ac:2124: -1- m4_pattern_allow([^HAS_SUN_AUDIO$])
+m4trace:configure.ac:2141: -1- m4_pattern_allow([^HAS_SHM_AUDIO$])
+m4trace:configure.ac:2153: -1- PTLIB_MODULE_OPTION([PORTAUDIO], [portaudio], [PortAudio library], [portaudio], [], [-;portaudio], [#include <portaudio.h>], [Pa_GetDeviceCount()], [AC_CHECK_HEADER(
+            [portmixer.h],
+            [
+               AC_SUBST(HAS_PORTMIXER, 1)
+               AC_DEFINE(P_PORTMIXER, 1)
+               LIBS="-lportmixer $LIBS"
+            ]
+         )
+      ])
+m4trace:configure.ac:2153: -1- MY_MODULE_OPTION([PORTAUDIO], [portaudio], [PortAudio library], [portaudio], [], [-;portaudio], [#include <portaudio.h>], [Pa_GetDeviceCount()], [AC_CHECK_HEADER(
+            [portmixer.h],
+            [
+               AC_SUBST(HAS_PORTMIXER, 1)
+               AC_DEFINE(P_PORTMIXER, 1)
+               LIBS="-lportmixer $LIBS"
+            ]
+         )
+      ], [], [])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^PORTAUDIO_SYSTEM$])
+m4trace:configure.ac:2153: -1- MY_ARG_ENABLE([portaudio], [PortAudio library], [${DEFAULT_PORTAUDIO:-yes}], [usable=yes], [usable=no], [], [], [], [])
+m4trace:configure.ac:2153: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/my_macros.m4:187: MY_MODULE_OPTION is expanded from...
+make/ptlib.m4:69: PTLIB_MODULE_OPTION is expanded from...
+configure.ac:2153: the top level])
+m4trace:configure.ac:2153: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2153: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2153: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2153: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2153: -1- MY_IFELSE([enableval], [usable=yes], [usable=no])
+m4trace:configure.ac:2153: -1- PKG_CHECK_MODULES([PORTAUDIO], [m4_bpatsubsts([portaudio],[local-source], [])], [], [
+                     PORTAUDIO[_CFLAGS]=""
+                     PORTAUDIO[_LIBS]="-;portaudio"
+                  
+               ])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^PORTAUDIO_CFLAGS$])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^PORTAUDIO_LIBS$])
+m4trace:configure.ac:2153: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([portaudio],[local-source], [])], [pkg_cv_[]PORTAUDIO_CFLAGS=`$PKG_CONFIG --[]cflags "m4_bpatsubsts([portaudio],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:2153: -1- PKG_CHECK_EXISTS([m4_bpatsubsts([portaudio],[local-source], [])], [pkg_cv_[]PORTAUDIO_LIBS=`$PKG_CONFIG --[]libs "m4_bpatsubsts([portaudio],[local-source], [])" 2>/dev/null`], [pkg_failed=yes])
+m4trace:configure.ac:2153: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:2153: -1- MY_LINK_IFELSE([for PortAudio library usability], [$PORTAUDIO[_CFLAGS]], [$PORTAUDIO[_LIBS]], [#include <portaudio.h>], [Pa_GetDeviceCount()], [MY_ADD_MODULE_FLAGS([PORTAUDIO])], [usable=no
+            ])
+m4trace:configure.ac:2153: -1- MY_IFELSE([usable], [MY_ADD_MODULE_FLAGS([PORTAUDIO])], [usable=no
+            ])
+m4trace:configure.ac:2153: -1- MY_ADD_MODULE_FLAGS([PORTAUDIO])
+m4trace:configure.ac:2153: -1- MY_ADD_FLAGS([$PORTAUDIO_LIBS], [$PORTAUDIO_CFLAGS])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^PORTAUDIO_USABLE$])
+m4trace:configure.ac:2153: -1- MY_IFELSE([usable], [AC_CHECK_HEADER(
+            [portmixer.h],
+            [
+               AC_SUBST(HAS_PORTMIXER, 1)
+               AC_DEFINE(P_PORTMIXER, 1)
+               LIBS="-lportmixer $LIBS"
+            ]
+         )
+      ], [])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^HAS_PORTMIXER$])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^P_PORTMIXER$])
+m4trace:configure.ac:2153: -1- PTLIB_SUBST([PORTAUDIO], [$PORTAUDIO[_USABLE]])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^HAS_PORTAUDIO$])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^P_PORTAUDIO$])
+m4trace:configure.ac:2153: -1- m4_pattern_allow([^PTLIB_PORTAUDIO$])
+m4trace:configure.ac:2184: -1- m4_pattern_allow([^HAS_V4L$])
+m4trace:configure.ac:2216: -1- m4_pattern_allow([^V4L2_CFLAGS$])
+m4trace:configure.ac:2217: -1- m4_pattern_allow([^V4L2_LIBS$])
+m4trace:configure.ac:2218: -1- m4_pattern_allow([^HAS_V4L2$])
+m4trace:configure.ac:2230: -1- m4_pattern_allow([^HAS_BSDVIDEOCAP$])
+m4trace:configure.ac:2230: -1- m4_pattern_allow([^HAS_BSDVIDEOCAP$])
+m4trace:configure.ac:2230: -1- m4_pattern_allow([^HAS_BSDVIDEOCAP$])
+m4trace:configure.ac:2264: -1- m4_pattern_allow([^HAS_AVC1394$])
+m4trace:configure.ac:2294: -1- m4_pattern_allow([^HAS_DC1394$])
+m4trace:configure.ac:2310: -1- m4_pattern_allow([^DC_CFLAGS$])
+m4trace:configure.ac:2310: -1- m4_pattern_allow([^DC_CFLAGS$])
+m4trace:configure.ac:2352: -1- PTLIB_SIMPLE_OPTION([samples], [SAMPLES], [enable samples build])
+m4trace:configure.ac:2352: -1- MY_ARG_ENABLE([samples], [enable samples build], [${DEFAULT_SAMPLES:-yes}], [PTLIB_SUBST(SAMPLES, 1)], [HAS_SAMPLES=], [], [], [
+   ])
+m4trace:configure.ac:2352: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1462: AC_ARG_ENABLE is expanded from...
+make/my_macros.m4:35: MY_ARG_ENABLE is expanded from...
+make/ptlib.m4:42: PTLIB_SIMPLE_OPTION is expanded from...
+configure.ac:2352: the top level])
+m4trace:configure.ac:2352: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2352: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2352: -1- MY_ARG_DEPENDENCY([
+   ])
+m4trace:configure.ac:2352: -1- MY_ARG_DEPENDENCY([])
+m4trace:configure.ac:2352: -1- MY_IFELSE([enableval], [PTLIB_SUBST(SAMPLES, 1)], [HAS_SAMPLES=])
+m4trace:configure.ac:2352: -1- PTLIB_SUBST([SAMPLES], [1])
+m4trace:configure.ac:2352: -1- m4_pattern_allow([^HAS_SAMPLES$])
+m4trace:configure.ac:2352: -1- m4_pattern_allow([^P_SAMPLES$])
+m4trace:configure.ac:2352: -1- m4_pattern_allow([^PTLIB_SAMPLES$])
+m4trace:configure.ac:2379: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:2379: -1- m4_pattern_allow([^LTLIBOBJS$])

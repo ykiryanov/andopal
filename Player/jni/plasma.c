@@ -29,8 +29,13 @@
 
 #include <opal.h>
 
+extern void opalInitialize();
+extern void opalShutdown();
+
 extern	void* createCodecTest(const char* szArguments, void* reserved);
 extern 	void deleteCodecTest(void* handle);
+extern 	int setupOptions();
+extern  int doCall(const char * from, const char * to);
 
 #define  LOG_TAG    "libplasma"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -473,28 +478,17 @@ void android_main(struct android_app* state) {
 
     stats_init(&engine.stats);
 
-    OpalHandle opal;
-    unsigned   version;
-
-    version = OPAL_C_API_VERSION;
-    if ((opal = OpalInitialise(&version,
-                                OPAL_PREFIX_H323  " "
-                                OPAL_PREFIX_SIP   " "
-                                OPAL_PREFIX_IAX2  " "
-                                OPAL_PREFIX_PCSS
-                                " TraceLevel=4")) == NULL) {
-    	printf("Could not initialise OPAL\n");
-    }
-    else
-    	printf("OPAL version %d\n", version);
 
    // loop waiting for stuff to do.
+   setupOptions();
 
     while (1) {
         // Read all pending events.
         int ident;
         int events;
         struct android_poll_source* source;
+
+        opalInitialize();
 
         // If not animating, we will block forever waiting for events.
         // If animating, we loop until all events are read, then continue
@@ -520,6 +514,5 @@ void android_main(struct android_app* state) {
         }
     }
 
-
-    OpalShutDown(opal);
+    opalShutdown();
 }

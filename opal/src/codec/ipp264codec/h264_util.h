@@ -5,8 +5,10 @@
 // #define H264_TEST
 // #define H264_ARM_CODE
 
-#ifdef WIN32
+#if defined(WIN32)
 #define H264_C_CODE
+#else
+#define H264_ARM_CODE
 #endif
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
