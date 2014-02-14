@@ -140,7 +140,7 @@ LKWP14:
         moveq   r12, r10
         ldr     r10, [sp, #0x5C]
         sub     r10, r10, #9
-        adds    r10, #9								//SB	cmn     r10, #9
+        adds    r10, #9								@//SB	cmn     r10, #9
         ldrcs   r10, [r11, +r10, lsl #2]
         ldr     r11, [sp, #0x54]
         strcs   r10, [sp, #0x60]

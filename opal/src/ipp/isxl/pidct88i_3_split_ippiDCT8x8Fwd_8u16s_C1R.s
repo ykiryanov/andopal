@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiDCT8x8Fwd_8u16s_C1R
+        .globl  ippiDCT8x8Fwd_8u16s_C1R
 
 
-_ippiDCT8x8Fwd_8u16s_C1R:
+ippiDCT8x8Fwd_8u16s_C1R:
         stmdb   sp!, {lr}
         cmp     r0, #0
         beq     LKHU0

@@ -518,7 +518,7 @@ LKVS33:
         ldr     r2, [sp, #0x30]
         ldr     r1, [pc, #0x600]
         sub     r2, r2, #9
-        adds    r2, #9							//!!SB!!			cmn     r2, #9
+        adds    r2, #9							@//!!SB!!			cmn     r2, #9
         ldrcs   r2, [r1, +r2, lsl #2]
         addcs   pc, pc, r2
         mvn     r0, #0xA

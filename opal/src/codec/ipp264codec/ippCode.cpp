@@ -15,9 +15,9 @@
 #include "umc_base_codec.h"
 #include "umc_video_data.h"
 
-#if P_IPHONEOS
-#include "TargetConditionals.h"
-#endif
+//SB!!! #if P_IPHONEOS
+//SB!!! #include "TargetConditionals.h"
+//SB!!! #endif
 
 #define DBG_ASSERT(a) __noop
 

@@ -138,7 +138,7 @@ LKWE13:
         mov     r11, #0
         moveq   r11, lr
         ldr     lr, [sp, #0x60]
-        adds    r4, #9						//SB		cmn     r4, #9
+        adds    r4, #9						@//SB		cmn     r4, #9
         ldrcs   lr, [lr, +r4, lsl #2]
         ldr     r4, [sp, #0x64]
         orr     r4, r12, r4, lsl #1

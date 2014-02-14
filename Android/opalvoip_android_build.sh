@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NDK_ROOT=$HOME/Projects/android-ndk-r9c
+NDK_ROOT=$HOME/Android/ndk
 echo "========================================================================"
 echo "NDK_ROOT = $NDK_ROOT"
 echo "========================================================================"

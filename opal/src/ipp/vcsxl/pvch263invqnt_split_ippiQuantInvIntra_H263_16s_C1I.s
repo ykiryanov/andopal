@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiQuantInvIntra_H263_16s_C1I
+        .globl  ippiQuantInvIntra_H263_16s_C1I
 
 
-_ippiQuantInvIntra_H263_16s_C1I:
+ippiQuantInvIntra_H263_16s_C1I:
         stmdb   sp!, {r4, r5, lr}
         ldr     r12, [sp, #0xC]
         mov     r4, r0

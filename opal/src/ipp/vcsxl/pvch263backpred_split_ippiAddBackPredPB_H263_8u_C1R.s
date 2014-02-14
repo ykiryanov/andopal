@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiAddBackPredPB_H263_8u_C1R
+        .globl  ippiAddBackPredPB_H263_8u_C1R
 
 
-_ippiAddBackPredPB_H263_8u_C1R:
+ippiAddBackPredPB_H263_8u_C1R:
         stmdb   sp!, {lr}
         sub     sp, sp, #0x10
         str     r2, [sp, #8]

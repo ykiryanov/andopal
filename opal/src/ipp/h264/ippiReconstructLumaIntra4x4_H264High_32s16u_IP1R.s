@@ -144,7 +144,7 @@ LKVV14:
         ldr     r2, [sp, #0x30]
         ldr     r11, [sp, #0x3C]
         sub     r2, r2, #9
-        adds    r2, #9							//SB        cmn     r2, #9
+        adds    r2, #9							@//SB        cmn     r2, #9
         ldrcs   r2, [r11, +r2, lsl #2]
         ldr     r11, [sp, #0x40]
         orr     r11, r3, r11, lsl #1

@@ -147,7 +147,7 @@ LKVT14:
         mov     r12, #0
         moveq   r12, r11
         ldr     r11, [sp, #0x40]
-        adds    r4, #9							//SB			cmn     r4, #9
+        adds    r4, #9							@//SB			cmn     r4, #9
         orr     r3, r2, r3, lsl #5
         ldrcs   r4, [r11, +r4, lsl #2]
         orr     r12, r3, r12, lsl #6

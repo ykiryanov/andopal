@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructCoeffsInter_H263_1u16s
+        .globl  ippiReconstructCoeffsInter_H263_1u16s
 
 
-_ippiReconstructCoeffsInter_H263_1u16s:
+ippiReconstructCoeffsInter_H263_1u16s:
         stmdb   sp!, {r4, lr}
         sub     sp, sp, #8
         ldr     r12, [sp, #0x10]

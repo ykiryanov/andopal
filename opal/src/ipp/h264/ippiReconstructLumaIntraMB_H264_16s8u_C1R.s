@@ -137,7 +137,7 @@ LKWO13:
         ldr     r10, [sp, #0x5C]
         ldr     r11, [sp, #0x54]
         sub     r10, r10, #9
-        adds    r10, #9						//SB cmn     r10, #9
+        adds    r10, #9						@//SB cmn     r10, #9
         ldrcs   r10, [r11, +r10, lsl #2]
         ldr     r11, [sp, #0x58]
         orr     r0, r11, r0, lsl #1

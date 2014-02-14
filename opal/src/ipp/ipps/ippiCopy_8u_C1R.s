@@ -1,8 +1,10 @@
         .text
         .align  4
         .globl  _ippiCopy_8u_C1R
+        .globl  ippiCopy_8u_C1R
 
 
+ippiCopy_8u_C1R:
 _ippiCopy_8u_C1R:
         stmdb   sp!, {r4 - r8, lr}
         cmp     r0, #0

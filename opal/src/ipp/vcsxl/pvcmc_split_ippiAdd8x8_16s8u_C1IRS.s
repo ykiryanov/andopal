@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiAdd8x8_16s8u_C1IRS
+        .globl  ippiAdd8x8_16s8u_C1IRS
 
 
-_ippiAdd8x8_16s8u_C1IRS:
+ippiAdd8x8_16s8u_C1IRS:
         stmdb   sp!, {lr}
         cmp     r0, #0
         beq     LEOG0

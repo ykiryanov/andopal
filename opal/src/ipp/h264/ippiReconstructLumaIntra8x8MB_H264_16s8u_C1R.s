@@ -473,7 +473,7 @@ LKWF31:
 LKWF32:
         ldr     r3, [pc, #0x898]
         sub     r10, r10, #9
-        adds    r10, #9							//SB		cmn     r10, #9
+        adds    r10, #9							@//SB		cmn     r10, #9
         ldrcs   r10, [r3, +r10, lsl #2]
         addcs   pc, pc, r10
         mvn     r0, #0xA

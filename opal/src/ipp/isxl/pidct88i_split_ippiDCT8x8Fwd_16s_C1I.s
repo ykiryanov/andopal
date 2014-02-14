@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiDCT8x8Fwd_16s_C1I
+        .globl  ippiDCT8x8Fwd_16s_C1I
 
 
-_ippiDCT8x8Fwd_16s_C1I:
+ippiDCT8x8Fwd_16s_C1I:
         stmdb   sp!, {lr}
         mov     r1, r0
         cmp     r1, #0

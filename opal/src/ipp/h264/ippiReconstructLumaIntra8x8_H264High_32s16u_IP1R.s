@@ -581,7 +581,7 @@ LKVU35:
         ldr     r2, [sp, #0x38]
         ldr     r1, [pc, #0x608]
         sub     r2, r2, #9
-        adds    r2, #9						//SB			cmn     r2, #9
+        adds    r2, #9						@//SB			cmn     r2, #9
         ldrcs   r2, [r1, +r2, lsl #2]
         addcs   pc, pc, r2
         add     sp, sp, #0x46, 30

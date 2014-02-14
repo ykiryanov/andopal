@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiScanInv_16s_C1
+        .globl  ippiScanInv_16s_C1
 
 
-_ippiScanInv_16s_C1:
+ippiScanInv_16s_C1:
         stmdb   sp!, {r4, lr}
         cmp     r0, #0
         beq     LEFX7

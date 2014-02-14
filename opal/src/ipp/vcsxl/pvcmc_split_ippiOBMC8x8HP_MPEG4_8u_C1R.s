@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiOBMC8x8HP_MPEG4_8u_C1R
+        .globl  ippiOBMC8x8HP_MPEG4_8u_C1R
 
 
-_ippiOBMC8x8HP_MPEG4_8u_C1R:
+ippiOBMC8x8HP_MPEG4_8u_C1R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0xE8
         ldr     lr, [sp, #0x110]

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiSqrDiff16x16_8u32s
+        .globl  ippiSqrDiff16x16_8u32s
 
 
-_ippiSqrDiff16x16_8u32s:
+ippiSqrDiff16x16_8u32s:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x48
         ldr     r4, [sp, #0x6C]

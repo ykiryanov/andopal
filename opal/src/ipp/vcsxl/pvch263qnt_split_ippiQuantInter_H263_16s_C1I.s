@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiQuantInter_H263_16s_C1I
+        .globl  ippiQuantInter_H263_16s_C1I
 
 
-_ippiQuantInter_H263_16s_C1I:
+ippiQuantInter_H263_16s_C1I:
         stmdb   sp!, {lr}
         cmp     r0, #0
         mvneq   r0, #7

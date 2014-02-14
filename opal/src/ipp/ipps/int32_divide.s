@@ -1,7 +1,7 @@
         .text
         .align  4
         .globl  __intel_idiv
-        .globl  __divsi3
+@       .globl  __divsi3
 
 
 LAGJ_inverse_b:
@@ -23,7 +23,7 @@ LAGJ_inverse_b:
         .long   0x80818283
 __intel_idiv:
         sub     r12, pc, #0x88
-__divsi3:
+@__divsi3:
         sub     r12, pc, #0x8C
         teq     r0, r1
         bmi     LAGJ_NEGATIVE_PATH

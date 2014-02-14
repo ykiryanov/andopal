@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiSpatialInterpolation_H263_8u_C1R
+        .globl  ippiSpatialInterpolation_H263_8u_C1R
 
 
-_ippiSpatialInterpolation_H263_8u_C1R:
+ippiSpatialInterpolation_H263_8u_C1R:
         stmdb   sp!, {r4, lr}
         sub     sp, sp, #0x18
         str     r2, [sp, #0x10]

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiEncodeCoeffsIntra_H263_16s1u
+        .globl  ippiEncodeCoeffsIntra_H263_16s1u
 
 
-_ippiEncodeCoeffsIntra_H263_16s1u:
+ippiEncodeCoeffsIntra_H263_16s1u:
         stmdb   sp!, {r4, r5, lr}
         sub     sp, sp, #0x10
         ldr     r4, [sp, #0x1C]

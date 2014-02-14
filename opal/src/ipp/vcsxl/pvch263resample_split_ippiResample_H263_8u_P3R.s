@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiResample_H263_8u_P3R
+        .globl  ippiResample_H263_8u_P3R
 
 
-_ippiResample_H263_8u_P3R:
+ippiResample_H263_8u_P3R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x70
         str     r2, [sp, #0x68]

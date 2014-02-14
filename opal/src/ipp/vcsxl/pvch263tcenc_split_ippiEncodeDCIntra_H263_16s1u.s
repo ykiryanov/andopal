@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiEncodeDCIntra_H263_16s1u
+        .globl  ippiEncodeDCIntra_H263_16s1u
 
 
-_ippiEncodeDCIntra_H263_16s1u:
+ippiEncodeDCIntra_H263_16s1u:
         stmdb   sp!, {r4, lr}
         cmp     r1, #0
         beq     LFEP2

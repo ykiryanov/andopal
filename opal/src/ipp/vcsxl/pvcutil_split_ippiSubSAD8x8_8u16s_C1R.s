@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiSubSAD8x8_8u16s_C1R
+        .globl  ippiSubSAD8x8_8u16s_C1R
 
 
-_ippiSubSAD8x8_8u16s_C1R:
+ippiSubSAD8x8_8u16s_C1R:
         stmdb   sp!, {r4, lr}
         sub     sp, sp, #0x10
         ldr     r4, [sp, #0x18]

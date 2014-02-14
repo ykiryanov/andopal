@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiFilterDeblocking8x8HorEdge_H263_8u_C1IR
+        .globl  ippiFilterDeblocking8x8HorEdge_H263_8u_C1IR
 
 
-_ippiFilterDeblocking8x8HorEdge_H263_8u_C1IR:
+ippiFilterDeblocking8x8HorEdge_H263_8u_C1IR:
         stmdb   sp!, {lr}
         cmp     r0, #0
         mvneq   r0, #7

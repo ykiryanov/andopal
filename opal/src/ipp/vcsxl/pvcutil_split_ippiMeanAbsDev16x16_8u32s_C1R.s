@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiMeanAbsDev16x16_8u32s_C1R
+        .globl  ippiMeanAbsDev16x16_8u32s_C1R
 
 
-_ippiMeanAbsDev16x16_8u32s_C1R:
+ippiMeanAbsDev16x16_8u32s_C1R:
         stmdb   sp!, {lr}
         cmp     r0, #0
         beq     LEFT0
