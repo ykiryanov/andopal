@@ -1,0 +1,23 @@
+/* CommentLine: H.264 Sequence.*/
+sample.yuv  /* name of source files */
+20                 /* number of frames to encode */
+1 20 0             /* 1(reserved) , N (# of frames in between I frames), IDR interval. */
+1 0                 /* Number of B frames between I (or P) and next P, treat B as a reference (only 0 is supported!) */
+2 1 2               /* num_ref_frames (1-16), minimum length of list1 for backward prediction (only 1 is supported!), number of slices. */
+77 51               /* profile_idc (77-main, 100-high); level_idc (set 0 for automatic selection) (check that num_ref_frames and frame size are in accordance with the level)  */
+720                 /* horizontal_size */
+576                 /* vertical_size */
+5                   /* frame_rate_code: 4,5 - 30 fps; 1,2 - 24 fps; 3 - 25 fps, 6 - 50 fps; 7,8 - 60 fps; other - 30fps  */
+1 8 8               /* High profile: chroma_format_idc (0 - monochrom, 1 - 420, 2 - 422), bit_depth_luma [8,12], bit_depth_chroma [8,12] */
+0 8 0 0 0           /* High profile: aux_format_idc: [0,3], bit_depth_aux: [8,12], alpha_incr_flag: 0, 1; alpha_opaque_value: [0, 2^(bit_depth_aux + 9) -1]; alpha_transparent_value: [0, 2^(bit_depth_aux + 9) - 1]  */
+2 20 20 20 2222222  /* RC method(1 - CBR, 2 -  AVBR framewise, 3 - constant quant); start qp values for I, P, B slices; bitrate (bits per second) */
+2 0 8 8             /* ME method(0 - full search; 1 - classic log; 2 - log; 3 - epzs; 4 - full orthogonal; 5 - log orthogonal; 6 - tts), subblock split, search x,search_y */
+0 0 0               /* weighted prediction, weighted biprediction implicit weighted biprediction (not supported!)*/
+0 1                 /* direct type (0 - temporal 1 - spatial); direct_inference_flag */
+0 3 3               /* disable_deblocking_idc: 1-- off, 0 - on, 2 -- on(without crossing slice boundaries); deblocking_filter_alpha, deblocking_filter_beta */
+0 0 0               /* High profile: transform_8x8_mode: 0 -- off, 1 - on; 0 -- use standard, 1 -- use default scaling matrices for 8x8 quantization; qpprime_y_zero_transform_bypass_flag: (0, 1) */
+720                 /* display_horizontal_size */
+576                 /* display_vertical_size */
+1 2                 /* entropy coding mode (0-cavlc,1-cabac); cabac_init_idc (0,1,2) */
+0                   /* picture coding type (0 - only FRM, 1 - only FLD , 2 - only AFRM, 3  - pure PicAFF(no MBAFF) 4 PicAFF + MBAFF). Only 0 (FRM) is supported! */
+0 sample.log        /* log mask and template filename of log-file (0 and "any value" for none) (not supported!) */

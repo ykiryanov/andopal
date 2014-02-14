@@ -1,0 +1,44 @@
+!! MPEG-4 videoencoder sample !!
+352x288.yuv  // name of source files
+352       // horizontal_size
+288       // vertical_size
+20        // number of frames
+30        // frame scale
+1         // frame interval
+0         // quant_type: 0 - H263, 1 - the first quantization method
+6         // IVOP quant
+6         // PVOP quant
+6         // BVOP quant
+-         // name of intra quant matrix file     ("-": default matrix)
+-         // name of non intra quant matrix file ("-": default matrix)
+0         // short_video_header
+100       // max I-VOP distance
+0         // num of successive B-VOPs
+15        // P-VOP searchWidth in full pel
+15        // P-VOP searchHeight in full pel
+15        // B-VOP searchWidth Forw in full pel
+15        // B-VOP searchHeight Forw in full pel
+15        // B-VOP searchWidth Back in full pel
+15        // B-VOP searchHeight Back in full pel
+1         // Motion Estimation algorithm: 0 - full search, 1 - fast search
+2         // Motion Estimation accuracy: 1 - full pel, 2 - half pel, 4 - quarter pel
+0         // 0 - 1MV  1 - 4MV
+1         // obmc_disable
+1         // Rounding Control enable
+0         // calculate PSNR
+0         // RateControl  0 - no, 1 - FrameLavel(VBR), 2 - MacroblockLevel (CBR)
+300000    // BitRate, bps
+50        // SceneChangeThreshold, %
+0         // insert GOV before I-frames
+0         // repeat VOL before I-frames
+0         // insert GOB/VideoPackets
+1024      // VideoPacket length, bit
+0         // data_partitioned
+0         // reversible_vlc
+0         // interlaced
+0         // top_field_first
+0         // alternate_vertical_scan_flag
+1         // ME pred - 0 - field; 1 - frame; 2 - field+frame
+0         // sprites - 0 - none, 1 - basic, 2 - GMC
+0         // no_of_sprite_warping_points
+0         // sprite_warping_accuracy

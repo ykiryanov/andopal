@@ -1,0 +1,17 @@
+!! H.261 videoencoder sample !!
+352x288.yuv // name of source files
+352       // horizontal_size
+288       // vertical_size
+20        // number of frames
+6         // I-Frame quant
+6         // P-Frame quant
+20        // I-Frame distance
+15        // motion vector searchWidth in full pel
+15        // motion vector searchHeight in full pel
+1         // Motion Estimation algorithm: 0 - full search, 1 - fast search
+0         // calculate PSNR
+1         // frame interval in CIF picture clock periods (1001/30000 s)
+1         // Rate control
+400000    // Bitrate in bps
+1         // frame skipping: 0 - OFF, 1 - ON, default ON
+0         // max encoded CIF frame size in kbits (1024*bits), /4 for QCIF frames, ignored if below miminal allowed value = 256 (64 for QCIF)

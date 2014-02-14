@@ -1,0 +1,25 @@
+!! H.263 videoencoder sample !!
+352x288.yuv  // name of source files
+352       // horizontal_size
+288       // vertical_size
+5        // number of frames
+30000        // frame scale
+1001         // frame interval
+7        // IVOP quant
+7        // PVOP quant
+9         // BVOP quant
+10        // IVOP distance
+1         // PVOP distance
+15        // PVOP searchWidth in full pel
+15        // PVOP searchHeight in full pel
+1         // Motion Estimation algorithm: 0 - full search, 1 - fast search
+2         // Motion Estimation accuracy: 1 - full pel, 2 - half pel
+1         // calculate PSNR
+0         // RateControl  0 - no, 1 - FrameLayer(VBR)
+400000    // BitRate, Kbps
+50        // SceneChangeThreshold, %
+0         // unrestricted motion vector: 0 - off; 1 - no PLUSPTYPE; 2 - PLUSPTYPE, UUI==1; 3 - PLUSPTYPE, UUI==01
+0         // advanced prediction: 0 - off (1MV),  1 - on (4MV, OBMC)
+0         // advanced Intra coding
+1         // insert GOB headers: 0 - off, 1 - GOB headers without stuffing, 2 - GOB headers with stuffing (GSTUF)
+0         // modified quantization mode: 0 - off, 1 - on
