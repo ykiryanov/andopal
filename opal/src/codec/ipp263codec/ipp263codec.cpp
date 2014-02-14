@@ -43,14 +43,15 @@
 #define RECOMMENDED_FRAME_RATE 3            // recommended frame rate
 #define MAXIMUM_FRAME_RATE 5                // maximum frame rate
 
-#else //lif // Win32
+#else
+#include <string.h>
 
 #define _stricmp strcasecmp
 
 #define RECOMMENDED_FRAME_RATE 30            // recommended frame rate
 #define MAXIMUM_FRAME_RATE 60                // maximum frame rate
 
-#endif // _WIN32_WCE
+#endif
 
 #include "ippdefs.h"
 #include "umc_h263_video_decoder.h"
@@ -63,10 +64,7 @@
 //#define ONE_THREAD_JOB
 #endif
 
-#ifdef __GNUC__
-inline int      STRCMPI (const char* pStr1, const char* pStr2)  { return strcasecmp(pStr1,pStr2);}
-inline char*    STRDUP  (const char* pStr)                      { return strdup(pStr);}
-#else
+#ifndef __GNUC__
 inline int      STRCMPI (const char* pStr1, const char* pStr2)  { return _strcmpi(pStr1,pStr2);}
 inline char*    STRDUP  (const char* pStr)                      { return _strdup(pStr);}
 #endif
@@ -1028,7 +1026,7 @@ bool H263PEncoderContext::EncodeFrames(const unsigned char* src, unsigned& srcLe
 #ifdef H263_PLUGIN_ACTIVATION    
 	if (!_ActivationMonitor.CanUse())
         return false;
-#endif // H263_PLUGIN_ACTIVATION	≥
+#endif // H263_PLUGIN_ACTIVATION	���
 	
 	// if this is the first frame, or the frame size has changed, deal with it
 
@@ -1909,25 +1907,25 @@ static void FindBoundingBox(const char * const * * parm,
   frameTime = 0;
 
   for (const char * const * option = *parm; *option != NULL; option += 2) {
-    if (STRCMPI(option[0], "MaxBR") == 0)
+    if (strcasecmp(option[0], "MaxBR") == 0)
       maxBR = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_MAX_BIT_RATE) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_MAX_BIT_RATE) == 0)
       maxBitRate = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_TARGET_BIT_RATE) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_TARGET_BIT_RATE) == 0)
       targetBitRate = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_MIN_RX_FRAME_WIDTH) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_MIN_RX_FRAME_WIDTH) == 0)
       rxMinWidth  = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_MIN_RX_FRAME_HEIGHT) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_MIN_RX_FRAME_HEIGHT) == 0)
       rxMinHeight = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_MAX_RX_FRAME_WIDTH) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_MAX_RX_FRAME_WIDTH) == 0)
       rxMaxWidth  = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_MAX_RX_FRAME_HEIGHT) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_MAX_RX_FRAME_HEIGHT) == 0)
       rxMaxHeight = atoi(option[1]);
-    else if (STRCMPI(option[0], PLUGINCODEC_OPTION_FRAME_TIME) == 0)
+    else if (strcasecmp(option[0], PLUGINCODEC_OPTION_FRAME_TIME) == 0)
       origFrameTime = atoi(option[1]);
     else {
       for (i = 0; i < StdSizeCount; i++) {
-        if (STRCMPI(option[0], StandardVideoSizes[i].optionName) == 0) {
+        if (strcasecmp(option[0], StandardVideoSizes[i].optionName) == 0) {
           mpi[i] = atoi(option[1]);
           if (mpi[i] != PLUGINCODEC_MPI_DISABLED) {
             int thisTime = 3003*mpi[i];
@@ -2106,9 +2104,9 @@ static int valid_for_protocol(const struct PluginCodec_Definition *, void *, con
   if (parmLen == NULL || parm == NULL || *parmLen != sizeof(char *))
     return 0;
 
-  return (STRCMPI((const char *)parm, "h.323") == 0 ||
-          STRCMPI((const char *)parm, "h323") == 0) ? 1 : \
-		  (STRCMPI((const char *)parm, "sip") == 0) ? 1 : 0;
+  return (strcasecmp((const char *)parm, "h.323") == 0 ||
+          strcasecmp((const char *)parm, "h323") == 0) ? 1 : \
+		  (strcasecmp((const char *)parm, "sip") == 0) ? 1 : 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2189,6 +2187,7 @@ unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion()
 
 PLUGIN_CODEC_DLL_API int PWLibPlugin_GetAPIVersion()
 { return PLUGIN_CODEC_VERSION_FIRST; } 
+#endif
 
 PLUGIN_CODEC_DLL_API struct PluginCodec_Definition * PLUGIN_CODEC_GET_CODEC_FN(unsigned * count, unsigned /*version*/);
 
@@ -2211,7 +2210,6 @@ PLUGIN_CODEC_DLL_API struct PluginCodec_Definition * PLUGIN_CODEC_GET_CODEC_FN(u
     PTRACE(h263TraceLevel, DINSK_CODEC_LOG, "Codec\tEnabled");
     return h263CodecDefn;
 }
-#endif
 
 };
 

@@ -237,5 +237,82 @@ void MyManager::CmdHangUp(PCLI::Arguments & args, P_INT_PTR)
   }
 }
 
+void MyManager::CmdCodecList(PCLI::Arguments & args, P_INT_PTR)
+{
+    OpalMediaFormatList formats;
+    OpalMediaFormat::GetAllRegisteredMediaFormats(formats);
+    
+    PCLI::Context & out = args.GetContext();
+    out << "Audio:\n";
+    OpalMediaFormatList::iterator format;
+    for (format = formats.begin(); format != formats.end(); ++format) {
+        if (format->GetMediaType() == OpalMediaType::Audio() && format->IsTransportable())
+            out << "  " << *format << '\n';
+    }
+    
+#if OPAL_VIDEO
+    out << "Video:\n";
+    for (format = formats.begin(); format != formats.end(); ++format) {
+        if (format->GetMediaType() == OpalMediaType::Video() && format->IsTransportable())
+            out << "  " << *format << '\n';
+    }
+#endif
+    
+    out << "Other:\n";
+    for (format = formats.begin(); format != formats.end(); ++format) {
+        if (format->GetMediaType() != OpalMediaType::Audio() &&
+#if OPAL_VIDEO
+            format->GetMediaType() != OpalMediaType::Video() &&
+#endif
+            format->IsTransportable())
+            out << "  " << *format << " (" << format->GetMediaType() << ")\n";
+    }
+    
+    out.flush();
+}
+
+
+void MyManager::CmdCodecOrderMask(PCLI::Arguments & args, P_INT_PTR)
+{
+    bool mask = args.GetCommandName().Find("mask") != P_MAX_INDEX;
+    PStringArray formats = mask ? GetMediaFormatMask() : GetMediaFormatOrder();
+    
+    if (args.GetCount() > 0) {
+        if (!args.HasOption('a'))
+            formats.RemoveAll();
+        
+        for (PINDEX i = 0; i < args.GetCount(); ++i)
+            formats += args[i];
+        
+        if (mask)
+            SetMediaFormatMask(formats);
+        else
+            SetMediaFormatOrder(formats);
+    }
+    
+    args.GetContext() << "Codec " << (mask ? "Mask" : "Order") << ": " << setfill(',') << formats << endl;
+}
+
+bool OpalCall::Hold(bool placeOnHold)
+{
+    PTRACE_CONTEXT_ID_PUSH_THREAD(this);
+    
+    PTRACE(3, "Call\t" << (placeOnHold ? "Setting to" : "Retrieving from") << " On Hold");
+    
+    bool ok = false;
+    
+    PSafePtr<OpalConnection> connection;
+    while (EnumerateConnections(connection, PSafeReadWrite)) {
+        if (!connection->IsNetworkConnection())
+            connection->HoldRemote(placeOnHold);
+    }
+    while (EnumerateConnections(connection, PSafeReadWrite)) {
+        if (connection->IsNetworkConnection() && connection->HoldRemote(placeOnHold))
+            ok = true;
+    }
+    
+    return ok;
+}
+
 
 // End of File ///////////////////////////////////////////////////////////////

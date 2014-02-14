@@ -630,6 +630,7 @@ OPAL_HAS_PRESENCE
 OPAL_HAS_PCSS
 OPAL_HAS_MIXER
 OPAL_RTCP_XR
+OPAL_RTP_FEC
 OPAL_G711PLC
 OPAL_AEC
 OPAL_RFC2435
@@ -652,6 +653,7 @@ OPAL_HAS_MSRP
 OPAL_T38_CAPABILITY
 OPAL_HAS_H281
 OPAL_HAS_H224
+OPAL_SKINNY
 OPAL_IAX2
 OPAL_H323
 OPAL_SIP
@@ -763,8 +765,6 @@ build_os
 build_vendor
 build_cpu
 build
-PKG_CONFIG_LIBDIR
-PKG_CONFIG_PATH
 PKG_CONFIG
 target_alias
 host_alias
@@ -829,6 +829,7 @@ enable_video
 enable_sip
 enable_h323
 enable_iax2
+enable_skinny
 enable_h224
 enable_h281
 enable_t38
@@ -851,6 +852,7 @@ enable_rfc4175
 enable_rfc2435
 enable_aec
 enable_g711plc
+enable_rtpfec
 enable_rtcpxr
 enable_mixer
 enable_pcss
@@ -864,8 +866,6 @@ with_plugin_installdir
 host_alias
 target_alias
 PKG_CONFIG
-PKG_CONFIG_PATH
-PKG_CONFIG_LIBDIR
 CC
 CFLAGS
 LDFLAGS
@@ -1522,6 +1522,7 @@ Optional Features:
   --disable-sip           disable SIP protocol support
   --disable-h323          disable H.323 protocol support
   --disable-iax2          disable IAX2 protocol support
+  --disable-skinny        disable Cisco SCCP (skinny) support
   --disable-h224          disable H.224 protocol support
   --disable-h281          disable H.281 (Far End Camera Control) protocol
                           support
@@ -1545,6 +1546,7 @@ Optional Features:
   --disable-rfc2435       disable RFC2435 support (experimental)
   --disable-aec           disable accoustic echo cancellation support
   --disable-g711plc       disable Packet Loss Concealment for G.711
+  --disable-rtpfec        disable RTP Forward Error Correction support
   --disable-rtcpxr        disable RTCP Extended Reports support
   --disable-mixer         disable media mixing support
   --disable-pcss          disable PC sound system support
@@ -1569,10 +1571,6 @@ Optional Packages:
 
 Some influential environment variables:
   PKG_CONFIG  path to pkg-config utility
-  PKG_CONFIG_PATH
-              directories to add to pkg-config's search path
-  PKG_CONFIG_LIBDIR
-              path overriding pkg-config's built-in search path
   CC          C compiler command
   CFLAGS      C compiler flags
   LDFLAGS     linker flags, e.g. -L<lib dir> if you have libraries in a
@@ -2706,11 +2704,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-
-
-
-
-
 if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
 	if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
@@ -2823,6 +2816,7 @@ $as_echo "yes" >&6; }
 $as_echo "no" >&6; }
 		PKG_CONFIG=""
 	fi
+
 fi
 if test -z "$PKG_CONFIG" ; then
    as_fn_error 1 "pkg-config is required" "$LINENO" 5
@@ -5082,18 +5076,18 @@ else
 /* end confdefs.h.  */
 
   /* For now, do not test the preprocessor; as of 2007 there are too many
-	 implementations with broken preprocessors.  Perhaps this can
-	 be revisited in 2012.  In the meantime, code should not expect
-	 #if to work with literals wider than 32 bits.  */
+         implementations with broken preprocessors.  Perhaps this can
+         be revisited in 2012.  In the meantime, code should not expect
+         #if to work with literals wider than 32 bits.  */
       /* Test literals.  */
       long long int ll = 9223372036854775807ll;
       long long int nll = -9223372036854775807LL;
       unsigned long long int ull = 18446744073709551615ULL;
       /* Test constant expressions.   */
       typedef int a[((-9223372036854775807LL < 0 && 0 < 9223372036854775807ll)
-		     ? 1 : -1)];
+                     ? 1 : -1)];
       typedef int b[(18446744073709551615ULL <= (unsigned long long int) -1
-		     ? 1 : -1)];
+                     ? 1 : -1)];
       int i = 63;
 int
 main ()
@@ -5102,9 +5096,9 @@ main ()
       long long int llmax = 9223372036854775807ll;
       unsigned long long int ullmax = 18446744073709551615ull;
       return ((ll << 63) | (ll >> 63) | (ll < i) | (ll > i)
-	      | (llmax / ll) | (llmax % ll)
-	      | (ull << 63) | (ull >> 63) | (ull << i) | (ull >> i)
-	      | (ullmax / ull) | (ullmax % ull));
+              | (llmax / ll) | (llmax % ll)
+              | (ull << 63) | (ull >> 63) | (ull << i) | (ull >> i)
+              | (ullmax / ull) | (ullmax % ull));
   ;
   return 0;
 }
@@ -5136,33 +5130,33 @@ if ${ac_cv_type_long_long_int+:} false; then :
 else
   ac_cv_type_long_long_int=yes
       if test "x${ac_cv_prog_cc_c99-no}" = xno; then
-	ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
-	if test $ac_cv_type_long_long_int = yes; then
-	  	  	  	  if test "$cross_compiling" = yes; then :
+        ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
+        if test $ac_cv_type_long_long_int = yes; then
+                                        if test "$cross_compiling" = yes; then :
   :
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <limits.h>
-		 #ifndef LLONG_MAX
-		 # define HALF \
-			  (1LL << (sizeof (long long int) * CHAR_BIT - 2))
-		 # define LLONG_MAX (HALF - 1 + HALF)
-		 #endif
+                 #ifndef LLONG_MAX
+                 # define HALF \
+                          (1LL << (sizeof (long long int) * CHAR_BIT - 2))
+                 # define LLONG_MAX (HALF - 1 + HALF)
+                 #endif
 int
 main ()
 {
 long long int n = 1;
-		 int i;
-		 for (i = 0; ; i++)
-		   {
-		     long long int m = n << i;
-		     if (m >> i != n)
-		       return 1;
-		     if (LLONG_MAX / 2 < m)
-		       break;
-		   }
-		 return 0;
+                 int i;
+                 for (i = 0; ; i++)
+                   {
+                     long long int m = n << i;
+                     if (m >> i != n)
+                       return 1;
+                     if (LLONG_MAX / 2 < m)
+                       break;
+                   }
+                 return 0;
   ;
   return 0;
 }
@@ -5176,7 +5170,7 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-	fi
+        fi
       fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_long_long_int" >&5
@@ -5199,18 +5193,18 @@ else
 /* end confdefs.h.  */
 
   /* For now, do not test the preprocessor; as of 2007 there are too many
-	 implementations with broken preprocessors.  Perhaps this can
-	 be revisited in 2012.  In the meantime, code should not expect
-	 #if to work with literals wider than 32 bits.  */
+         implementations with broken preprocessors.  Perhaps this can
+         be revisited in 2012.  In the meantime, code should not expect
+         #if to work with literals wider than 32 bits.  */
       /* Test literals.  */
       long long int ll = 9223372036854775807ll;
       long long int nll = -9223372036854775807LL;
       unsigned long long int ull = 18446744073709551615ULL;
       /* Test constant expressions.   */
       typedef int a[((-9223372036854775807LL < 0 && 0 < 9223372036854775807ll)
-		     ? 1 : -1)];
+                     ? 1 : -1)];
       typedef int b[(18446744073709551615ULL <= (unsigned long long int) -1
-		     ? 1 : -1)];
+                     ? 1 : -1)];
       int i = 63;
 int
 main ()
@@ -5219,9 +5213,9 @@ main ()
       long long int llmax = 9223372036854775807ll;
       unsigned long long int ullmax = 18446744073709551615ull;
       return ((ll << 63) | (ll >> 63) | (ll < i) | (ll > i)
-	      | (llmax / ll) | (llmax % ll)
-	      | (ull << 63) | (ull >> 63) | (ull << i) | (ull >> i)
-	      | (ullmax / ull) | (ullmax % ull));
+              | (llmax / ll) | (llmax % ll)
+              | (ull << 63) | (ull >> 63) | (ull << i) | (ull >> i)
+              | (ullmax / ull) | (ullmax % ull));
   ;
   return 0;
 }
@@ -5696,6 +5690,7 @@ fi
 OPAL_H323=yes
 OPAL_SIP=yes
 OPAL_IAX2=yes
+OPAL_SKINNY=yes
 OPAL_VIDEO=yes
 OPAL_T38_CAPABILITY=yes
 OPAL_FAX=yes
@@ -5712,6 +5707,7 @@ OPAL_T120DATA=no
 OPAL_LID=yes
 OPAL_CAPI=yes
 OPAL_STATISTICS=yes
+OPAL_RTP_FEC=no
 OPAL_RTCP_XR=yes
 OPAL_AEC=yes
 OPAL_IVR=yes
@@ -5814,46 +5810,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PTLIB" >&5
 $as_echo_n "checking for PTLIB... " >&6; }
 
-if test -n "$PTLIB_CFLAGS"; then
-    pkg_cv_PTLIB_CFLAGS="$PTLIB_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$PTLIB_CFLAGS"; then
+        pkg_cv_PTLIB_CFLAGS="$PTLIB_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ptlib >= 2.13.2\""; } >&5
   ($PKG_CONFIG --exists --print-errors "ptlib >= 2.13.2") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_PTLIB_CFLAGS=`$PKG_CONFIG --cflags "ptlib >= 2.13.2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$PTLIB_LIBS"; then
-    pkg_cv_PTLIB_LIBS="$PTLIB_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$PTLIB_LIBS"; then
+        pkg_cv_PTLIB_LIBS="$PTLIB_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ptlib >= 2.13.2\""; } >&5
   ($PKG_CONFIG --exists --print-errors "ptlib >= 2.13.2") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_PTLIB_LIBS=`$PKG_CONFIG --libs "ptlib >= 2.13.2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -5861,21 +5857,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        PTLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ptlib >= 2.13.2" 2>&1`
+	        PTLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "ptlib >= 2.13.2"`
         else
-	        PTLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ptlib >= 2.13.2" 2>&1`
+	        PTLIB_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "ptlib >= 2.13.2"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$PTLIB_PKG_ERRORS" >&5
 
-	as_fn_error $? "
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                as_fn_error $? "
       Cannot continue without PTLib!
       PKG_CONFIG_PATH=$PKG_CONFIG_PATH
     " "$LINENO" 5
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 	as_fn_error $? "
       Cannot continue without PTLib!
       PKG_CONFIG_PATH=$PKG_CONFIG_PATH
@@ -5886,7 +5882,7 @@ else
 	PTLIB_LIBS=$pkg_cv_PTLIB_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 if test "x`pkg-config ptlib --variable=target`" != "x$target" ; then
@@ -6188,46 +6184,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SRTP" >&5
 $as_echo_n "checking for SRTP... " >&6; }
 
-if test -n "$SRTP_CFLAGS"; then
-    pkg_cv_SRTP_CFLAGS="$SRTP_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$SRTP_CFLAGS"; then
+        pkg_cv_SRTP_CFLAGS="$SRTP_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsrtp \""; } >&5
   ($PKG_CONFIG --exists --print-errors "libsrtp ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_SRTP_CFLAGS=`$PKG_CONFIG --cflags "libsrtp " 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$SRTP_LIBS"; then
-    pkg_cv_SRTP_LIBS="$SRTP_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$SRTP_LIBS"; then
+        pkg_cv_SRTP_LIBS="$SRTP_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsrtp \""; } >&5
   ($PKG_CONFIG --exists --print-errors "libsrtp ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_SRTP_LIBS=`$PKG_CONFIG --libs "libsrtp " 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -6235,21 +6231,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        SRTP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libsrtp " 2>&1`
+	        SRTP_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "libsrtp "`
         else
-	        SRTP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libsrtp " 2>&1`
+	        SRTP_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libsrtp "`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$SRTP_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      SRTP_CFLAGS=""
                      SRTP_LIBS="-lsrtp"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      SRTP_CFLAGS=""
                      SRTP_LIBS="-lsrtp"
@@ -6260,7 +6256,7 @@ else
 	SRTP_LIBS=$pkg_cv_SRTP_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -6440,46 +6436,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ZRTP" >&5
 $as_echo_n "checking for ZRTP... " >&6; }
 
-if test -n "$ZRTP_CFLAGS"; then
-    pkg_cv_ZRTP_CFLAGS="$ZRTP_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$ZRTP_CFLAGS"; then
+        pkg_cv_ZRTP_CFLAGS="$ZRTP_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libzrtp\""; } >&5
   ($PKG_CONFIG --exists --print-errors "libzrtp") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_ZRTP_CFLAGS=`$PKG_CONFIG --cflags "libzrtp" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$ZRTP_LIBS"; then
-    pkg_cv_ZRTP_LIBS="$ZRTP_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$ZRTP_LIBS"; then
+        pkg_cv_ZRTP_LIBS="$ZRTP_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libzrtp\""; } >&5
   ($PKG_CONFIG --exists --print-errors "libzrtp") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_ZRTP_LIBS=`$PKG_CONFIG --libs "libzrtp" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -6487,21 +6483,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        ZRTP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libzrtp" 2>&1`
+	        ZRTP_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "libzrtp"`
         else
-	        ZRTP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libzrtp" 2>&1`
+	        ZRTP_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libzrtp"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$ZRTP_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      ZRTP_CFLAGS=""
                      ZRTP_LIBS="-lzrtpi -lbn"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      ZRTP_CFLAGS=""
                      ZRTP_LIBS="-lzrtpi -lbn"
@@ -6512,7 +6508,7 @@ else
 	ZRTP_LIBS=$pkg_cv_ZRTP_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -6680,46 +6676,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SPEEXDSP" >&5
 $as_echo_n "checking for SPEEXDSP... " >&6; }
 
-if test -n "$SPEEXDSP_CFLAGS"; then
-    pkg_cv_SPEEXDSP_CFLAGS="$SPEEXDSP_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$SPEEXDSP_CFLAGS"; then
+        pkg_cv_SPEEXDSP_CFLAGS="$SPEEXDSP_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"speexdsp \""; } >&5
   ($PKG_CONFIG --exists --print-errors "speexdsp ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_SPEEXDSP_CFLAGS=`$PKG_CONFIG --cflags "speexdsp " 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$SPEEXDSP_LIBS"; then
-    pkg_cv_SPEEXDSP_LIBS="$SPEEXDSP_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$SPEEXDSP_LIBS"; then
+        pkg_cv_SPEEXDSP_LIBS="$SPEEXDSP_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"speexdsp \""; } >&5
   ($PKG_CONFIG --exists --print-errors "speexdsp ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_SPEEXDSP_LIBS=`$PKG_CONFIG --libs "speexdsp " 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -6727,21 +6723,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        SPEEXDSP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "speexdsp " 2>&1`
+	        SPEEXDSP_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "speexdsp "`
         else
-	        SPEEXDSP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "speexdsp " 2>&1`
+	        SPEEXDSP_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "speexdsp "`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$SPEEXDSP_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      SPEEXDSP_CFLAGS=""
                      SPEEXDSP_LIBS="-lspeexdsp"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      SPEEXDSP_CFLAGS=""
                      SPEEXDSP_LIBS="-lspeexdsp"
@@ -6752,7 +6748,7 @@ else
 	SPEEXDSP_LIBS=$pkg_cv_SPEEXDSP_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -6962,46 +6958,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CAPI" >&5
 $as_echo_n "checking for CAPI... " >&6; }
 
-if test -n "$CAPI_CFLAGS"; then
-    pkg_cv_CAPI_CFLAGS="$CAPI_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$CAPI_CFLAGS"; then
+        pkg_cv_CAPI_CFLAGS="$CAPI_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"capi20\""; } >&5
   ($PKG_CONFIG --exists --print-errors "capi20") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_CAPI_CFLAGS=`$PKG_CONFIG --cflags "capi20" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$CAPI_LIBS"; then
-    pkg_cv_CAPI_LIBS="$CAPI_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$CAPI_LIBS"; then
+        pkg_cv_CAPI_LIBS="$CAPI_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"capi20\""; } >&5
   ($PKG_CONFIG --exists --print-errors "capi20") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_CAPI_LIBS=`$PKG_CONFIG --libs "capi20" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -7009,21 +7005,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        CAPI_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "capi20" 2>&1`
+	        CAPI_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "capi20"`
         else
-	        CAPI_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "capi20" 2>&1`
+	        CAPI_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "capi20"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$CAPI_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      CAPI_CFLAGS=""
                      CAPI_LIBS="-lcapi"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      CAPI_CFLAGS=""
                      CAPI_LIBS="-lcapi"
@@ -7034,7 +7030,7 @@ else
 	CAPI_LIBS=$pkg_cv_CAPI_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -7187,46 +7183,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for DAHDI" >&5
 $as_echo_n "checking for DAHDI... " >&6; }
 
-if test -n "$DAHDI_CFLAGS"; then
-    pkg_cv_DAHDI_CFLAGS="$DAHDI_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$DAHDI_CFLAGS"; then
+        pkg_cv_DAHDI_CFLAGS="$DAHDI_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"dahdi\""; } >&5
   ($PKG_CONFIG --exists --print-errors "dahdi") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_DAHDI_CFLAGS=`$PKG_CONFIG --cflags "dahdi" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$DAHDI_LIBS"; then
-    pkg_cv_DAHDI_LIBS="$DAHDI_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$DAHDI_LIBS"; then
+        pkg_cv_DAHDI_LIBS="$DAHDI_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"dahdi\""; } >&5
   ($PKG_CONFIG --exists --print-errors "dahdi") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_DAHDI_LIBS=`$PKG_CONFIG --libs "dahdi" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -7234,21 +7230,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        DAHDI_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "dahdi" 2>&1`
+	        DAHDI_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "dahdi"`
         else
-	        DAHDI_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "dahdi" 2>&1`
+	        DAHDI_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "dahdi"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$DAHDI_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      DAHDI_CFLAGS=""
                      DAHDI_LIBS="-ltonezone"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      DAHDI_CFLAGS=""
                      DAHDI_LIBS="-ltonezone"
@@ -7259,7 +7255,7 @@ else
 	DAHDI_LIBS=$pkg_cv_DAHDI_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -7454,46 +7450,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JAVA" >&5
 $as_echo_n "checking for JAVA... " >&6; }
 
-if test -n "$JAVA_CFLAGS"; then
-    pkg_cv_JAVA_CFLAGS="$JAVA_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$JAVA_CFLAGS"; then
+        pkg_cv_JAVA_CFLAGS="$JAVA_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openjdk\""; } >&5
   ($PKG_CONFIG --exists --print-errors "openjdk") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_JAVA_CFLAGS=`$PKG_CONFIG --cflags "openjdk" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$JAVA_LIBS"; then
-    pkg_cv_JAVA_LIBS="$JAVA_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$JAVA_LIBS"; then
+        pkg_cv_JAVA_LIBS="$JAVA_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"openjdk\""; } >&5
   ($PKG_CONFIG --exists --print-errors "openjdk") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_JAVA_LIBS=`$PKG_CONFIG --libs "openjdk" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -7501,21 +7497,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        JAVA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "openjdk" 2>&1`
+	        JAVA_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "openjdk"`
         else
-	        JAVA_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "openjdk" 2>&1`
+	        JAVA_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "openjdk"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$JAVA_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      JAVA_CFLAGS=""
                      JAVA_LIBS="-ljdk"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      JAVA_CFLAGS=""
                      JAVA_LIBS="-ljdk"
@@ -7526,7 +7522,7 @@ else
 	JAVA_LIBS=$pkg_cv_JAVA_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -7679,46 +7675,46 @@ pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for RUBY" >&5
 $as_echo_n "checking for RUBY... " >&6; }
 
-if test -n "$RUBY_CFLAGS"; then
-    pkg_cv_RUBY_CFLAGS="$RUBY_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$RUBY_CFLAGS"; then
+        pkg_cv_RUBY_CFLAGS="$RUBY_CFLAGS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ruby\""; } >&5
   ($PKG_CONFIG --exists --print-errors "ruby") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_RUBY_CFLAGS=`$PKG_CONFIG --cflags "ruby" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
-if test -n "$RUBY_LIBS"; then
-    pkg_cv_RUBY_LIBS="$RUBY_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
+if test -n "$PKG_CONFIG"; then
+    if test -n "$RUBY_LIBS"; then
+        pkg_cv_RUBY_LIBS="$RUBY_LIBS"
+    else
+        if test -n "$PKG_CONFIG" && \
     { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ruby\""; } >&5
   ($PKG_CONFIG --exists --print-errors "ruby") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
   pkg_cv_RUBY_LIBS=`$PKG_CONFIG --libs "ruby" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
 fi
- else
-    pkg_failed=untried
+    fi
+else
+	pkg_failed=untried
 fi
 
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -7726,21 +7722,21 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        RUBY_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ruby" 2>&1`
+	        RUBY_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "ruby"`
         else
-	        RUBY_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ruby" 2>&1`
+	        RUBY_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "ruby"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$RUBY_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
                      RUBY_CFLAGS="`ruby -e 'puts $:.join(" -I")'`"
                      RUBY_LIBS="-lruby"
 
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
                      RUBY_CFLAGS="`ruby -e 'puts $:.join(" -I")'`"
                      RUBY_LIBS="-lruby"
@@ -7751,7 +7747,7 @@ else
 	RUBY_LIBS=$pkg_cv_RUBY_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	:
 fi
 
 fi
@@ -8085,6 +8081,67 @@ fi
 
 
    enable_iax2="$enableval"
+
+
+
+
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking Cisco SCCP (skinny) support" >&5
+$as_echo_n "checking Cisco SCCP (skinny) support... " >&6; }
+
+   # Check whether --enable-skinny was given.
+if test "${enable_skinny+set}" = set; then :
+  enableval=$enable_skinny;
+         if test "x$enableval" = "xno"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled by user" >&5
+$as_echo "disabled by user" >&6; }
+         fi
+
+else
+
+         enableval=$OPAL_SKINNY
+         if test "x$enableval" = "xno"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled by default" >&5
+$as_echo "disabled by default" >&6; }
+         fi
+
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   if test "x${enableval}" = "xyes"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+   fi
+
+
+   if test "x$enableval" = "xyes"; then :
+
+         OPAL_SKINNY=yes
+
+
+$as_echo "#define OPAL_SKINNY 1" >>confdefs.h
+
+
+else
+  OPAL_SKINNY=no
+fi
+
+
+   enable_skinny="$enableval"
 
 
 
@@ -9567,6 +9624,67 @@ fi
 
 
    enable_g711plc="$enableval"
+
+
+
+
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking RTP Forward Error Correction support" >&5
+$as_echo_n "checking RTP Forward Error Correction support... " >&6; }
+
+   # Check whether --enable-rtpfec was given.
+if test "${enable_rtpfec+set}" = set; then :
+  enableval=$enable_rtpfec;
+         if test "x$enableval" = "xno"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled by user" >&5
+$as_echo "disabled by user" >&6; }
+         fi
+
+else
+
+         enableval=$OPAL_RTP_FEC
+         if test "x$enableval" = "xno"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled by default" >&5
+$as_echo "disabled by default" >&6; }
+         fi
+
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   if test "x${enableval}" = "xyes"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+   fi
+
+
+   if test "x$enableval" = "xyes"; then :
+
+         OPAL_RTP_FEC=yes
+
+
+$as_echo "#define OPAL_RTP_FEC 1" >>confdefs.h
+
+
+else
+  OPAL_RTP_FEC=no
+fi
+
+
+   enable_rtpfec="$enableval"
 
 
 
@@ -11575,6 +11693,7 @@ echo "                  MSRP capability :  $OPAL_HAS_MSRP"
 echo "         RFC-4103 (IM) capability :  $OPAL_HAS_RFC4103"
 echo ""
 echo "                     IAX2 support :  $OPAL_IAX2"
+echo "      Cisco SCCP (skinny) support :  $OPAL_SKINNY"
 echo "            Line Interface Device :  $OPAL_LID"
 echo "                      CAPI (ISDN) :  $OPAL_CAPI"
 echo "                     DAHDI (PSTN) :  $OPAL_DAHDI"

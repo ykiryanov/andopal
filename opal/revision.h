@@ -30,7 +30,7 @@
 #ifndef _OPAL_REVISION_H
 #define _OPAL_REVISION_H
 
-#define SVN_REVISION 1020
+#define SVN_REVISION 
 
 #endif  // _OPAL_REVISION_H
 

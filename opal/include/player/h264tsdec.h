@@ -9,11 +9,11 @@
 #ifndef __Player__h264_dec__
 #define __Player__h264_dec__
 
-#include "TSVideoDecoder.h"
+#include SVideoDecoder.h>
 
-#include "umc_media_data.h"
-#include "umc_video_data.h"
-#include "umc_h264_dec.h"
+#include <umc/umc_media_data.h>
+#include <umc/umc_video_data.h>
+#include <umc/umc_h264_dec.h>
 
 TSVideoDecoder* NewH264TSDecoder();
 

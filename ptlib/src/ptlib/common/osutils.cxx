@@ -2096,7 +2096,7 @@ PString PProcess::GetLibVersion()
                   MINOR_VERSION,
                   VersionStatus[BUILD_TYPE],
                   BUILD_NUMBER,
-                  SVN_REVISION);
+                  777);
 }
 
 

@@ -432,21 +432,124 @@ LOCAL_UMC_FILES :=	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
                         $(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
                         $(OPAL_SRC_PATH)/umc/umc_video_render.cpp
 
-LOCAL_IPP_FILES := 	$(OPAL_SRC_PATH)/ipp/ippslib.s
+UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
+VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
 
-LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
+LOCAL_IPP_FILES := \
+	$(UMC_SRC_PATH)/umc_base_codec.cpp \
+	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
+	$(UMC_SRC_PATH)/umc_media_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
+	$(VM_SRC_PATH)/vm_debug_linux32.c 
+
+LOCAL_IPP_COMMON_FILES := \
+	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
+
+LOCAL_H263_FILES := \
+	$(IPPASM_SRC_PATH)/ippslib.s \
+	$(H263_SRC_PATH)/ipp263codec.cpp \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframeb.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decfuncs.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263parse.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263stream.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263tbl.c \
+	$(H263_SRC_PATH)/h263_dec/src/umc_h263_video_decoder.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_bitstream.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_frame.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_headers.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_misc.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_tables.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/umc_h263_video_encoder.cpp
+
+H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
+
+#LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
 			$(OPAL_SRC_PATH)/player/udplistener.cxx \
 			$(OPAL_SRC_PATH)/player/audio.cxx
 
-LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
-LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
-LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
-LOCAL_PLAYER_FILES +=	$(LOCAL_IPP_FILES)
+#LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
+#LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
+#LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
+#LOCAL_PLAYER_FILES +=	$(LOCAL_IPP_FILES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
 
 include $(BUILD_STATIC_LIBRARY)
+##################################################################
+
+##################OPAL STATIC LIBRARY COMPILE###################
+#include $(CLEAR_VARS)
+
+H263_SRC_PATH := ../../opal/src/codec/ipp263codec
+IPPCOMMON_SRC_PATH := ../../opal/src/codec/common
+
+IPPASM_SRC_PATH := ../../opal/src/ipp
+
+H263_INCLUDE := \
+	$(LOCAL_PATH)/../../opal/src/codec/common \
+	$(LOCAL_PATH)/../../opal/src/codec/ipp263codec/h263_dec/include \
+	$(LOCAL_PATH)/../../opal/src/codec/ipp263codec/h263_enc/include \
+	$(LOCAL_PATH)/../../opal/src/ipp 
+
+H263_LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/include \
+	$(LOCAL_PATH)/../../ptlib/include \
+	$(LOCAL_PATH)/../../opal/include \
+	$(LOCAL_PATH)/../../opal/include/ipp \
+	$(LOCAL_PATH)/../../opal/include/umc \
+	$(LOCAL_PATH)/../../opal/include/h264/umc \
+	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
+	$(H263_INCLUDE)
+
+UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
+VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
+
+LOCAL_IPP_FILES := \
+	$(UMC_SRC_PATH)/umc_base_codec.cpp \
+	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
+	$(UMC_SRC_PATH)/umc_media_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
+	$(VM_SRC_PATH)/vm_debug_linux32.c 
+
+LOCAL_IPP_COMMON_FILES := \
+	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
+
+LOCAL_H263_FILES := \
+	$(IPPASM_SRC_PATH)/ippslib.s \
+	$(H263_SRC_PATH)/ipp263codec.cpp \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframeb.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decfuncs.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263parse.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263stream.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263tbl.c \
+	$(H263_SRC_PATH)/h263_dec/src/umc_h263_video_decoder.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_bitstream.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_frame.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_headers.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_misc.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_tables.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/umc_h263_video_encoder.cpp
+
+H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
+
+#include $(BUILD_STATIC_LIBRARY)
 ##################################################################
 
 #####################OPAL SHARE LIBRARY COMPILE###################
@@ -457,10 +560,13 @@ LOCAL_SRC_FILES := 	plasma.c \
 			$(OPAL_SRC_PATH)/player/codectest.cxx \
 			$(OPAL_SRC_PATH)/player/video.cxx \
 			$(OPAL_SRC_PATH)/player/yuv2rgb.cxx \
-			$(LOCAL_H261_FILES)
- 
+			$(LOCAL_H261_FILES) \
+ 			$(LOCAL_H263_FILES) \
+			$(LOCAL_IPP_COMMON_FILES) \
+			$(LOCAL_IPP_FILES)
+
 LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
-LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
+#LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
@@ -473,12 +579,14 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/h264/umc \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(LOCAL_PATH)/../../opal/plugins/video/common \
+	$(H263_INCLUDE) \
 	$(TARGET_C_INCLUDES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_STATIC_LIBRARIES += libopals
 LOCAL_STATIC_LIBRARIES += android_native_app_glue 
 
+LOCAL_CFLAGS += -DNDK_DEBUG=1
 LOCAL_CFLAGS += -DANDROID
 LOCAL_CFLAGS += -DLINUX32
 LOCAL_LDLIBS := -lOpenSLES -ldl -lc -lm -llog -lgcc -landroid -lEGL -lGLESv2

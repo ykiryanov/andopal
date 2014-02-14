@@ -118,7 +118,7 @@ PJavaScript::PJavaScript()
   V8_HANDLE_SCOPE(handleScope, m_private->m_isolate);
 
   // create a V8 context
-  m_private->m_context = V8_NEW(Context, m_private->m_isolate);
+  m_private->m_context = V8_NEW(Context, (v8::ExtensionConfiguration *) m_private->m_isolate);
 
   // make context scope available
   v8::Context::Scope contextScope(m_private->m_context);

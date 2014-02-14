@@ -29,13 +29,17 @@
 
 #include <opal.h>
 
+#if !defined(NULL)
+#define NULL ((void*)0)
+#endif
+
 extern void opalInitialize();
 extern void opalShutdown();
 
 extern	void* createCodecTest(const char* szArguments, void* reserved);
 extern 	void deleteCodecTest(void* handle);
 extern 	int setupOptions();
-extern  int doCall(const char * from, const char * to);
+extern  int doCall();
 
 #define  LOG_TAG    "libplasma"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -88,59 +92,6 @@ typedef int32_t  Fixed;
 #define  FIXED_FROM_INT_FLOAT(x,f)   (Fixed)((x)*(FIXED_ONE*(f)))
 
 typedef int32_t  Angle;
-
-#define  ANGLE_BITS              9
-
-#if ANGLE_BITS < 8
-#  error ANGLE_BITS must be at least 8
-#endif
-
-#define  ANGLE_2PI               (1 << ANGLE_BITS)
-#define  ANGLE_PI                (1 << (ANGLE_BITS-1))
-#define  ANGLE_PI2               (1 << (ANGLE_BITS-2))
-#define  ANGLE_PI4               (1 << (ANGLE_BITS-3))
-
-#define  ANGLE_FROM_FLOAT(x)   (Angle)((x)*ANGLE_PI/M_PI)
-#define  ANGLE_TO_FLOAT(x)     ((x)*M_PI/ANGLE_PI)
-
-#if ANGLE_BITS <= FIXED_BITS
-#  define  ANGLE_FROM_FIXED(x)     (Angle)((x) >> (FIXED_BITS - ANGLE_BITS))
-#  define  ANGLE_TO_FIXED(x)       (Fixed)((x) << (FIXED_BITS - ANGLE_BITS))
-#else
-#  define  ANGLE_FROM_FIXED(x)     (Angle)((x) << (ANGLE_BITS - FIXED_BITS))
-#  define  ANGLE_TO_FIXED(x)       (Fixed)((x) >> (ANGLE_BITS - FIXED_BITS))
-#endif
-
-static Fixed  angle_sin_tab[ANGLE_2PI+1];
-
-static void init_angles(void)
-{
-    int  nn;
-    for (nn = 0; nn < ANGLE_2PI+1; nn++) {
-        double  radians = nn*M_PI/ANGLE_PI;
-        angle_sin_tab[nn] = FIXED_FROM_FLOAT(sin(radians));
-    }
-}
-
-static __inline__ Fixed angle_sin( Angle  a )
-{
-    return angle_sin_tab[(uint32_t)a & (ANGLE_2PI-1)];
-}
-
-static __inline__ Fixed angle_cos( Angle  a )
-{
-    return angle_sin(a + ANGLE_PI2);
-}
-
-static __inline__ Fixed fixed_sin( Fixed  f )
-{
-    return angle_sin(ANGLE_FROM_FIXED(f));
-}
-
-static __inline__ Fixed  fixed_cos( Fixed  f )
-{
-    return angle_cos(ANGLE_FROM_FIXED(f));
-}
 
 /* Color palette used for rendering the plasma */
 #define  PALETTE_BITS   8
@@ -197,91 +148,6 @@ static __inline__ uint16_t  palette_from_fixed( Fixed  x )
 static void init_tables(void)
 {
     init_palette();
-    init_angles();
-}
-
-static void fill_plasma(ANativeWindow_Buffer* buffer, double  t)
-{
-    Fixed yt1 = FIXED_FROM_FLOAT(t/1230.);
-    Fixed yt2 = yt1;
-    Fixed xt10 = FIXED_FROM_FLOAT(t/3000.);
-    Fixed xt20 = xt10;
-
-#define  YT1_INCR   FIXED_FROM_FLOAT(1/100.)
-#define  YT2_INCR   FIXED_FROM_FLOAT(1/163.)
-
-    void* pixels = buffer->bits;
-    //LOGI("width=%d height=%d stride=%d format=%d", buffer->width, buffer->height,
-    //        buffer->stride, buffer->format);
-
-    int  yy;
-    for (yy = 0; yy < buffer->height; yy++) {
-        uint16_t*  line = (uint16_t*)pixels;
-        Fixed      base = fixed_sin(yt1) + fixed_sin(yt2);
-        Fixed      xt1 = xt10;
-        Fixed      xt2 = xt20;
-
-        yt1 += YT1_INCR;
-        yt2 += YT2_INCR;
-
-#define  XT1_INCR  FIXED_FROM_FLOAT(1/173.)
-#define  XT2_INCR  FIXED_FROM_FLOAT(1/242.)
-
-#if OPTIMIZE_WRITES
-        /* optimize memory writes by generating one aligned 32-bit store
-         * for every pair of pixels.
-         */
-        uint16_t*  line_end = line + buffer->width;
-
-        if (line < line_end) {
-            if (((uint32_t)line & 3) != 0) {
-                Fixed ii = base + fixed_sin(xt1) + fixed_sin(xt2);
-
-                xt1 += XT1_INCR;
-                xt2 += XT2_INCR;
-
-                line[0] = palette_from_fixed(ii >> 2);
-                line++;
-            }
-
-            while (line + 2 <= line_end) {
-                Fixed i1 = base + fixed_sin(xt1) + fixed_sin(xt2);
-                xt1 += XT1_INCR;
-                xt2 += XT2_INCR;
-
-                Fixed i2 = base + fixed_sin(xt1) + fixed_sin(xt2);
-                xt1 += XT1_INCR;
-                xt2 += XT2_INCR;
-
-                uint32_t  pixel = ((uint32_t)palette_from_fixed(i1 >> 2) << 16) |
-                                   (uint32_t)palette_from_fixed(i2 >> 2);
-
-                ((uint32_t*)line)[0] = pixel;
-                line += 2;
-            }
-
-            if (line < line_end) {
-                Fixed ii = base + fixed_sin(xt1) + fixed_sin(xt2);
-                line[0] = palette_from_fixed(ii >> 2);
-                line++;
-            }
-        }
-#else /* !OPTIMIZE_WRITES */
-        int xx;
-        for (xx = 0; xx < buffer->width; xx++) {
-
-            Fixed ii = base + fixed_sin(xt1) + fixed_sin(xt2);
-
-            xt1 += XT1_INCR;
-            xt2 += XT2_INCR;
-
-            line[xx] = palette_from_fixed(ii / 4);
-        }
-#endif /* !OPTIMIZE_WRITES */
-
-        // go to next line
-        pixels = (uint16_t*)pixels + buffer->stride;
-    }
 }
 
 /* simple stats management */
@@ -423,8 +289,16 @@ static void engine_term_display(struct engine* engine) {
 static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) {
     struct engine* engine = (struct engine*)app->userData;
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-        engine->animating = 1;
-        return 1;
+    	if(!engine->animating) {
+
+//    		doCall();
+
+            createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30"
+            		" --display-device NativeWindow G.711-uLaw-64k H.263",
+            		(void*) engine->app->window);
+    	}
+    	engine->animating = 1;
+     return 1;
     } else if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
         LOGI("Key event: action=%d keyCode=%d metaState=0x%x",
                 AKeyEvent_getAction(event),
@@ -440,10 +314,11 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             if (engine->app->window != NULL) {
-                engine_draw_frame(engine);
+                //engine_draw_frame(engine);
+                opalInitialize();
 
-                createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30 --display-device NativeWindow G.711-uLaw-64k H.261",
-                		(void*) engine->app->window);
+//
+//                setupOptions();
             }
 
             break;
@@ -452,7 +327,7 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_LOST_FOCUS:
             engine->animating = 0;
-            engine_draw_frame(engine);
+            //engine_draw_frame(engine);
             break;
     }
 }
@@ -478,17 +353,12 @@ void android_main(struct android_app* state) {
 
     stats_init(&engine.stats);
 
-
-   // loop waiting for stuff to do.
-   setupOptions();
-
+  // loop waiting for stuff to do.
     while (1) {
         // Read all pending events.
         int ident;
         int events;
         struct android_poll_source* source;
-
-        opalInitialize();
 
         // If not animating, we will block forever waiting for events.
         // If animating, we loop until all events are read, then continue
@@ -508,11 +378,7 @@ void android_main(struct android_app* state) {
                 return;
             }
         }
-
-        if (engine.animating) {
-            engine_draw_frame(&engine);
-        }
-    }
+      }
 
     opalShutdown();
 }

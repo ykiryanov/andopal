@@ -31,142 +31,142 @@
 # $Date$
 #
 
-PTLIB_MAJOR :=@PTLIB_MAJOR@
-PTLIB_MINOR :=@PTLIB_MINOR@
-PTLIB_STAGE :=@PTLIB_STAGE@
-PTLIB_BUILD :=@PTLIB_BUILD@
+PTLIB_MAJOR :=2
+PTLIB_MINOR :=13
+PTLIB_STAGE :=-beta
+PTLIB_BUILD :=3
 
 # detected platform
-target      := @target@
-target_os   := @target_os@
-target_cpu  := @target_cpu@
+target      := Darwin_x86_64
+target_os   := Darwin
+target_cpu  := x86_64
 
 # The install directories
 ifndef prefix
-  prefix := @prefix@
+  prefix := /usr/local
 endif
 ifndef exec_prefix
-  exec_prefix := @exec_prefix@
+  exec_prefix := ${prefix}
 endif
 ifndef libdir
-  libdir := @libdir@
+  libdir := ${exec_prefix}/lib
 endif
 ifndef includedir
-  includedir := @includedir@
+  includedir := ${prefix}/include
 endif
 ifndef datarootdir
-  datarootdir := @datarootdir@
+  datarootdir := ${prefix}/share
 endif
 
 # Tool names detected by configure
-CC      := @CC@
-CXX     := @CXX@
-LD      := @LD@
-AR      := @AR@
-RANLIB  := @RANLIB@
-LN_S    := @LN_S@
-MKDIR_P := @MKDIR_P@
-BISON   := @BISON@
-INSTALL := @INSTALL@
-SVN     := @SVN@
+CC      := gcc
+CXX     := g++
+LD      := g++
+AR      := libtool
+RANLIB  := 
+LN_S    := ln -s
+MKDIR_P := mkdir -p
+BISON   := /usr/bin/bison
+INSTALL := /usr/bin/install -c -C
+SVN     := /opt/local/bin/svn
 
-CPPFLAGS          := @CPPFLAGS@ $(CPPFLAGS)
-CXXFLAGS          := @CXXFLAGS@ $(CXXFLAGS)
-CFLAGS            := @CFLAGS@ $(CFGLAGS)
-LDFLAGS           := @LDFLAGS@ $(LDFLAGS)
-LIBS              := @LIBS@ $(LIBS)
-SHARED_CPPFLAGS   := @SHARED_CPPFLAGS@
-SHARED_LDFLAGS     = @SHARED_LDFLAGS@
-DEBUG_CPPFLAGS    := @DEBUG_CPPFLAGS@
-DEBUG_CFLAGS      := @DEBUG_CFLAGS@
-OPT_CPPFLAGS      := @OPT_CPPFLAGS@
-OPT_CFLAGS        := @OPT_CFLAGS@
-ARFLAGS           := @ARFLAGS@
+CPPFLAGS          :=  -stdlib=libstdc++ -mmacosx-version-min=10.6 -I/opt/local/include -DP_64BIT -fno-caret-diagnostics -Wno-\#pragma-messages -D_REENTRANT -DPTRACING=2     $(CPPFLAGS)
+CXXFLAGS          :=  -fno-exceptions -D_THREAD_SAFE -pthread $(CXXFLAGS)
+CFLAGS            :=  -D_THREAD_SAFE -pthread $(CFGLAGS)
+LDFLAGS           :=  -stdlib=libstdc++ $(LDFLAGS)
+LIBS              := -ldl -lv8 -lexpat -lldap -lsasl2 -lpcap -lresolv  -L/opt/local/lib -framework QTKit -framework CoreVideo -framework AudioUnit -framework AudioToolbox -framework CoreAudio -framework SystemConfiguration -framework Foundation -lobjc -llber -lldap -lsasl2 -lpcap -lresolv  -L/opt/local/lib -framework QTKit -framework CoreVideo -framework AudioUnit -framework AudioToolbox -framework CoreAudio -framework SystemConfiguration -framework Foundation -lobjc  $(LIBS)
+SHARED_CPPFLAGS   := -fPIC
+SHARED_LDFLAGS     = -dynamiclib
+DEBUG_CPPFLAGS    := -D_DEBUG
+DEBUG_CFLAGS      :=  -g3 -ggdb -O0
+OPT_CPPFLAGS      := -DNDEBUG
+OPT_CFLAGS        :=  -O3
+ARFLAGS           := -static -o
 YFLAGS            := @YFLAGS@
 
-SHAREDLIBEXT      := @SHAREDLIBEXT@
-STATICLIBEXT      := @STATICLIBEXT@
+SHAREDLIBEXT      := dylib
+STATICLIBEXT      := a
 
 PTLIB_PLUGIN_SUFFIX := _ptplugin
 
-PTLIB_PLUGIN_DIR  := @PTLIB_PLUGIN_DIR@
+PTLIB_PLUGIN_DIR  := ptlib-2.13.3
 
-HAS_IPV6          := @HAS_IPV6@
-HAS_DNS_RESOLVER  := @HAS_DNS_RESOLVER@
-HAS_PCAP          := @HAS_PCAP@
-HAS_OPENSSL       := @HAS_OPENSSL@
-HAS_SSL           := @HAS_OPENSSL@
-HAS_OPENLDAP      := @HAS_OPENLDAP@
-HAS_LDAP          := @HAS_OPENLDAP@
-HAS_SASL          := @HAS_SASL@
-HAS_SASL2         := @HAS_SASL2@
-HAS_EXPAT         := @HAS_EXPAT@
-HAS_REGEX         := @HAS_REGEX@
-HAS_SDL           := @HAS_SDL@
-HAS_PLUGINS       := @HAS_PLUGINS@
-HAS_SAMPLES       := @HAS_SAMPLES@
+HAS_IPV6          := 1
+HAS_DNS_RESOLVER  := 1
+HAS_PCAP          := 1
+HAS_OPENSSL       := 
+HAS_SSL           := 
+HAS_OPENLDAP      := 1
+HAS_LDAP          := 1
+HAS_SASL          := 
+HAS_SASL2         := 1
+HAS_EXPAT         := 1
+HAS_REGEX         := 1
+HAS_SDL           := 
+HAS_PLUGINS       := 1
+HAS_SAMPLES       := 
 
-HAS_TTS           := @HAS_TTS@
-HAS_ASN           := @HAS_ASN@
-HAS_NAT           := @HAS_NAT@
-HAS_STUN          := @HAS_STUN@
-HAS_STUNSRVR      := @HAS_STUNSRVR@
-HAS_PIPECHAN      := @HAS_PIPECHAN@
-HAS_DTMF          := @HAS_DTMF@
-HAS_VCARD         := @HAS_VCARD@
-HAS_WAVFILE       := @HAS_WAVFILE@
-HAS_SOCKS         := @HAS_SOCKS@
-HAS_FTP           := @HAS_FTP@
-HAS_SNMP          := @HAS_SNMP@
-HAS_TELNET        := @HAS_TELNET@
-HAS_CLI           := @HAS_CLI@
-HAS_REMCONN       := @HAS_REMCONN@
-HAS_SERIAL        := @HAS_SERIAL@
-HAS_POP3SMTP      := @HAS_POP3SMTP@
-HAS_AUDIO         := @HAS_AUDIO@
-HAS_VIDEO         := @HAS_VIDEO@
-HAS_SHM_VIDEO     := @HAS_SHM_VIDEO@
-HAS_SHM_AUDIO     := @HAS_SHM_AUDIO@
-HAS_PORTAUDIO     := @HAS_PORTAUDIO@
-HAS_SUN_AUDIO     := @HAS_SUN_AUDIO@
-HAS_VFW_CAPTURE   := @HAS_VFW_CAPTURE@
-HAS_GSTREAMER     := @HAS_GSTREAMER@
+HAS_TTS           := 1
+HAS_ASN           := 1
+HAS_NAT           := 1
+HAS_STUN          := 1
+HAS_STUNSRVR      := 1
+HAS_PIPECHAN      := 1
+HAS_DTMF          := 1
+HAS_VCARD         := 1
+HAS_WAVFILE       := 1
+HAS_SOCKS         := 1
+HAS_FTP           := 1
+HAS_SNMP          := 1
+HAS_TELNET        := 1
+HAS_CLI           := 1
+HAS_REMCONN       := 1
+HAS_SERIAL        := 1
+HAS_POP3SMTP      := 1
+HAS_AUDIO         := 1
+HAS_VIDEO         := 1
+HAS_SHM_VIDEO     := 
+HAS_SHM_AUDIO     := 
+HAS_PORTAUDIO     := 
+HAS_SUN_AUDIO     := 
+HAS_VFW_CAPTURE   := 
+HAS_GSTREAMER     := 
 
-HAS_VXML          := @HAS_VXML@
-HAS_JABBER        := @HAS_JABBER@
-HAS_XMLRPC        := @HAS_XMLRPC@
-HAS_SOAP          := @HAS_SOAP@
-HAS_URL           := @HAS_URL@
-HAS_HTTP          := @HAS_HTTP@
-HAS_HTTPFORMS     := @HAS_HTTPFORMS@
-HAS_HTTPSVC       := @HAS_HTTPSVC@
-HAS_SSDP          := @HAS_SSDP@
-HAS_CONFIG_FILE   := @HAS_CONFIG_FILE@
-HAS_VIDFILE       := @HAS_VIDFILE@
-HAS_FFVDEV        := @HAS_FFVDEV@
-HAS_ODBC          := @HAS_ODBC@
-HAS_DIRECTSHOW    := @HAS_DIRECTSHOW@
-HAS_DIRECTSOUND   := @HAS_DIRECTSOUND@
-HAS_LUA           := @HAS_LUA@
-HAS_V8            := @HAS_V8@
+HAS_VXML          := 1
+HAS_JABBER        := 1
+HAS_XMLRPC        := 1
+HAS_SOAP          := 1
+HAS_URL           := 1
+HAS_HTTP          := 1
+HAS_HTTPFORMS     := 1
+HAS_HTTPSVC       := 1
+HAS_SSDP          := 1
+HAS_CONFIG_FILE   := 1
+HAS_VIDFILE       := 1
+HAS_FFVDEV        := 1
+HAS_ODBC          := 
+HAS_DIRECTSHOW    := 
+HAS_DIRECTSOUND   := 
+HAS_LUA           := 
+HAS_V8            := 1
 
-HAS_ALSA          := @HAS_ALSA@
+HAS_ALSA          := 
 HAS_AUDIOSHM      := @HAS_AUDIOSHM@
-HAS_OSS           := @HAS_OSS@
-HAS_PULSE         := @HAS_PULSE@
-HAS_ESD           := @HAS_ESD@
+HAS_OSS           := 
+HAS_PULSE         := 
+HAS_ESD           := 
 HAS_SUNAUDIO      := @HAS_SUNAUDIO@
-HAS_V4L           := @HAS_V4L@
-HAS_V4L2          := @HAS_V4L2@
-HAS_BSDVIDEOCAP   := @HAS_BSDVIDEOCAP@
-HAS_AVC1394       := @HAS_AVC1394@
-HAS_DC1394        := @HAS_DC1394@
+HAS_V4L           := 
+HAS_V4L2          := 
+HAS_BSDVIDEOCAP   := 
+HAS_AVC1394       := 
+HAS_DC1394        := 
 
-ESD_CFLAGS  := @ESD_CFLAGS@
-ESD_LIBS    := @ESD_LIBS@
-V4L2_CFLAGS := @V4L2_CFLAGS@
-V4L2_LIBS   := @V4L2_LIBS@
-DC_CFLAGS   := @DC_CFLAGS@
+ESD_CFLAGS  := 
+ESD_LIBS    := 
+V4L2_CFLAGS := 
+V4L2_LIBS   := 
+DC_CFLAGS   := 
 
 
 # Remember where this make file is, it is the platform specific one and there
@@ -175,4 +175,3 @@ PTLIB_PLATFORM_INC_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))../includ
 
 
 # End of ptlib_config.mak
-

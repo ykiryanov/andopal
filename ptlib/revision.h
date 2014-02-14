@@ -22,7 +22,7 @@
  *
  * Contributor(s): ______________________________________.
  *
- * $Revision: 30742
+ * $Revision: 30742 $
  * $Author: rjongbloed $
  * $Date: 2013-10-18 00:32:05 +0000 (Fri, 18 Oct 2013) $
  */
@@ -30,10 +30,9 @@
 #ifndef _PTLib_REVISION_H
 #define _PTLib_REVISION_H
 
-#define SVN_REVISION 30742
+#define SVN_REVISION 
 
 #endif  // _PTLib_REVISION_H
 
 
 // End of File ///////////////////////////////////////////////////////////////
-

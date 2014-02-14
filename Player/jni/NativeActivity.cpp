@@ -2,37 +2,56 @@
 #include <ptlib_config.h>
 #include <opal.h>
 #include <player/codectest.h>
+#include <android/log.h>
 
 #include <jni.h>
 
-OpalHandle hOPAL = NULL;
-char * CurrentCallToken = NULL;
-char * HeldCallToken = NULL;
+#if !defined(NULL)
+#define NULL ((void*)0)
+#endif
 
-#define TRACE_FILE "stderr"
+static OpalHandle hOPAL = NULL;
+static char * CurrentCallToken = NULL;
+static char * HeldCallToken = NULL;
+static bool initialized = false;
+
+#define TRACE_FILE "syslog"
+
+#define  LOG_TAG    "libplasma"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 extern "C" {
+	extern 	int setupOptions();
+	extern  int doCall();
 
     void opalInitialize() {
 
-       unsigned   version;
+		unsigned version = OPAL_C_API_VERSION;
+        if(hOPAL == NULL)
+			hOPAL = OpalInitialise(&version, NULL);
 
-       version = OPAL_C_API_VERSION;
-       if ((hOPAL = OpalInitialise(&version,
-                                    OPAL_PREFIX_H323  " "
-                                    OPAL_PREFIX_SIP   " "
-                                    OPAL_PREFIX_PCSS
-                                    " TraceLevel=4"
-                                    TRACE_FILE " TraceAppend")) == NULL) {
-        	printf("Could not initialise OPAL\n");
-        }
-        else
-        	printf("OPAL version %d\n", version);
+		if(hOPAL == NULL) {
+			LOGE("Could not initialise OPAL\n");
+		}
+		else
+			LOGI("OPAL version %d\n", version);
+
+	  PFile::OpenOptions options = PFile::Create;
+	  PFileInfo::Permissions permissions = PFileInfo::DefaultPerms;
+
+	  PFile * traceOutput = new PTextFile();
+	  if (traceOutput->Open("/sdcard/opal.log", PFile::WriteOnly, options, permissions))
+		  PTrace::SetStream(traceOutput);
+
+		PTrace::SetLevel(5);
     }
 
-    void opalShutdown() {
+     void opalShutdown() {
 
-        OpalShutDown(hOPAL);
+    	 if(initialized)
+    		 OpalShutDown(hOPAL);
 
     }
 
@@ -47,7 +66,7 @@ extern "C" {
 	}
 
 
-	OpalMessage * OpalSendCommand(OpalHandle hOPAL, OpalMessage * command, const char * errorMessage)
+	OpalMessage * OpalSendCommand(OpalMessage * command, const char * errorMessage)
 	{
 	  OpalMessage * response;
 	  if ((response = OpalSendMessage(hOPAL, command)) == NULL)
@@ -56,9 +75,9 @@ extern "C" {
 	    return response;
 
 	  if (response->m_param.m_commandError == NULL || *response->m_param.m_commandError == '\0')
-	    printf("%s.\n", errorMessage);
+	    LOGI("%s.\n", errorMessage);
 	  else
-	    printf("%s: %s\n", errorMessage, response->m_param.m_commandError);
+		  LOGI("%s: %s\n", errorMessage, response->m_param.m_commandError);
 
 	  OpalFreeMessage(response);
 
@@ -88,23 +107,43 @@ extern "C" {
 		  command.m_param.m_general.m_mediaDataHeader = OpalMediaDataPayloadOnly;
 		#endif
 
-		  if ((response = OpalSendCommand(hOPAL, &command, "Could not set general options")) == NULL)
-		    return 0;
+//		  if ((response = OpalSendCommand(&command, "Could not set general options")) == NULL)
+//		    return 0;
 
-		  OpalFreeMessage(response);
+		  if ((response = OpalSendMessage(hOPAL, &command)) != NULL)
+		  {
+			  if (response->m_param.m_commandError == NULL || *response->m_param.m_commandError == '\0')
+				LOGI("%s.\n", "Set general options");
+			  else
+				  LOGI("%s: %s\n", "Could not set general options", response->m_param.m_commandError);
+
+			  OpalFreeMessage(response);
+			  response = NULL;
+		  }
 
 		  // Options across all protocols
 		  memset(&command, 0, sizeof(command));
 		  command.m_type = OpalCmdSetProtocolParameters;
 
-		  command.m_param.m_protocol.m_userName = "robertj";
-		  command.m_param.m_protocol.m_displayName = "Robert Jongbloed";
+		  command.m_param.m_protocol.m_userName = "crowdoptic";
+		  command.m_param.m_protocol.m_displayName = "CrowdOptic";
 		  command.m_param.m_protocol.m_interfaceAddresses = "*";
 
-		  if ((response = OpalSendCommand(hOPAL, &command, "Could not set protocol options")) == NULL)
-		    return 0;
+//		  if ((response = OpalSendCommand(&command, "Could not set protocol options")) == NULL)
+//		    return 0;
+//
+//		  OpalFreeMessage(response);
 
-		  OpalFreeMessage(response);
+		  if ((response = OpalSendMessage(hOPAL, &command)) != NULL)
+		  {
+			  if (response->m_param.m_commandError == NULL || *response->m_param.m_commandError == '\0')
+				LOGI("%s.\n", "Set protocol options");
+			  else
+				  LOGI("%s: %s\n", "Could not set protocol options", response->m_param.m_commandError);
+
+			  OpalFreeMessage(response);
+			  response = NULL;
+		  }
 
 		  memset(&command, 0, sizeof(command));
 		  command.m_type = OpalCmdSetProtocolParameters;
@@ -112,30 +151,59 @@ extern "C" {
 		  command.m_param.m_protocol.m_prefix = "sip";
 		  command.m_param.m_protocol.m_defaultOptions = "PRACK-Mode=0\nInitial-Offer=false";
 
-		  if ((response = OpalSendCommand(hOPAL, &command, "Could not set SIP options")) == NULL)
-		    return 0;
+//		  if ((response = OpalSendCommand(&command, "Could not set SIP options")) == 0)
+//		    return 0;
+//
+//		  OpalFreeMessage(response);
 
-		  OpalFreeMessage(response);
+		  if ((response = OpalSendMessage(hOPAL, &command)) != NULL)
+		  {
+			  if (response->m_param.m_commandError == NULL || *response->m_param.m_commandError == '\0')
+				LOGI("%s.\n", "Set SIP options");
+			  else
+				  LOGI("%s: %s\n", "Could not set SIP options", response->m_param.m_commandError);
+
+			  OpalFreeMessage(response);
+			  response = NULL;
+		  }
 	}
 
-	int doCall(OpalHandle hOPAL, const char * from, const char * to)
+	int doCall()
 	{
 	  // Example cmd line: call 612@ekiga.net
 	  OpalMessage command;
 	  OpalMessage * response;
 
-	  printf("Calling %s\n", to);
-
 	  memset(&command, 0, sizeof(command));
 	  command.m_type = OpalCmdSetUpCall;
-	  command.m_param.m_callSetUp.m_partyA = from;
-	  command.m_param.m_callSetUp.m_partyB = to;
+	  command.m_param.m_callSetUp.m_partyA = "sip:crowdoptic@192.168.1.131";
+	  command.m_param.m_callSetUp.m_partyB = "sip:ykiryanov@192.168.1.125";
 	  command.m_param.m_callSetUp.m_overrides.m_displayName = "CrowdOptic";
-	  if ((response = OpalSendCommand(hOPAL, &command, "Could not make call")) == NULL)
-	    return 0;
+	  LOGI("Calling %s\n", command.m_param.m_callSetUp.m_partyB);
 
-	  CurrentCallToken = strdup(response->m_param.m_callSetUp.m_callToken);
-	  OpalFreeMessage(response);
+//	  if ((response = OpalSendCommand(&command, "Could not make call")) == ((void*)0))
+//	    return 0;
+
+	  if ((response = OpalSendMessage(hOPAL, &command)) != NULL)
+	  {
+		  if (response->m_param.m_commandError == NULL || *response->m_param.m_commandError == '\0')
+			LOGI("%s.\n", "Calling");
+		  else
+			  LOGI("%s: %s\n", "Could not make call", response->m_param.m_commandError);
+
+		  PString token = response->m_param.m_callSetUp.m_callToken;
+
+		  if(CurrentCallToken != NULL)
+			free(CurrentCallToken);
+
+		  CurrentCallToken = strdup((const char*) token);
+
+		  OpalFreeMessage(response);
+		  response = NULL;
+	  }
+
+//	  CurrentCallToken = strdup(response->m_param.m_callSetUp.m_callToken);
+//	  OpalFreeMessage(response);
 	  return 1;
 	}
 

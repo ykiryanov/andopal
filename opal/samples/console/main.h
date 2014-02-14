@@ -55,6 +55,34 @@ class MyManager : public OpalManagerCLI
     PDECLARE_NOTIFIER(PCLI::Arguments, MyManager, CmdTransfer);
     PDECLARE_NOTIFIER(PCLI::Arguments, MyManager, CmdHangUp);
 
+    PDECLARE_NOTIFIER(PCLI::Arguments, MyManager, CmdCodecList);
+    PDECLARE_NOTIFIER(PCLI::Arguments, MyManager, CmdCodecOrderMask);
+
+#if OPAL_HAS_MIXER
+    /**Set up a conference between the parties.
+       The \p call is added to a conference specified by \p mixerURI.
+
+       If \p mixerURI is NULL or empty, then a suitable default is created
+       based on the OpalMixerEndPoint contained in the manager.
+
+       If the conference node does not exist then it is created.
+
+       If the mixer node (conference) is empty then the \p localParty is also
+       added to the conference.
+
+       If \p localURI is NULL then a suitable default (e.g. "pc:*") is used,
+       hoeever, if it an empty string, then no local connection is created.
+      */
+    virtual bool SetUpConference(
+      OpalCall & call,
+      const char * mixerURI = NULL,
+      const char * localURI = NULL
+    ) { return false; }
+#endif // OPAL_HAS_MIXER
+#if OPAL_SKINNY
+    virtual OpalConsoleSkinnyEndPoint * CreateSkinnyEndPoint() { return NULL; }
+#endif
+
     bool               m_autoAnswer;
     PSafePtr<OpalCall> m_activeCall;
     PSafePtr<OpalCall> m_heldCall;
