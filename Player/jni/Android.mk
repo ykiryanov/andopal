@@ -299,7 +299,7 @@ LOCAL_H264_FILES := \
 	$(H264_SRC_PATH)/h264_dec.cpp \
 	$(H264_SRC_PATH)/h264_enc.cpp \
 	$(H264_SRC_PATH)/h264_frame.cpp \
-	$(H264_SRC_PATH)/h264Stream.cpp \
+	$(H264_SRC_PATH)/codec/h264_enc/src/umc_h264_video_encoder.cpp \
 	$(H264_SRC_PATH)/CodecUtil.cpp \
 	$(H264_SRC_PATH)/ReconstructLumaInter4x4MB.cpp \
 	$(H264_SRC_PATH)/ReconstructLumaInter8x8MB.cpp \
@@ -620,6 +620,7 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/h264 \
 	$(LOCAL_PATH)/../../opal/src/codec/common \
 	$(LOCAL_PATH)/../../opal/src/codec/ipp264codec/codec/h264_dec/include \
+	$(LOCAL_PATH)/../../opal/src/codec/ipp264codec/codec/h264_enc/include \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(LOCAL_PATH)/../../opal/plugins/video/common \
 	$(H263_INCLUDE) \
