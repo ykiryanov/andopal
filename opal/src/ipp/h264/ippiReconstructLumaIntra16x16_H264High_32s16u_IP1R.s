@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructLumaIntra16x16_H264High_32s16u_IP1R
+        .globl  ippiReconstructLumaIntra16x16_H264High_32s16u_IP1R
 
 
-_ippiReconstructLumaIntra16x16_H264High_32s16u_IP1R:
+ippiReconstructLumaIntra16x16_H264High_32s16u_IP1R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x84
         and     r12, r2, #4

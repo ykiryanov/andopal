@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChromaIntraHalf4x4_H264High_32s16u_IP2R
+        .globl  ippiReconstructChromaIntraHalf4x4_H264High_32s16u_IP2R
 
 
-_ippiReconstructChromaIntraHalf4x4_H264High_32s16u_IP2R:
+ippiReconstructChromaIntraHalf4x4_H264High_32s16u_IP2R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x70
         cmp     r0, #0
@@ -558,7 +558,7 @@ LKVZ9:
         bne     LKVZ9
         add     sp, sp, #0x70
         ldmia   sp!, {r4 - r11, lr}
-        b       _ippiReconstructChromaInter4x4_H264High_32s16u_IP2R
+        b       ippiReconstructChromaInter4x4_H264High_32s16u_IP2R
 LKVZ10:
         mvn     r0, #0x74
         add     sp, sp, #0x70

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChromaIntraMB_H264_16s8u_P2R
+        .globl  ippiReconstructChromaIntraMB_H264_16s8u_P2R
 
 
-_ippiReconstructChromaIntraMB_H264_16s8u_P2R:
+ippiReconstructChromaIntraMB_H264_16s8u_P2R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x8C
         ldr     r5, [sp, #0xBC]
@@ -69,7 +69,7 @@ LKWS4:
 LKWS5:
         str     r12, [sp, #4]
         str     lr, [sp]
-        bl      _ippiReconstructChromaInterMB_H264_16s8u_P2R
+        bl      ippiReconstructChromaInterMB_H264_16s8u_P2R
         add     sp, sp, #0x8C
         ldmia   sp!, {r4 - r11, pc}
 LKWS6:

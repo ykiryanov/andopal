@@ -9,7 +9,7 @@
 #ifndef __Player__h264_dec__
 #define __Player__h264_dec__
 
-#include SVideoDecoder.h>
+#include <TSVideoDecoder.h>
 
 #include <umc/umc_media_data.h>
 #include <umc/umc_video_data.h>

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiUniDirWeightBlock_H264_8u_C1R
+        .globl  ippiUniDirWeightBlock_H264_8u_C1R
 
 
-_ippiUniDirWeightBlock_H264_8u_C1R:
+ippiUniDirWeightBlock_H264_8u_C1R:
         stmdb   sp!, {r4 - r9, lr}
         ldr     r4, [sp, #0x1C]
         ldr     lr, [sp, #0x20]

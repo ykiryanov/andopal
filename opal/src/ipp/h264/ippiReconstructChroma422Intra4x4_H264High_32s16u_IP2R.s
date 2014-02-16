@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChroma422Intra4x4_H264High_32s16u_IP2R
+        .globl  ippiReconstructChroma422Intra4x4_H264High_32s16u_IP2R
 
 
-_ippiReconstructChroma422Intra4x4_H264High_32s16u_IP2R:
+ippiReconstructChroma422Intra4x4_H264High_32s16u_IP2R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x11, 28
         ldr     r4, [sp, #0x134]
@@ -105,7 +105,7 @@ LKWX4:
 LKWX5:
         mov     r2, r4
         mov     r1, r3
-        bl      _ippiReconstructChroma422Inter4x4_H264High_32s16u_IP2R
+        bl      ippiReconstructChroma422Inter4x4_H264High_32s16u_IP2R
         add     sp, sp, #0x11, 28
         ldmia   sp!, {r4 - r11, pc}
 LKWX6:

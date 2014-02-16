@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChromaIntra4x4_H264High_32s16u_IP2R
+        .globl  ippiReconstructChromaIntra4x4_H264High_32s16u_IP2R
 
 
-_ippiReconstructChromaIntra4x4_H264High_32s16u_IP2R:
+ippiReconstructChromaIntra4x4_H264High_32s16u_IP2R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0xBC
         mov     r4, r0
@@ -104,7 +104,7 @@ LKWA3:
         bne     LKWA3
 LKWA4:
         mov     r0, r4
-        bl      _ippiReconstructChromaInter4x4_H264High_32s16u_IP2R
+        bl      ippiReconstructChromaInter4x4_H264High_32s16u_IP2R
         add     sp, sp, #0xBC
         ldmia   sp!, {r4 - r11, pc}
 LKWA5:

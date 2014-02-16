@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiSet_8u_C1R
+        .globl  ippiSet_8u_C1R
 
 
-_ippiSet_8u_C1R:
+ippiSet_8u_C1R:
         mov     r12, sp
         stmdb   sp!, {r3}
         stmdb   sp!, {r4, r5, r11, r12, lr}

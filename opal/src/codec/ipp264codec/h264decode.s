@@ -20,11 +20,11 @@ DataII:
 	.text
 	.align 4
 
-    .globl  _arm_H264_Add_4x4
-    .globl  _arm_H264_Trans4x4
-    .globl  _arm_H264_Trans4x4_1
+    .globl  arm_H264_Add_4x4
+    .globl  arm_H264_Trans4x4
+    .globl  arm_H264_Trans4x4_1
 
-_arm_H264_Add_4x4:
+arm_H264_Add_4x4:
 /*
     r0 - pPlane
     r1 - nStep
@@ -459,7 +459,7 @@ _m1:
 
 
         
-_arm_H264_Trans4x4:
+arm_H264_Trans4x4:
 /*
 //      Ipp8u*          pYPlane,                  0x00
 //      Ipp16s*         pCoeff,                   0x04
@@ -565,7 +565,7 @@ mTrans2:
 .equ	pGlobalCoeff_1,			0x30
 
 
-_arm_H264_Trans4x4_1:
+arm_H264_Trans4x4_1:
 @//      Ipp16s*         pCoeff,                   r0
 @//      const Ipp16s*   pQuantTable,              r1
 @//      Ipp8u*          pYPlane,                  r2. [sp, #0x00]

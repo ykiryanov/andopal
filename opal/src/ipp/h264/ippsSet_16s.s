@@ -1,9 +1,11 @@
         .text
         .align  4
+        .globl  ippsSet_16s
         .globl  _ippsSet_16s
 
 
 _ippsSet_16s:
+ippsSet_16s:
         stmdb   sp!, {lr}
         cmp     r1, #0
         mvneq   r0, #7

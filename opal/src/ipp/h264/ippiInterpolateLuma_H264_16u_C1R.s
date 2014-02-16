@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiInterpolateLuma_H264_16u_C1R
+        .globl  ippiInterpolateLuma_H264_16u_C1R
 
 
-_ippiInterpolateLuma_H264_16u_C1R:
+ippiInterpolateLuma_H264_16u_C1R:
         mov     r2, r0
         cmp     r2, #0
         beq     LLAN5

@@ -288,18 +288,35 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/t38/t38mf.cxx \
 	$(OPAL_SRC_PATH)/t38/t38proto.cxx
 
-# $(H264_SRC_PATH)/ipp264codec.cpp 
-LOCAL_H264_FILES := $(H264_SRC_PATH)/h264decode.s
 
-LOCAL_H261_FILES := 	$(H261_SRC_PATH)/h261vic.cxx \
-			$(H261_SRC_PATH)/vic/bv.c \
-			$(H261_SRC_PATH)/vic/dct.cxx \
-			$(H261_SRC_PATH)/vic/encoder-h261.cxx \
-			$(H261_SRC_PATH)/vic/huffcode.c \
-			$(H261_SRC_PATH)/vic/p64.cxx \
-			$(H261_SRC_PATH)/vic/p64encoder.cxx \
-			$(H261_SRC_PATH)/vic/transmitter.cxx \
-			$(H261_SRC_PATH)/vic/vid_coder.cxx
+XX_LOCAL_H264_FILES := \
+	$(H264_SRC_PATH)/ipp264codec.cpp \
+
+
+LOCAL_H264_FILES := \
+	$(H264_SRC_PATH)/h264decode.s \
+	$(H264_SRC_PATH)/h264_util.cpp \
+	$(H264_SRC_PATH)/CodecUtil.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInter4x4MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInter8x8MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInterMB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra16x16MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra4x4MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra8x8MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntraMB.cpp
+	
+
+LOCAL_H261_FILES := \
+	$(H261_SRC_PATH)/h261vic.cxx \
+	$(H261_SRC_PATH)/vic/bv.c \
+	$(H261_SRC_PATH)/vic/dct.cxx \
+	$(H261_SRC_PATH)/vic/encoder-h261.cxx \
+	$(H261_SRC_PATH)/vic/huffcode.c \
+	$(H261_SRC_PATH)/vic/p64.cxx \
+	$(H261_SRC_PATH)/vic/p64encoder.cxx \
+	$(H261_SRC_PATH)/vic/transmitter.cxx \
+	$(H261_SRC_PATH)/vic/vid_coder.cxx
+
 
 LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
 			$(AAC_SRC_PATH)/codec/fixpt/decoder/aactabs.c \
@@ -376,72 +393,90 @@ LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
                         $(AAC_SRC_PATH)/dec/src/sbr_dec_qmf_tabs_fp.c \
                         $(AAC_SRC_PATH)/dec/src/umc_aac_decoder.cpp
 
-LOCAL_H264_DEC_FILES := $(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_bitstream_cabac.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_conversion.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_decode_pic.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_defs_yuv.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_ippwrap.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_sei.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_slice_decoder_decode_pic.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_tables.cpp \
-                        $(H264_DEC_PATH)/umc_h264_dec_tables_cabac.cpp \
-                        $(H264_DEC_PATH)/umc_h264_direct_pred.cpp \
-                        $(H264_DEC_PATH)/umc_h264_frame.cpp \
-                        $(H264_DEC_PATH)/umc_h264_frame_list.cpp \
-                        $(H264_DEC_PATH)/umc_h264_heap.cpp \
-                        $(H264_DEC_PATH)/umc_h264_log.cpp \
-                        $(H264_DEC_PATH)/umc_h264_nal_spl.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_cabac_mt.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_cavlc_mt.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_mbaff.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_prepare.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_table.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_cabac.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_types.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_types_cabac.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_hp.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_mblevel_calc.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_mt.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_decoder_mt_reconstruct_mv.cpp \
-                        $(H264_DEC_PATH)/umc_h264_segment_store.cpp \
-                        $(H264_DEC_PATH)/umc_h264_slice_decoding.cpp \
-                        $(H264_DEC_PATH)/umc_h264_task_broker.cpp \
-                        $(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
-                        $(H264_DEC_PATH)/umc_h264_thread.cpp
+LOCAL_H264_DEC_FILES := \
+	$(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_bitstream_cabac.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_conversion.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_decode_pic.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_defs_yuv.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_ippwrap.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_sei.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_slice_decoder_decode_pic.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_tables.cpp \
+	$(H264_DEC_PATH)/umc_h264_dec_tables_cabac.cpp \
+	$(H264_DEC_PATH)/umc_h264_direct_pred.cpp \
+	$(H264_DEC_PATH)/umc_h264_frame.cpp \
+	$(H264_DEC_PATH)/umc_h264_frame_list.cpp \
+	$(H264_DEC_PATH)/umc_h264_heap.cpp \
+	$(H264_DEC_PATH)/umc_h264_log.cpp \
+	$(H264_DEC_PATH)/umc_h264_nal_spl.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_cabac_mt.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_cavlc_mt.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_mbaff.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_prepare.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_deblocking_table.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_cabac.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_types.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_decode_mb_types_cabac.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_hp.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_mblevel_calc.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_mt.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_decoder_mt_reconstruct_mv.cpp \
+	$(H264_DEC_PATH)/umc_h264_segment_store.cpp \
+	$(H264_DEC_PATH)/umc_h264_slice_decoding.cpp \
+	$(H264_DEC_PATH)/umc_h264_task_broker.cpp \
+	$(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
+	$(H264_DEC_PATH)/umc_h264_thread.cpp \
 
-LOCAL_UMC_FILES :=	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
-			$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_default_memory_allocator.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_dual_thread_codec.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_index.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_media_buffer.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_media_data.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_media_data_ex.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_muxer.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_par_reader.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_splitter.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_utils.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_video_data.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_video_decoder.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
-                        $(OPAL_SRC_PATH)/umc/umc_video_render.cpp
+XX := $(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp
+
+LOCAL_UMC_FILES := \
+	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_default_memory_allocator.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_dual_thread_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_index.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_buffer.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_data.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_data_ex.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_muxer.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_splitter.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_utils.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_data.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_decoder.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_render.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_event.cpp
+	
+
+LOCAL_UMC_FILES += \
+	$(OPAL_SRC_PATH)/umc/umc_malloc.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_mmap.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_mutex.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_par_reader.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_pendulum.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_semaphore.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_sys_info.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_thread.cpp
 
 UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
 VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
 
 LOCAL_IPP_FILES := \
-	$(UMC_SRC_PATH)/umc_base_codec.cpp \
-	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
-	$(UMC_SRC_PATH)/umc_media_data.cpp \
-	$(UMC_SRC_PATH)/umc_video_data.cpp \
-	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
-	$(VM_SRC_PATH)/vm_debug_linux32.c 
+        $(VM_SRC_PATH)/vm_debug_linux32.c \
+        $(VM_SRC_PATH)/vm_event_linux32.c \
+        $(VM_SRC_PATH)/vm_mmap_linux32.c \
+        $(VM_SRC_PATH)/vm_mutex_linux32.c \
+        $(VM_SRC_PATH)/vm_semaphore_linux32.c \
+        $(VM_SRC_PATH)/vm_shared_object_linux32.c \
+        $(VM_SRC_PATH)/vm_sys_info_linux32.c \
+        $(VM_SRC_PATH)/vm_thread_linux32.c \
+        $(VM_SRC_PATH)/vm_time_linux32.c \
+	$(VM_SRC_PATH)/vm_file_unix.c
 
 LOCAL_IPP_COMMON_FILES := \
 	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
@@ -471,14 +506,15 @@ LOCAL_H263_FILES := \
 
 H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
 
-#LOCAL_PLAYER_FILES :=  $(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
-			$(OPAL_SRC_PATH)/player/udplistener.cxx \
-			$(OPAL_SRC_PATH)/player/audio.cxx
+LOCAL_PLAYER_FILES := \
+	$(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
+	$(OPAL_SRC_PATH)/player/udplistener.cxx \
+	$(OPAL_SRC_PATH)/player/audio.cxx
 
-#LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx $(LOCAL_H264_DEC_FILES) 
-#LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
-#LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
-#LOCAL_PLAYER_FILES +=	$(LOCAL_IPP_FILES)
+LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx
+LOCAL_PLAYER_FILES +=   $(LOCAL_H264_DEC_FILES)
+LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
+LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_MODULE := libopals
@@ -498,7 +534,7 @@ H263_INCLUDE := \
 	$(LOCAL_PATH)/../../opal/src/codec/common \
 	$(LOCAL_PATH)/../../opal/src/codec/ipp263codec/h263_dec/include \
 	$(LOCAL_PATH)/../../opal/src/codec/ipp263codec/h263_enc/include \
-	$(LOCAL_PATH)/../../opal/src/ipp 
+	$(LOCAL_PATH)/../../opal/src/ipp
 
 H263_LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
@@ -513,21 +549,21 @@ H263_LOCAL_C_INCLUDES := \
 UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
 VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
 
-LOCAL_IPP_FILES := \
+#LOCAL_IPP_FILES := \
 	$(UMC_SRC_PATH)/umc_base_codec.cpp \
 	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
 	$(UMC_SRC_PATH)/umc_media_data.cpp \
 	$(UMC_SRC_PATH)/umc_video_data.cpp \
 	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
-	$(VM_SRC_PATH)/vm_debug_linux32.c 
+	$(VM_SRC_PATH)/vm_debug_linux32.c
 
 LOCAL_IPP_COMMON_FILES := \
+	$(IPPASM_SRC_PATH)/ippslib.s \
 	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
 	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
 	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
 
 LOCAL_H263_FILES := \
-	$(IPPASM_SRC_PATH)/ippslib.s \
 	$(H263_SRC_PATH)/ipp263codec.cpp \
 	$(H263_SRC_PATH)/h263_dec/src/h263decframe.c \
 	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ei.c \
@@ -566,7 +602,7 @@ LOCAL_SRC_FILES := 	plasma.c \
 			$(LOCAL_IPP_FILES)
 
 LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
-#LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
+LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
 
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include \
@@ -577,6 +613,9 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/ipp \
 	$(LOCAL_PATH)/../../opal/include/umc \
 	$(LOCAL_PATH)/../../opal/include/h264/umc \
+	$(LOCAL_PATH)/../../opal/include/h264 \
+	$(LOCAL_PATH)/../../opal/src/codec/common \
+	$(LOCAL_PATH)/../../opal/src/codec/ipp264codec/codec/h264_dec/include \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(LOCAL_PATH)/../../opal/plugins/video/common \
 	$(H263_INCLUDE) \
@@ -584,13 +623,14 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_STATIC_LIBRARIES += libopals
-LOCAL_STATIC_LIBRARIES += android_native_app_glue 
+LOCAL_STATIC_LIBRARIES += android_native_app_glue
 
 LOCAL_CFLAGS += -DNDK_DEBUG=1
 LOCAL_CFLAGS += -DANDROID
 LOCAL_CFLAGS += -DLINUX32
+LOCAL_CFLAGS += -DWOT_NO_FILESYSTEM
 LOCAL_LDLIBS := -lOpenSLES -ldl -lc -lm -llog -lgcc -landroid -lEGL -lGLESv2
-#LOCAL_LDFLAGS := -nostdlib -Wl,--no-undefined 
+#LOCAL_LDFLAGS := -nostdlib -Wl,--no-undefined
 
 LOCAL_MODULE    := native-plasma
 

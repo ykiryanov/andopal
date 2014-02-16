@@ -82,9 +82,9 @@ freePtr:
 .include "ippGA/ippsAddWeightedQ31_32s.s"
 
         
-@//gl _ippsAutoCorr_NormE_16s32s
+@//gl ippsAutoCorr_NormE_16s32s
 @//.include "ipps/ippsAutoCorr_G729_16s32s_Sfs.s"
-@//gl _ippsAutoCorr_G729_16s32s_Sfs
+@//fsAutoCorr_G729_16s32s_Sfs
 .include "ipps/owncts_nosplit.s"
 @//gl NormTable
 @//gl NormTable2
@@ -448,54 +448,54 @@ freePtr:
 @//============================================================================
 
 
-        gl _ippiResizeYUV422_8u_C2R
-		gl _ippiResize_8u_C1R
-		gl _ippiResize_8u_C3R
-		gl _ippiResize_8u_C4R
-		gl _ippiResize_16u_C1R
-		gl _ippiResize_16u_C3R
-		gl _ippiResize_16u_C4R
+        gl ippiResizeYUV422_8u_C2R
+		gl ippiResize_8u_C1R
+		gl ippiResize_8u_C3R
+		gl ippiResize_8u_C4R
+		gl ippiResize_16u_C1R
+		gl ippiResize_16u_C3R
+		gl ippiResize_16u_C4R
         
-		gl _ippiYCbCr422ToBGR444_8u16u_C2C3R
-		gl _ippiYCbCr420ToBGR444_8u16u_P3C3R
-		gl _ippiYCrCb420ToYCbCr420_8u_P3P2R
-		gl _ippiYCbCr420ToBGR_8u_P3C3R
-		gl _ippiBGRToYCbCr422_8u_C3C2R
-		gl _ippiCbYCr422ToYCrCb420_8u_C2P3R
-		gl _ippiYCbCr420_8u_P2P3R
-		gl _ippiYCbCr420ToYCbCr422_8u_P2C2R
-		gl _ippiYCbCr420ToCbYCr422_8u_P2C2R
-		gl _ippiYCrCb420ToYCbCr422_8u_P3C2R
-		gl _ippiYCbCr420To411_8u_P3R
-		gl _ippiYCrCb420ToCbYCr422_8u_P3C2R
-		gl _ippiCbYCr422ToYCbCr422_8u_C2R
-		gl _ippiFilterDeblockinzChromaHorEdge_H264_16u_C1IR
-		gl _ippiBGRToYCrCb420_8u_AC4P3R
-		gl _ippiBGRToYCrCb420_8u_C3P3R
-		gl _ippiYCrCb420ToBGR_Filter_8u_P3C4R
-		gl _ippiCbYCr422ToYCbCr422_8u_C2P3R.
-		gl _ippiBGR565ToYCrCb420_16u8u_C3P3R
-		gl _ippiYCbCr422ToBGR_8u_C2C3R
-		gl _ippiYCbCr422ToBGR_8u_C2C4R
-		gl _ippiBGR555ToYCrCb420_16u8u_C3P3R
-		gl _ippiCbYCr422ToYCbCr420_8u_C2P2R
-		gl _ippiBGRToYCbCr422_8u_AC4C2R
-		gl _ippiYCrCb422ToYCbCr422_8u_C2P3R
-		gl _ippiYCbCr420ToBGR565_8u16u_P3C3R
-		gl _ippiYCbCr420ToBGR555_8u16u_P3C3R
-		gl _ippiBGR565ToYCbCr422_16u8u_C3C2R
-		gl _ippiYCbCr422ToBGR565_8u16u_C2C3R
-		gl _ippiYCbCr422ToCbYCr422_8u_C2R
-		gl _ippiCbYCr422ToBGR_8u_C2C4R
-		gl _ippiYCbCr422ToYCbCr420_8u_C2P2R
-		gl _ippiYCbCr420ToYCbCr422_8u_P3R
-		gl _ippiYCbCr422ToBGR555_8u16u_C2C3R
-		gl _ippiYCbCr422ToYCrCb420_8u_C2P3R
-		gl _ippiCbYCr422ToYCbCr422_8u_C2P3R
-		gl _ippiBGR555ToYCbCr422_16u8u_C3C2R
-		gl _ippiBGRToCbYCr422_8u_AC4C2R
-		gl _ippiYCbCr422ToYCbCr420_8u_P3R
-		gl _ippiYCbCr422_8u_P3C2R
+		gl ippiYCbCr422ToBGR444_8u16u_C2C3R
+		gl ippiYCbCr420ToBGR444_8u16u_P3C3R
+		gl ippiYCrCb420ToYCbCr420_8u_P3P2R
+		gl ippiYCbCr420ToBGR_8u_P3C3R
+		gl ippiBGRToYCbCr422_8u_C3C2R
+		gl ippiCbYCr422ToYCrCb420_8u_C2P3R
+		gl ippiYCbCr420_8u_P2P3R
+		gl ippiYCbCr420ToYCbCr422_8u_P2C2R
+		gl ippiYCbCr420ToCbYCr422_8u_P2C2R
+		gl ippiYCrCb420ToYCbCr422_8u_P3C2R
+		gl ippiYCbCr420To411_8u_P3R
+		gl ippiYCrCb420ToCbYCr422_8u_P3C2R
+		gl ippiCbYCr422ToYCbCr422_8u_C2R
+		gl ippiFilterDeblockinzChromaHorEdge_H264_16u_C1IR
+		gl ippiBGRToYCrCb420_8u_AC4P3R
+		gl ippiBGRToYCrCb420_8u_C3P3R
+		gl ippiYCrCb420ToBGR_Filter_8u_P3C4R
+		gl ippiCbYCr422ToYCbCr422_8u_C2P3R.
+		gl ippiBGR565ToYCrCb420_16u8u_C3P3R
+		gl ippiYCbCr422ToBGR_8u_C2C3R
+		gl ippiYCbCr422ToBGR_8u_C2C4R
+		gl ippiBGR555ToYCrCb420_16u8u_C3P3R
+		gl ippiCbYCr422ToYCbCr420_8u_C2P2R
+		gl ippiBGRToYCbCr422_8u_AC4C2R
+		gl ippiYCrCb422ToYCbCr422_8u_C2P3R
+		gl ippiYCbCr420ToBGR565_8u16u_P3C3R
+		gl ippiYCbCr420ToBGR555_8u16u_P3C3R
+		gl ippiBGR565ToYCbCr422_16u8u_C3C2R
+		gl ippiYCbCr422ToBGR565_8u16u_C2C3R
+		gl ippiYCbCr422ToCbYCr422_8u_C2R
+		gl ippiCbYCr422ToBGR_8u_C2C4R
+		gl ippiYCbCr422ToYCbCr420_8u_C2P2R
+		gl ippiYCbCr420ToYCbCr422_8u_P3R
+		gl ippiYCbCr422ToBGR555_8u16u_C2C3R
+		gl ippiYCbCr422ToYCrCb420_8u_C2P3R
+		gl ippiCbYCr422ToYCbCr422_8u_C2P3R
+		gl ippiBGR555ToYCbCr422_16u8u_C3C2R
+		gl ippiBGRToCbYCr422_8u_AC4C2R
+		gl ippiYCbCr422ToYCbCr420_8u_P3R
+		gl ippiYCbCr422_8u_P3C2R
 		
 
 @//=============================================================================
@@ -589,7 +589,7 @@ freePtr:
 .include "h264/ippiQuantLuma8x8_H264_32s_C1.s"
 .include "h264/ippiRangeMapping_VC1_8u_C1R.s"
 .include "h264/ippiReadDataBlockThroughBoundary_8u.s"
-.include "h264/ippiReadDataBlockThroughBoundary_16u.s" 
+.include "h264/ippiReadDataBlockThroughBoundary_16u.s"
 		
 		
 .include "h264/ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R.s"

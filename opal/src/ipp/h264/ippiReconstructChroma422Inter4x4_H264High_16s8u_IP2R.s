@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R
+        .globl  ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R
 
 
-_ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R:
+ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R:
         mov     r12, sp
         stmdb   sp!, {r4, r11, r12, lr}
         mov     r11, r12

@@ -19,7 +19,7 @@
 /* obtain file info. return 0 if file is not accessible,
    file_size or file_attr can be NULL if either is not interested */
 Ipp32s vm_file_getinfo(const vm_char *filename, Ipp64u *file_size, Ipp32u *file_attr) {
-#if defined(OSX) || defined(LINUX64)
+#if defined(OSX) || defined(LINUX64) || defined(ANDROID)
    struct stat buf;
    if (stat(filename,&buf) != 0) return 0;
 #else
@@ -39,15 +39,15 @@ Ipp32s vm_file_getinfo(const vm_char *filename, Ipp64u *file_size, Ipp32u *file_
 
 
 Ipp64u vm_file_fseek(vm_file *fd, Ipp64s position, VM_FILE_SEEK_MODE mode) {
-#if defined(OSX) || defined(LINUX64)
+#if defined(OSX) || defined(LINUX64) || defined(ANDROID)
   return fseeko(fd, (off_t)position, mode);
 #else
-  return fseeko64(fd, (__off64_t)position, mode);
+  return fseeko64(fd, (off64_t)position, mode);
 #endif
   }
 
 Ipp64u vm_file_ftell(vm_file *fd) {
-#if defined(OSX) || defined(LINUX64)
+#if defined(OSX) || defined(LINUX64) || defined(ANDROID)
   return (Ipp64u) ftello(fd);
 #else
   return (Ipp64u)ftello64(fd);
@@ -132,10 +132,12 @@ Ipp32s vm_string_findclose(vm_findptr handle) {
 
 Ipp64u vm_dir_get_free_disk_space( void ) {
   Ipp64u rtv = 0;
+#if 0 //SB !!!
   struct statvfs fst;
   if (statvfs(".", &fst) >= 0) {
     rtv = fst.f_bsize*fst.f_bavail;
     }
+#endif 
   return rtv;
   }
 

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiFilterDeblockingChromaVerEdgeMBAFF_H264_16u_C1IR
+        .globl  ippiFilterDeblockingChromaVerEdgeMBAFF_H264_16u_C1IR
 
 
-_ippiFilterDeblockingChromaVerEdgeMBAFF_H264_16u_C1IR:
+ippiFilterDeblockingChromaVerEdgeMBAFF_H264_16u_C1IR:
         stmdb   sp!, {r4 - r7, lr}
         cmp     r0, #0
         beq     LLDC8

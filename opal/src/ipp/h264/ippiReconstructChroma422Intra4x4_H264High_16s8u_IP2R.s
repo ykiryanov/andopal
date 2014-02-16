@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiReconstructChroma422Intra4x4_H264High_16s8u_IP2R
+        .globl  ippiReconstructChroma422Intra4x4_H264High_16s8u_IP2R
 
 
-_ippiReconstructChroma422Intra4x4_H264High_16s8u_IP2R:
+ippiReconstructChroma422Intra4x4_H264High_16s8u_IP2R:
         mov     r12, sp
         stmdb   sp!, {r4, r5, r11, r12, lr}
         mov     r11, r12
@@ -1532,7 +1532,7 @@ LKXA51:
         ldr     r2, [r11]
         ldr     r1, [r11, #-0x18]
         ldr     r0, [r11, #-0x24]
-        bl      _ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R
+        bl      ippiReconstructChroma422Inter4x4_H264High_16s8u_IP2R
         str     r0, [r11, #-0x28]
         ldr     r0, [r11, #-0x28]
         ldmdb   r11, {r4, r5, r11, sp, pc}

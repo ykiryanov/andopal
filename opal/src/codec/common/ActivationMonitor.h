@@ -13,7 +13,7 @@ class ActivationMonitor
     static long s_nCodecObjectId;
     static int GetNextCodecObjectId()
     {
-#if defined(_WIN32_WCE) || defined(OSX32)
+#if defined(_WIN32_WCE) || defined(OSX32) || defined(ANDROID)
 	    return ++s_nCodecObjectId;
 #else
 	    return InterlockedIncrement(&s_nCodecObjectId);

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiCopy_16s_C1R
+        .globl  ippiCopy_16s_C1R
 
 
-_ippiCopy_16s_C1R:
+ippiCopy_16s_C1R:
         stmdb   sp!, {r4 - r11, lr}
         ldr     lr, [sp, #0x28]
         ldr     r12, [sp, #0x24]

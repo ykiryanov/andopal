@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiInterpolateLumaBlock_H264_16u_P1R
+        .globl  ippiInterpolateLumaBlock_H264_16u_P1R
 
 
-_ippiInterpolateLumaBlock_H264_16u_P1R:
+ippiInterpolateLumaBlock_H264_16u_P1R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x48
         cmp     r0, #0

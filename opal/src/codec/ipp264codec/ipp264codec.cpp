@@ -639,6 +639,8 @@ static struct PluginCodec_Description gPluginDescr =
     (int) ACTIVATION_UNREGISTERED
 };
 
+
+#if 0 //SB
 extern "C"
 {
     // PLUGIN_CODEC_IMPLEMENT(D264)
@@ -680,3 +682,4 @@ extern "C"
 		return 1;
 	}
 };
+#endif //SB

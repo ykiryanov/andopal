@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiBidir_H264_16u_P2P1R
+        .globl  ippiBidir_H264_16u_P2P1R
 
 
-_ippiBidir_H264_16u_P2P1R:
+ippiBidir_H264_16u_P2P1R:
         stmdb   sp!, {r4 - r9, lr}
         cmp     r0, #0
         beq     LLAP5

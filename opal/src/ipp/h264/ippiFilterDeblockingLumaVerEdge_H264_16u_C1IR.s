@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiFilterDeblockingLumaVerEdge_H264_16u_C1IR
+        .globl  ippiFilterDeblockingLumaVerEdge_H264_16u_C1IR
 
 
-_ippiFilterDeblockingLumaVerEdge_H264_16u_C1IR:
+ippiFilterDeblockingLumaVerEdge_H264_16u_C1IR:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x20
         cmp     r0, #0

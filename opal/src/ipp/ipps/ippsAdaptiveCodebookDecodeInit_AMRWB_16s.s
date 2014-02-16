@@ -18,7 +18,7 @@ _ippsAdaptiveCodebookDecodeInit_AMRWB_16s:
         add     r1, r4, #0xC
         mov     r0, #0x40
         mov     r2, #5
-        bl      _ippsSet_16s
+        bl      ippsSet_16s
         mov     r1, #0x40
         mov     r0, #0
         strh    r1, [r4, #0x16]

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiDecodeExpGolombOne_H264_1u16s
+        .globl  ippiDecodeExpGolombOne_H264_1u16s
 
 
-_ippiDecodeExpGolombOne_H264_1u16s:
+ippiDecodeExpGolombOne_H264_1u16s:
         stmdb   sp!, {r4 - r8, lr}
         cmp     r0, #0
         beq     LLBF17

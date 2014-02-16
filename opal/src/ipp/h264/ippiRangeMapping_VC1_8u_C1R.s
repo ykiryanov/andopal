@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiRangeMapping_VC1_8u_C1R
+        .globl  ippiRangeMapping_VC1_8u_C1R
 
 
-_ippiRangeMapping_VC1_8u_C1R:
+ippiRangeMapping_VC1_8u_C1R:
         stmdb   sp!, {r4 - r9, lr}
         ldr     r12, [sp, #0x24]
         cmp     r0, #0
