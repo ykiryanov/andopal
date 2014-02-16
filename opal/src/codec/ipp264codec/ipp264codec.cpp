@@ -640,7 +640,6 @@ static struct PluginCodec_Description gPluginDescr =
 };
 
 
-#if 0 //SB
 extern "C"
 {
     // PLUGIN_CODEC_IMPLEMENT(D264)
@@ -664,7 +663,7 @@ extern "C"
     /////////////////////////////////////////////////////////////////////////////
     
 #ifndef BONELIB
-	PLUGIN_CODEC_DLL_API struct PluginCodec_Description* BonePlugin_GetInformation()
+	PLUGIN_CODEC_DLL_API struct PluginCodec_Description* BoneD264Plugin_GetInformation()
 #else
 	struct PluginCodec_Description* GetH264PluginInformation()
 #endif
@@ -673,7 +672,7 @@ extern "C"
     }
     
 #ifndef BONELIB
-	PLUGIN_CODEC_DLL_API int BonePlugin_Activate(IActivation* pActivation)
+	PLUGIN_CODEC_DLL_API int BoneD264Plugin_Activate(IActivation* pActivation)
 #else
 	int ActivateH264Plugin(IActivation* pActivation)
 #endif
@@ -682,4 +681,3 @@ extern "C"
 		return 1;
 	}
 };
-#endif //SB

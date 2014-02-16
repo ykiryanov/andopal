@@ -37,6 +37,7 @@
 
 #include <opal.h>
 #include <opal/manager.h>
+#include <codec/opalpluginmgr.h>
 
 #include <ep/pcss.h>
 #include <ep/localep.h>
@@ -54,6 +55,14 @@
 
 #include <queue>
 
+extern "C" {
+	unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
+	struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
+	unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
+	struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
+	unsigned int Opal_StaticCodec_D264_GetAPIVersion();
+	struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned version);
+};
 
 class OpalManager_C;
 
@@ -436,6 +445,25 @@ struct OpalHandleStruct
       PPluginManager::GetPluginManager().SetDirectories(args.GetOptionString("plugin").Lines());
 
     m_process.Startup();
+
+	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
+    new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
+	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
+
+    PTRACE(1, "H.261 version: " << Opal_StaticCodec_VIC_H261_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.261",
+			Opal_StaticCodec_VIC_H261_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
+
+    PTRACE(1, "H.263 version: " << Opal_StaticCodec_DINSK_H263_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.263",
+			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
+
+	PTRACE(1, "H.264 version: " << Opal_StaticCodec_D264_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.264",
+			Opal_StaticCodec_D264_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 
     m_manager = new OpalManager_C(version, args);
 

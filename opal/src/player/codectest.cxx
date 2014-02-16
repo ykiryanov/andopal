@@ -27,6 +27,8 @@ unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
 struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
 unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
 struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
+unsigned int Opal_StaticCodec_D264_GetAPIVersion();
+struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned version);
 };
 
 #ifdef BONEPLAYER
@@ -144,8 +146,15 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
 
 	printf("H.263 version: %d", Opal_StaticCodec_DINSK_H263_GetAPIVersion());
 	pluginManager->RegisterStaticCodec("H.263",
-			Opal_StaticCodec_VIC_H261_GetAPIVersion,
+			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
+
+	_native_window = (ANativeWindow*) native_window;
+
+	printf("H.264 version: %d", Opal_StaticCodec_D264_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.264",
+			Opal_StaticCodec_D264_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 
 	_native_window = (ANativeWindow*) native_window;
 

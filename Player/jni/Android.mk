@@ -289,13 +289,17 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/t38/t38proto.cxx
 
 
-XX_LOCAL_H264_FILES := \
-	$(H264_SRC_PATH)/ipp264codec.cpp \
-
+#XX_LOCAL_H264_FILES := \
+#	$(H264_SRC_PATH)/ipp264codec.cpp \
 
 LOCAL_H264_FILES := \
+	$(H264_SRC_PATH)/ipp264codec.cpp \
 	$(H264_SRC_PATH)/h264decode.s \
 	$(H264_SRC_PATH)/h264_util.cpp \
+	$(H264_SRC_PATH)/h264_dec.cpp \
+	$(H264_SRC_PATH)/h264_enc.cpp \
+	$(H264_SRC_PATH)/h264_frame.cpp \
+	$(H264_SRC_PATH)/h264Stream.cpp \
 	$(H264_SRC_PATH)/CodecUtil.cpp \
 	$(H264_SRC_PATH)/ReconstructLumaInter4x4MB.cpp \
 	$(H264_SRC_PATH)/ReconstructLumaInter8x8MB.cpp \
