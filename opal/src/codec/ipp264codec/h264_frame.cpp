@@ -7,6 +7,8 @@
 
 #include <codec/opalplugin.hpp>
 
+using namespace std;
+
 extern int h264TraceLevel;
 
 H264Frame::H264Frame()

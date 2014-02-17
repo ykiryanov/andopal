@@ -167,7 +167,6 @@ void Mpeg2TS::dispatchPacket(const u8* data)
 
 void Mpeg2TS::videoFrame(u8* frame, u32 frameSize)
 {
-#ifdef PLAYER_VIDEO
     if (_decoder)
     {
         _decoder->decode(frame, frameSize);
@@ -178,7 +177,6 @@ void Mpeg2TS::videoFrame(u8* frame, u32 frameSize)
                 _yuv420PlaybackCallback(_opaque, _decoder->getOutBuffer(), _decoder->getFrameWidth(), _decoder->getFrameHeight());
         }
     }
-#endif
 }
 
 

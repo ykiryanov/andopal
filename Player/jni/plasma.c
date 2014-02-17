@@ -27,19 +27,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <opal.h>
-
-#if !defined(NULL)
-#define NULL ((void*)0)
-#endif
-
-extern void opalInitialize();
-extern void opalShutdown();
-
-extern	void* createCodecTest(const char* szArguments, void* reserved);
-extern 	void deleteCodecTest(void* handle);
-extern 	int setupOptions();
-extern  int doCall();
+#include "NativeActivity.h"
 
 #define  LOG_TAG    "libplasma"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -47,7 +35,7 @@ extern  int doCall();
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 /* Set to 1 to enable debug log traces. */
-#define DEBUG 0
+#define DEBUG 1
 
 /* Set to 1 to optimize memory stores when generating plasma. */
 #define OPTIMIZE_WRITES  1
@@ -93,12 +81,34 @@ typedef int32_t  Fixed;
 
 typedef int32_t  Angle;
 
+#define  ANGLE_BITS              9
+
+#if ANGLE_BITS < 8
+#  error ANGLE_BITS must be at least 8
+#endif
+
+#define  ANGLE_2PI               (1 << ANGLE_BITS)
+#define  ANGLE_PI                (1 << (ANGLE_BITS-1))
+#define  ANGLE_PI2               (1 << (ANGLE_BITS-2))
+#define  ANGLE_PI4               (1 << (ANGLE_BITS-3))
+
+#define  ANGLE_FROM_FLOAT(x)   (Angle)((x)*ANGLE_PI/M_PI)
+#define  ANGLE_TO_FLOAT(x)     ((x)*M_PI/ANGLE_PI)
+
+#if ANGLE_BITS <= FIXED_BITS
+#  define  ANGLE_FROM_FIXED(x)     (Angle)((x) >> (FIXED_BITS - ANGLE_BITS))
+#  define  ANGLE_TO_FIXED(x)       (Fixed)((x) << (FIXED_BITS - ANGLE_BITS))
+#else
+#  define  ANGLE_FROM_FIXED(x)     (Angle)((x) << (ANGLE_BITS - FIXED_BITS))
+#  define  ANGLE_TO_FIXED(x)       (Fixed)((x) >> (ANGLE_BITS - FIXED_BITS))
+#endif
+
 /* Color palette used for rendering the plasma */
 #define  PALETTE_BITS   8
 #define  PALETTE_SIZE   (1 << PALETTE_BITS)
 
 #if PALETTE_BITS > FIXED_BITS
-#  error PALETTE_BITS must be smaller than FIXED_BITS 
+#  error PALETTE_BITS must be smaller than FIXED_BITS
 #endif
 
 static uint16_t  palette[PALETTE_SIZE];
@@ -106,8 +116,8 @@ static uint16_t  palette[PALETTE_SIZE];
 static uint16_t  make565(int red, int green, int blue)
 {
     return (uint16_t)( ((red   << 8) & 0xf800) |
-                       ((green << 2) & 0x03e0) |
-                       ((blue  >> 3) & 0x001f) );
+                      ((green << 2) & 0x03e0) |
+                      ((blue  >> 3) & 0x001f) );
 }
 
 static void init_palette(void)
@@ -118,17 +128,17 @@ static void init_palette(void)
         int  jj = (nn-mm)*4*255/PALETTE_SIZE;
         palette[nn] = make565(255, jj, 255-jj);
     }
-
+    
     for ( mm = nn; nn < PALETTE_SIZE/2; nn++ ) {
         int  jj = (nn-mm)*4*255/PALETTE_SIZE;
         palette[nn] = make565(255-jj, 255, jj);
     }
-
+    
     for ( mm = nn; nn < PALETTE_SIZE*3/4; nn++ ) {
         int  jj = (nn-mm)*4*255/PALETTE_SIZE;
         palette[nn] = make565(0, 255-jj, 255);
     }
-
+    
     for ( mm = nn; nn < PALETTE_SIZE; nn++ ) {
         int  jj = (nn-mm)*4*255/PALETTE_SIZE;
         palette[nn] = make565(jj, 0, 255);
@@ -163,7 +173,7 @@ typedef struct {
     double  firstTime;
     double  lastTime;
     double  frameTime;
-
+    
     int         firstFrame;
     int         numFrames;
     FrameStats  frames[ MAX_FRAME_STATS ];
@@ -191,13 +201,13 @@ stats_endFrame( Stats*  s )
     double renderTime = now - s->frameTime;
     double frameTime  = now - s->lastTime;
     int nn;
-
+    
     if (now - s->firstTime >= MAX_PERIOD_MS) {
         if (s->numFrames > 0) {
             double minRender, maxRender, avgRender;
             double minFrame, maxFrame, avgFrame;
             int count;
-
+            
             nn = s->firstFrame;
             minRender = maxRender = avgRender = s->frames[nn].renderTime;
             minFrame  = maxFrame  = avgFrame  = s->frames[nn].frameTime;
@@ -216,7 +226,7 @@ stats_endFrame( Stats*  s )
             }
             avgRender /= s->numFrames;
             avgFrame  /= s->numFrames;
-
+            
             LOGI("frame/s (avg,min,max) = (%.1f,%.1f,%.1f) "
                  "render time ms (avg,min,max) = (%.1f,%.1f,%.1f)\n",
                  1000./avgFrame, 1000./maxFrame, 1000./minFrame,
@@ -226,14 +236,14 @@ stats_endFrame( Stats*  s )
         s->firstFrame = 0;
         s->firstTime  = now;
     }
-
+    
     nn = s->firstFrame + s->numFrames;
     if (nn >= MAX_FRAME_STATS)
         nn -= MAX_FRAME_STATS;
-
+    
     s->frames[nn].renderTime = renderTime;
     s->frames[nn].frameTime  = frameTime;
-
+    
     if (s->numFrames < MAX_FRAME_STATS) {
         s->numFrames += 1;
     } else {
@@ -241,7 +251,7 @@ stats_endFrame( Stats*  s )
         if (s->firstFrame >= MAX_FRAME_STATS)
             s->firstFrame -= MAX_FRAME_STATS;
     }
-
+    
     s->lastTime = now;
 }
 
@@ -249,9 +259,9 @@ stats_endFrame( Stats*  s )
 
 struct engine {
     struct android_app* app;
-
+    
     Stats stats;
-
+    
     int animating;
 };
 
@@ -260,25 +270,22 @@ static void engine_draw_frame(struct engine* engine) {
         // No window.
         return;
     }
-
+    
     ANativeWindow_Buffer buffer;
     if (ANativeWindow_lock(engine->app->window, &buffer, NULL) < 0) {
         LOGW("Unable to lock window buffer");
         return;
     }
-
+    
     stats_startFrame(&engine->stats);
-
+    
     struct timespec t;
     t.tv_sec = t.tv_nsec = 0;
     clock_gettime(CLOCK_MONOTONIC, &t);
     int64_t time_ms = (((int64_t)t.tv_sec)*1000000000LL + t.tv_nsec)/1000000;
-
-    /* Now fill the values with a nice little plasma */
-    /* fill_plasma(&buffer, time_ms); */
-
+    
     ANativeWindow_unlockAndPost(engine->app->window);
-
+    
     stats_endFrame(&engine->stats);
 }
 
@@ -289,23 +296,19 @@ static void engine_term_display(struct engine* engine) {
 static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) {
     struct engine* engine = (struct engine*)app->userData;
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-    	if(!engine->animating) {
-
-//    		doCall();
-
-            createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30"
-            		" --display-device NativeWindow G.711-uLaw-64k H.263",
-            		(void*) engine->app->window);
-    	}
-    	engine->animating = 1;
-     return 1;
+        if(!engine->animating)
+        {
+        	engine->animating = 1;
+            
+        }
+        return 1;
     } else if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
         LOGI("Key event: action=%d keyCode=%d metaState=0x%x",
-                AKeyEvent_getAction(event),
-                AKeyEvent_getKeyCode(event),
-                AKeyEvent_getMetaState(event));
+             AKeyEvent_getAction(event),
+             AKeyEvent_getKeyCode(event),
+             AKeyEvent_getMetaState(event));
     }
-
+    
     return 0;
 }
 
@@ -315,12 +318,19 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
         case APP_CMD_INIT_WINDOW:
             if (engine->app->window != NULL) {
                 //engine_draw_frame(engine);
-                opalInitialize();
-
-//
-//                setupOptions();
+#if defined(NETPLAYER)
+				createCodecTest("--listen-address * --listen-port 5004"
+                                " --display-device NativeWindow G.711-uLaw-64k H.263P-DINSK",
+                                (void*) engine->app->window);
+#elif defined(PREVIEWER)
+				createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30"
+                                " --display-device NativeWindow G.711-uLaw-64k H.263P-DINSK",
+                                (void*) engine->app->window);
+#else
+				setupOptions();
+				doCall();
+#endif
             }
-
             break;
         case APP_CMD_TERM_WINDOW:
             engine_term_display(engine);
@@ -334,51 +344,57 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
 
 void android_main(struct android_app* state) {
     static int init;
-
+    
     struct engine engine;
-
+    
     // Make sure glue isn't stripped.
     app_dummy();
-
+    
     memset(&engine, 0, sizeof(engine));
     state->userData = &engine;
     state->onAppCmd = engine_handle_cmd;
     state->onInputEvent = engine_handle_input;
     engine.app = state;
-
+    
     if (!init) {
         init_tables();
         init = 1;
     }
-
+    
     stats_init(&engine.stats);
-
-  // loop waiting for stuff to do.
+    
+	opalInitialize();
+    // loop waiting for stuff to do.
+    
     while (1) {
         // Read all pending events.
         int ident;
         int events;
         struct android_poll_source* source;
-
+        
         // If not animating, we will block forever waiting for events.
         // If animating, we loop until all events are read, then continue
         // to draw the next frame of animation.
         while ((ident=ALooper_pollAll(engine.animating ? 0 : -1, NULL, &events,
-                (void**)&source)) >= 0) {
-
+                                      (void**)&source)) >= 0) {
+            
             // Process this event.
             if (source != NULL) {
                 source->process(state, source);
             }
-
+            
             // Check if we are exiting.
             if (state->destroyRequested != 0) {
                 LOGI("Engine thread destroy requested!");
                 engine_term_display(&engine);
+            	opalShutdown();
                 return;
             }
         }
-      }
-
-    opalShutdown();
+        
+        if (engine.animating) {
+            engine_draw_frame(&engine);
+        }
+    }
+    
 }

@@ -4,7 +4,7 @@
 //  This software is supplied under the terms of a license  agreement or
 //  nondisclosure agreement with Intel Corporation and may not be copied
 //  or disclosed except in  accordance  with the terms of that agreement.
-//    Copyright (c) 2003-2009 Intel Corporation. All Rights Reserved.
+//    Copyright (c) 2003-2007 Intel Corporation. All Rights Reserved.
 //
 //
 */
@@ -16,11 +16,6 @@
 #include "ippvc.h"
 
 using namespace UMC;
-
-namespace UMC
-{
-    BaseCodec *CreateColorSpaceConversion() { return (new ColorSpaceConversion); }
-}
 
 template <class T> inline
 void SwapValues(T &one, T& two)
@@ -81,7 +76,6 @@ static Status CopyImage(VideoData *pSrc, VideoData *pDst, int flag, int bSwapUV)
   IppiSize size;
   int cPlanes;
   int iDstPlane;
-  IppStatus sts = ippStsNoErr;
 
   cPlanes = pSrc->GetNumPlanes();
   if (cPlanes > pDst->GetNumPlanes()) cPlanes = pDst->GetNumPlanes();
@@ -102,9 +96,9 @@ static Status CopyImage(VideoData *pSrc, VideoData *pDst, int flag, int bSwapUV)
     if (src.m_iSampleSize == dst.m_iSampleSize) {
       size.width *= src.m_iSampleSize;
       if (flag == 2 && src.m_iBitDepth >= 0) { // case VC1->YUV420
-        sts = ippiRangeMapping_VC1_8u_C1R(src.m_pPlane, src.m_nPitch, dst.m_pPlane, dst.m_nPitch, size, src.m_iBitDepth);
+        ippiRangeMapping_VC1_8u_C1R(src.m_pPlane, src.m_nPitch, dst.m_pPlane, dst.m_nPitch, size, src.m_iBitDepth);
       } else {
-        sts = ippiCopy_8u_C1R(src.m_pPlane, src.m_nPitch, dst.m_pPlane, dst.m_nPitch, size);
+        ippiCopy_8u_C1R(src.m_pPlane, src.m_nPitch, dst.m_pPlane, dst.m_nPitch, size);
       }
     } else if (src.m_iSampleSize == 2 && dst.m_iSampleSize == 1) {
       ConvertImage_16s8u_C1R((const Ipp16s*)src.m_pPlane, src.m_nPitch, src.m_iBitDepth, dst.m_pPlane, dst.m_nPitch, size);
@@ -112,8 +106,7 @@ static Status CopyImage(VideoData *pSrc, VideoData *pDst, int flag, int bSwapUV)
       return UMC_ERR_UNSUPPORTED;
     }
   }
-
-  return (ippStsNoErr == sts) ? UMC_OK : UMC_ERR_FAILED;
+  return UMC_OK;
 }
 
 Status ColorSpaceConversion::GetFrame(MediaData *input, MediaData *output)
@@ -121,14 +114,15 @@ Status ColorSpaceConversion::GetFrame(MediaData *input, MediaData *output)
   VideoData *in = DynamicCast<VideoData>(input);
   VideoData *out = DynamicCast<VideoData>(output);
 
-  UMC_CHECK(in, UMC_ERR_NULL_PTR);
-  UMC_CHECK(out, UMC_ERR_NULL_PTR);
+  if (NULL == in || NULL == out) {
+    return UMC_ERR_NULL_PTR;
+  }
 
   IppiSize srcSize = {in->GetWidth(), in->GetHeight()};
   IppiSize dstSize = {out->GetWidth(), out->GetHeight()};
-  UMC_CHECK(srcSize.width == dstSize.width, UMC_ERR_INVALID_PARAMS);
-  UMC_CHECK(srcSize.height == dstSize.height, UMC_ERR_INVALID_PARAMS);
-
+  if (srcSize.width != dstSize.width || srcSize.height != dstSize.height) {
+    return UMC_ERR_INVALID_PARAMS;
+  }
 
   ColorFormat srcFormat = in->GetColorFormat();
   ColorFormat dstFormat = out->GetColorFormat();
@@ -252,7 +246,7 @@ Status ColorSpaceConversion::GetFrame(MediaData *input, MediaData *output)
   case YUY2:
     switch (dstFormat) {
     case YUV420:
-      status = ippiYCbCr422ToYCbCr420_8u_C2P3R(pSrc[0], pSrcStep[0], pDst, pDstStep, srcSize);
+      status = ippiYCbCr422ToYCrCb420_8u_C2P3R(pSrc[0], pSrcStep[0], pDstYVU, pDstStepYVU, srcSize);
       break;
     case NV12:
       status = ippiYCbCr422ToYCbCr420_8u_C2P2R(pSrc[0], pSrcStep[0], pDst[0], pDstStep[0], pDst[1], pDstStep[1], srcSize);
@@ -614,6 +608,7 @@ IppStatus cc_I420_to_Y41P(const Ipp8u **pSrc,
   return (IppStatus)0;
 }
 
+
 IppStatus cc_YUV411_to_YUV420(const Ipp8u *pSrc[3],
                           Ipp32s   pSrcStep[3],
                           Ipp8u    *pDst[3],
@@ -627,8 +622,6 @@ IppStatus cc_YUV411_to_YUV420(const Ipp8u *pSrc[3],
     int  height ;
     const Ipp8u* srcu;
     const Ipp8u* srcv;
-    IppStatus sts = ippStsNoErr;
-
     Ipp8u* dstu;
     Ipp8u* dstv;
 
@@ -644,8 +637,7 @@ IppStatus cc_YUV411_to_YUV420(const Ipp8u *pSrc[3],
     height = srcSize.height;
 
     /* Y plane */
-    sts = ippiCopy_8u_C1R( pSrc[0], pSrcStep[0], pDst[0], pDstStep[0],  srcSize );
-    if( ippStsNoErr != sts ) return sts;
+    ippiCopy_8u_C1R( pSrc[0], pSrcStep[0], pDst[0], pDstStep[0],  srcSize );
 
     for( h = 0; h < height ; h +=2)
     {
@@ -668,36 +660,3 @@ IppStatus cc_YUV411_to_YUV420(const Ipp8u *pSrc[3],
 
     return (IppStatus)0;
 }
-
-namespace UMC
-{
-
-Status FillBlockWithColor(VideoData *pData, int y, int u, int v)
-{
-    IppiSize ySize = {16, 16};
-    IppiSize lSize = {8, 8};
-    Ipp8u yuyv[4] = {(Ipp8u)y, (Ipp8u)u, (Ipp8u)y, (Ipp8u)v};
-    Ipp16s uv = (Ipp16s)(u | (v << 8));
-
-    switch (pData->GetColorFormat())
-    {
-    case YV12:
-    case YUV420:
-        ippiSet_8u_C1R((Ipp8u)y, (Ipp8u*)pData->GetPlanePointer(0), pData->GetPlanePitch(0), ySize);
-        ippiSet_8u_C1R((Ipp8u)u, (Ipp8u*)pData->GetPlanePointer(1), pData->GetPlanePitch(1), lSize);
-        ippiSet_8u_C1R((Ipp8u)v, (Ipp8u*)pData->GetPlanePointer(2), pData->GetPlanePitch(2), lSize);
-        return UMC_OK;
-    case YUY2:
-    case UYVY:
-        ippiSet_8u_C4R(yuyv, (Ipp8u*)pData->GetPlanePointer(0), pData->GetPlanePitch(0), ySize);
-        return UMC_OK;
-    case NV12:
-        ippiSet_8u_C1R((Ipp8u)y,   (Ipp8u*)pData->GetPlanePointer(0), pData->GetPlanePitch(0), ySize);
-        ippiSet_16s_C1R(uv, (Ipp16s*)pData->GetPlanePointer(1), pData->GetPlanePitch(1), lSize);
-        return UMC_OK;
-    default:
-        return UMC_ERR_NOT_IMPLEMENTED;
-    }
-}
-
-} // namespace UMC

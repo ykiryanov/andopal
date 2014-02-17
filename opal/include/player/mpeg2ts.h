@@ -11,10 +11,8 @@
 
 #include <player/udplistener.h>
 #include <player/audio.h>
-#ifdef PLAYER_VIDEO
 #include "h264TSDec.h"
 #include <h264/umc/umc_h264_dec.h>
-#endif
 //#include "umc_config.h"
 //#include "rtpframe.h"
 
@@ -88,9 +86,7 @@ public:
     Stream  _videoStream;
     
 public:
-#ifdef PLAYER_VIDEO
     H264TSVideoDecoder*    _decoder;
-#endif
     
     UdpListener* _opaque;
     void (*_yuv420PlaybackCallback)(void* opaque, u8* pYUV, int frameWidth, int frameHeight);
@@ -99,9 +95,7 @@ public:
     Mpeg2TS()
     : _audioStream(*this, 0x0C0, _opaque)
     , _videoStream(*this, 0x0E0, _opaque)
-#ifdef PLAYER_VIDEO
     , _decoder(NULL)
-#endif
     , _opaque(NULL)
     , _yuv420PlaybackCallback(NULL)
     , _pcmPlaybackCallback(NULL)

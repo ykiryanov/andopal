@@ -1026,7 +1026,7 @@ bool H263PEncoderContext::EncodeFrames(const unsigned char* src, unsigned& srcLe
 #ifdef H263_PLUGIN_ACTIVATION    
 	if (!_ActivationMonitor.CanUse())
         return false;
-#endif // H263_PLUGIN_ACTIVATION	���
+#endif // H263_PLUGIN_ACTIVATION	���������
 	
 	// if this is the first frame, or the frame size has changed, deal with it
 
@@ -2196,10 +2196,6 @@ struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned *
 	
 PLUGIN_CODEC_DLL_API struct PluginCodec_Definition * PLUGIN_CODEC_GET_CODEC_FN(unsigned * count, unsigned version)
 {
-#if PTRACING && !(defined(_WIN32_WCE) && defined(NDEBUG))
-    Trace::SetLevel(0);
-#endif
-
    // check version numbers etc
     if (version < PLUGIN_CODEC_VERSION_OPTIONS) {
       *count = 0;

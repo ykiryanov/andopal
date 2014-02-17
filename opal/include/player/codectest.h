@@ -20,15 +20,6 @@
 #include <opal/patch.h>
 #include <rtp/rtpep.h>
 
-#ifdef _WIN32
-#include "BoneVideoOutputDevice.h"
-#include "VideoOutputWindow.h"
-#endif
-
-#ifdef P_IOS
-#include "TargetConditionals.h"
-#endif
-
 class BoneCodecTest;
 
 class Mpeg2TSListener;

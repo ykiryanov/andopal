@@ -75,10 +75,7 @@ public:
         m_tsParser._yuv420PlaybackCallback = yuv420PlaybackCallback;
         m_tsParser._pcmPlaybackCallback = pcmPlaybackCallback;
 
-#ifdef PLAYER_VIDEO
         m_tsParser._decoder = new H264TSVideoDecoder();
-#endif
-        
     }
 
     PVideoOutputDevice *getVideoDisplay() const
@@ -251,13 +248,11 @@ void BoneCodecTest::MonitorMain(PThread &, INT)
         if(m_udpListener)
         {
 
-#if PLAYER_VIDEO
         	m_video.SetPlaybackSource(m_udpListener);
             m_video.m_nPlaybackWidth = 640;
             m_video.m_nPlaybackHeight = 360;
             
             m_video.Initialise(args);
-#endif
             
             NetIpAddress addr(ipa.Byte4(), ipa.Byte3(), ipa.Byte2(), ipa.Byte1(), atoi(strListenPort));
             m_udpListener->start(addr.nIp, addr.nPort);
@@ -273,7 +268,7 @@ void BoneCodecTest::MonitorMain(PThread &, INT)
     }
     else
     {
-            //bAudio = m_audio.Initialise(args);
+            bAudio = m_audio.Initialise(args);
             bVideo = m_video.Initialise(args);
         
         if (!bAudio && !bVideo)

@@ -38,7 +38,7 @@ VideoProcessing::VideoProcessing()
   // create filters
 
     pFilter[iDeinterlacing] = NULL; // new Deinterlacing;
-    pFilter[iColorConv0] = new ColorSpaceConversion; // first color conversion
+    pFilter[iColorConv0] = NULL; // new ColorSpaceConversion; // first color conversion
     pFilter[iColorConv] = pFilter[iColorConv0]; // second color conversion
     pFilter[iResizing] =  NULL; //new VideoResizing;
 }
