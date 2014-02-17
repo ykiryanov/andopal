@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiTransformFwdLuma8x8_H264_16s32s_C1
+        .globl  ippiTransformFwdLuma8x8_H264_16s32s_C1
 
 
-_ippiTransformFwdLuma8x8_H264_16s32s_C1:
+ippiTransformFwdLuma8x8_H264_16s32s_C1:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x4D, 30
         cmp     r0, #0

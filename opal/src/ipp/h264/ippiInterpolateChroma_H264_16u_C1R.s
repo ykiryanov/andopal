@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiInterpolateChroma_H264_16u_C1R
+        .globl  ippiInterpolateChroma_H264_16u_C1R
 
 
-_ippiInterpolateChroma_H264_16u_C1R:
+ippiInterpolateChroma_H264_16u_C1R:
         mov     r2, r0
         cmp     r2, #0
         beq     LLAO5

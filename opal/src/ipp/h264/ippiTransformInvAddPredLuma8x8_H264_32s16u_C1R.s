@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiTransformInvAddPredLuma8x8_H264_32s16u_C1R
+        .globl  ippiTransformInvAddPredLuma8x8_H264_32s16u_C1R
 
 
-_ippiTransformInvAddPredLuma8x8_H264_32s16u_C1R:
+ippiTransformInvAddPredLuma8x8_H264_32s16u_C1R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x15, 28
         ldr     r12, [sp, #0x174]

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiTransformQuantInvLumaDC4x4_H264_32s_C1I
+        .globl  ippiTransformQuantInvLumaDC4x4_H264_32s_C1I
 
 
-_ippiTransformQuantInvLumaDC4x4_H264_32s_C1I:
+ippiTransformQuantInvLumaDC4x4_H264_32s_C1I:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x34
         mov     r3, r0

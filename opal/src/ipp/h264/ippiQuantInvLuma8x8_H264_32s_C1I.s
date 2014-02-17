@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiQuantInvLuma8x8_H264_32s_C1I
+        .globl  ippiQuantInvLuma8x8_H264_32s_C1I
 
 
-_ippiQuantInvLuma8x8_H264_32s_C1I:
+ippiQuantInvLuma8x8_H264_32s_C1I:
         stmdb   sp!, {r4 - r8, lr}
         cmp     r0, #0
         beq     LLCH4

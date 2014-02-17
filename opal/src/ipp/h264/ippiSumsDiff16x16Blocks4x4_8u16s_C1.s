@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiSumsDiff16x16Blocks4x4_8u16s_C1
+        .globl  ippiSumsDiff16x16Blocks4x4_8u16s_C1
 
 
-_ippiSumsDiff16x16Blocks4x4_8u16s_C1:
+ippiSumsDiff16x16Blocks4x4_8u16s_C1:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x28
         ldr     r12, [sp, #0x4C]

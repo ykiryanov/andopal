@@ -289,25 +289,6 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/t38/t38proto.cxx
 
 
-#XX_LOCAL_H264_FILES := \
-#	$(H264_SRC_PATH)/ipp264codec.cpp \
-
-LOCAL_H264_FILES := \
-	$(H264_SRC_PATH)/ipp264codec.cpp \
-	$(H264_SRC_PATH)/h264decode.s \
-	$(H264_SRC_PATH)/h264_util.cpp \
-	$(H264_SRC_PATH)/h264_dec.cpp \
-	$(H264_SRC_PATH)/h264_enc.cpp \
-	$(H264_SRC_PATH)/h264_frame.cpp \
-	$(H264_SRC_PATH)/h264Stream.cpp \
-	$(H264_SRC_PATH)/CodecUtil.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaInter4x4MB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaInter8x8MB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaInterMB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaIntra16x16MB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaIntra4x4MB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaIntra8x8MB.cpp \
-	$(H264_SRC_PATH)/ReconstructLumaIntraMB.cpp
 	
 
 LOCAL_H261_FILES := \
@@ -396,6 +377,24 @@ LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
                         $(AAC_SRC_PATH)/dec/src/sbr_dec_noise_tabs_fp.c \
                         $(AAC_SRC_PATH)/dec/src/sbr_dec_qmf_tabs_fp.c \
                         $(AAC_SRC_PATH)/dec/src/umc_aac_decoder.cpp
+                        
+                        
+LOCAL_H264_FILES := \
+	$(H264_SRC_PATH)/ipp264codec.cpp \
+	$(H264_SRC_PATH)/h264decode.s \
+	$(H264_SRC_PATH)/h264_dec.cpp \
+	$(H264_SRC_PATH)/h264_enc.cpp \
+	$(H264_SRC_PATH)/h264_frame.cpp \
+	$(H264_SRC_PATH)/h264_util.cpp \
+	$(H264_SRC_PATH)/CodecUtil.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInter4x4MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInter8x8MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaInterMB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra16x16MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra4x4MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntra8x8MB.cpp \
+	$(H264_SRC_PATH)/ReconstructLumaIntraMB.cpp
+                        
 
 LOCAL_H264_DEC_FILES := \
 	$(H264_DEC_PATH)/umc_h264_dec_bitstream.cpp \
@@ -435,9 +434,31 @@ LOCAL_H264_DEC_FILES := \
 	$(H264_DEC_PATH)/umc_h264_task_supplier.cpp \
 	$(H264_DEC_PATH)/umc_h264_thread.cpp \
 
-XX := $(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp
+LOCAL_H264_ENC_FILES := \
+	$(H264_ENC_PATH)/umc_base_bitstream.cpp \
+	$(H264_ENC_PATH)/umc_h264_aic.cpp \
+	$(H264_ENC_PATH)/umc_h264_avbr.cpp \
+	$(H264_ENC_PATH)/umc_h264_bs.cpp \
+	$(H264_ENC_PATH)/umc_h264_core_enc.cpp \
+	$(H264_ENC_PATH)/umc_h264_deblocking.cpp \
+	$(H264_ENC_PATH)/umc_h264_deblocking_mbaff.cpp \
+	$(H264_ENC_PATH)/umc_h264_deblocking_tools.cpp \
+	$(H264_ENC_PATH)/umc_h264_enc_cpb.cpp \
+	$(H264_ENC_PATH)/umc_h264_ermb.cpp \
+	$(H264_ENC_PATH)/umc_h264_gen_enc.cpp \
+	$(H264_ENC_PATH)/umc_h264_mc.cpp \
+	$(H264_ENC_PATH)/umc_h264_me.cpp \
+	$(H264_ENC_PATH)/umc_h264_pack.cpp \
+	$(H264_ENC_PATH)/umc_h264_sad.cpp \
+	$(H264_ENC_PATH)/umc_h264_tables.cpp \
+	$(H264_ENC_PATH)/umc_h264_video_encoder.cpp
+
+
+
+A :=	$(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp \
 
 LOCAL_UMC_FILES := \
+	$(OPAL_SRC_PATH)/umc/umc_video_processing.cpp \
 	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
 	$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
 	$(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
@@ -517,6 +538,7 @@ LOCAL_PLAYER_FILES := \
 
 LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx
 LOCAL_PLAYER_FILES +=   $(LOCAL_H264_DEC_FILES)
+LOCAL_PLAYER_FILES +=   $(LOCAL_H264_ENC_FILES)
 LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
 LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
 
@@ -620,6 +642,7 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/include/h264 \
 	$(LOCAL_PATH)/../../opal/src/codec/common \
 	$(LOCAL_PATH)/../../opal/src/codec/ipp264codec/codec/h264_dec/include \
+	$(LOCAL_PATH)/../../opal/src/codec/ipp264codec/codec/h264_enc/include \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(LOCAL_PATH)/../../opal/plugins/video/common \
 	$(H263_INCLUDE) \

@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiInterpolateChroma_H264_8u_C1R
+        .globl  ippiInterpolateChroma_H264_8u_C1R
 
 
-_ippiInterpolateChroma_H264_8u_C1R:
+ippiInterpolateChroma_H264_8u_C1R:
         stmdb   sp!, {r4 - r9, lr}
         sub     sp, sp, #0x44
         ldr     lr, [sp, #0x60]

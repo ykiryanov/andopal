@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiEdgesDetect16x16_8u_C1R
+        .globl  ippiEdgesDetect16x16_8u_C1R
 
 
-_ippiEdgesDetect16x16_8u_C1R:
+ippiEdgesDetect16x16_8u_C1R:
         stmdb   sp!, {r4 - r11, lr}
         ldr     r12, [sp, #0x24]
         cmp     r0, #0

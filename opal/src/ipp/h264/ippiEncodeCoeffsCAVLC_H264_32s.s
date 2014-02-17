@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiEncodeCoeffsCAVLC_H264_32s
+        .globl  ippiEncodeCoeffsCAVLC_H264_32s
 
 
-_ippiEncodeCoeffsCAVLC_H264_32s:
+ippiEncodeCoeffsCAVLC_H264_32s:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #0x18
         ldr     r7, [sp, #0x3C]

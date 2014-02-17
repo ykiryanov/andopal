@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiInterpolateBlock_H264_8u_P2P1R
+        .globl  ippiInterpolateBlock_H264_8u_P2P1R
 
 
-_ippiInterpolateBlock_H264_8u_P2P1R:
+ippiInterpolateBlock_H264_8u_P2P1R:
         stmdb   sp!, {r4 - r11, lr}
         sub     sp, sp, #8
         ldr     lr, [sp, #0x2C]

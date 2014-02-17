@@ -1,9 +1,9 @@
         .text
         .align  4
-        .globl  _ippiGenScaleLevel8x8_H264_8u16s_D2
+        .globl  ippiGenScaleLevel8x8_H264_8u16s_D2
 
 
-_ippiGenScaleLevel8x8_H264_8u16s_D2:
+ippiGenScaleLevel8x8_H264_8u16s_D2:
         stmdb   sp!, {r4 - r11, lr}
         ldr     r12, [sp, #0x24]
         cmp     r0, #0
