@@ -132,6 +132,8 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
     memset(m_pSyncPoint, 0, sizeof(m_pSyncPoint));
 	m_arguments = pstrArguments;
     
+	_native_window = (ANativeWindow*) native_window;
+
 	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
     new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
 	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
@@ -145,8 +147,6 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
 	pluginManager->RegisterStaticCodec("H.263",
 			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
-
-	_native_window = (ANativeWindow*) native_window;
 
 	printf("H.264 version: %d", Opal_StaticCodec_D264_GetAPIVersion());
 	pluginManager->RegisterStaticCodec("H.264",

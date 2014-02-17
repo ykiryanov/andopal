@@ -28,21 +28,25 @@ void opalInitialize() {
 	else
 		LOGI("OPAL version %d\n", version);
 
-//	// Register codecs
-//	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
-//	new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
-//	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
-//
-//	LOGI("H.261 version: %d", Opal_StaticCodec_VIC_H261_GetAPIVersion());
-//	pluginManager->RegisterStaticCodec("H.261",
-//			Opal_StaticCodec_VIC_H261_GetAPIVersion,
-//						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
-//
-//	LOGI("H.263 version: %d", Opal_StaticCodec_DINSK_H263_GetAPIVersion());
-//	pluginManager->RegisterStaticCodec("H.263-DINSK",
-//			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
-//						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
+	// Register codecs
+	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
+	new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
+	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
 
+	LOGI("H.261 version: %d", Opal_StaticCodec_VIC_H261_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.261",
+			Opal_StaticCodec_VIC_H261_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
+
+	LOGI("H.263 version: %d", Opal_StaticCodec_DINSK_H263_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.263-DINSK",
+			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
+
+	LOGI("H.264 version: %d", Opal_StaticCodec_D264_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.264",
+			Opal_StaticCodec_D264_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 }
 
  void opalShutdown() {
