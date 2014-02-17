@@ -226,7 +226,7 @@ stats_endFrame( Stats*  s )
             avgRender /= s->numFrames;
             avgFrame  /= s->numFrames;
             
-            LOGI("frame/s (avg,min,max) = (%.1f,%.1f,%.1f) "
+            LOGW("frame/s (avg,min,max) = (%.1f,%.1f,%.1f) "
                  "render time ms (avg,min,max) = (%.1f,%.1f,%.1f)\n",
                  1000./avgFrame, 1000./maxFrame, 1000./minFrame,
                  avgRender, minRender, maxRender);
@@ -262,6 +262,8 @@ struct engine {
     Stats stats;
     
     int animating;
+
+    int calling;
 };
 
 static void engine_draw_frame(struct engine* engine) {
@@ -323,11 +325,15 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
                                 (void*) engine->app->window);
 #elif defined(PREVIEWER)
 				createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30"
-                                " --display-device NativeWindow G.711-uLaw-64k H.263P-DINSK",
+                                " --display-device NativeWindow G.711-uLaw-64k H.264-0",
                                 (void*) engine->app->window);
 #else
-				setupOptions();
-				doCall();
+				if(!engine->calling)
+				{
+					engine->calling = 1;
+					setupOptions();
+					doCall();
+				}
 #endif
             }
             break;

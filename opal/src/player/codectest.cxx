@@ -31,6 +31,75 @@ unsigned int Opal_StaticCodec_D264_GetAPIVersion();
 struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned version);
 };
 
+#ifdef ANDROID
+#include <android/log.h>
+
+#define  LOG_TAG    "opal"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+class CodecTestAndroidDebugStream : public ostream {
+  public:
+	CodecTestAndroidDebugStream();
+
+  private:
+    class Buffer : public streambuf {
+      public:
+        Buffer();
+        virtual int overflow(int=EOF);
+        virtual int underflow();
+        virtual int sync();
+        char buffer[250];
+    } buffer;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// PAndroidDebugStream
+
+CodecTestAndroidDebugStream::CodecTestAndroidDebugStream()
+  : ostream(&buffer)
+{
+}
+
+
+CodecTestAndroidDebugStream::Buffer::Buffer()
+{
+  setg(buffer, buffer, &buffer[sizeof(buffer)-2]);
+  setp(buffer, &buffer[sizeof(buffer)-2]);
+}
+
+int CodecTestAndroidDebugStream::Buffer::overflow(int c)
+{
+  size_t bufSize = pptr() - pbase();
+
+  if (c != EOF) {
+    *pptr() = (char)c;
+    bufSize++;
+  }
+
+  if (bufSize != 0) {
+    char * p = pbase();
+    setp(p, epptr());
+    p[bufSize] = '\0';
+
+    LOGI("%s", p);
+  }
+
+  return 0;
+}
+
+int CodecTestAndroidDebugStream::Buffer::underflow()
+{
+  return EOF;
+}
+
+int CodecTestAndroidDebugStream::Buffer::sync()
+{
+  return overflow(EOF);
+}
+#endif
+
 #ifdef BONEPLAYER
 #include <player/Mpeg2TS.h>
 
@@ -132,7 +201,10 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
     memset(m_pSyncPoint, 0, sizeof(m_pSyncPoint));
 	m_arguments = pstrArguments;
     
-	_native_window = (ANativeWindow*) native_window;
+#ifdef ANDROID
+	PTrace::SetLevel(4);
+	PTrace::SetStream(new CodecTestAndroidDebugStream);
+#endif
 
 	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
     new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
@@ -144,12 +216,12 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
 
 	printf("H.263 version: %d", Opal_StaticCodec_DINSK_H263_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.263",
+	pluginManager->RegisterStaticCodec("H.263-DINSK",
 			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
 
 	printf("H.264 version: %d", Opal_StaticCodec_D264_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.264",
+	pluginManager->RegisterStaticCodec("H.264-DINSK",
 			Opal_StaticCodec_D264_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 

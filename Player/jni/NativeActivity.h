@@ -36,14 +36,6 @@ extern "C" {
 	extern 	void deleteCodecTest(void* handle);
 	extern 	int setupOptions();
 	extern  int doCall();
-
-	unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
-	unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
-
-	unsigned int Opal_StaticCodec_D264_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned /*version*/);
 #ifdef __cplusplus
 };
 #endif

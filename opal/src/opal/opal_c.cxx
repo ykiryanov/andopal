@@ -143,6 +143,74 @@ inline bool IsNullString(const char * str)
   return str == NULL || *str == '\0';
 }
 
+#ifdef ANDROID
+#include <android/log.h>
+
+#define  LOG_TAG    "opal"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+class PAndroidDebugStream : public ostream {
+  public:
+	PAndroidDebugStream();
+
+  private:
+    class Buffer : public streambuf {
+      public:
+        Buffer();
+        virtual int overflow(int=EOF);
+        virtual int underflow();
+        virtual int sync();
+        char buffer[250];
+    } buffer;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// PAndroidDebugStream
+
+PAndroidDebugStream::PAndroidDebugStream()
+  : ostream(&buffer)
+{
+}
+
+
+PAndroidDebugStream::Buffer::Buffer()
+{
+  setg(buffer, buffer, &buffer[sizeof(buffer)-2]);
+  setp(buffer, &buffer[sizeof(buffer)-2]);
+}
+
+int PAndroidDebugStream::Buffer::overflow(int c)
+{
+  size_t bufSize = pptr() - pbase();
+
+  if (c != EOF) {
+    *pptr() = (char)c;
+    bufSize++;
+  }
+
+  if (bufSize != 0) {
+    char * p = pbase();
+    setp(p, epptr());
+    p[bufSize] = '\0';
+
+    LOGI("%s", p);
+  }
+
+  return 0;
+}
+
+int PAndroidDebugStream::Buffer::underflow()
+{
+  return EOF;
+}
+
+int PAndroidDebugStream::Buffer::sync()
+{
+  return overflow(EOF);
+}
+#endif
 
 class OpalMessageBuffer
 {
@@ -456,18 +524,23 @@ struct OpalHandleStruct
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
 
     PTRACE(1, "H.263 version: " << Opal_StaticCodec_DINSK_H263_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.263",
+	pluginManager->RegisterStaticCodec("H.263-DINSK",
 			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
 
 	PTRACE(1, "H.264 version: " << Opal_StaticCodec_D264_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.264",
+	pluginManager->RegisterStaticCodec("H.264-DINSK",
 			Opal_StaticCodec_D264_GetAPIVersion,
 						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 
     m_manager = new OpalManager_C(version, args);
 
-    PTRACE(1, "Start Up, OPAL version " << OpalGetVersion());
+#ifdef ANDROID
+	PTrace::SetLevel(4);
+	PTrace::SetStream(new PAndroidDebugStream);
+#endif
+
+   PTRACE(1, "Start Up, OPAL version " << OpalGetVersion());
   }
 
   ~OpalHandleStruct()
