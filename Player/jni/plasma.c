@@ -29,9 +29,7 @@
 
 #include "NativeActivity.h"
 
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define NETPLAYER 1
 
 /* Set to 1 to enable debug log traces. */
 #define DEBUG 1
@@ -101,63 +99,6 @@ typedef int32_t  Angle;
 #  define  ANGLE_FROM_FIXED(x)     (Angle)((x) << (ANGLE_BITS - FIXED_BITS))
 #  define  ANGLE_TO_FIXED(x)       (Fixed)((x) >> (ANGLE_BITS - FIXED_BITS))
 #endif
-
-/* Color palette used for rendering the plasma */
-#define  PALETTE_BITS   8
-#define  PALETTE_SIZE   (1 << PALETTE_BITS)
-
-#if PALETTE_BITS > FIXED_BITS
-#  error PALETTE_BITS must be smaller than FIXED_BITS
-#endif
-
-static uint16_t  palette[PALETTE_SIZE];
-
-static uint16_t  make565(int red, int green, int blue)
-{
-    return (uint16_t)( ((red   << 8) & 0xf800) |
-                      ((green << 2) & 0x03e0) |
-                      ((blue  >> 3) & 0x001f) );
-}
-
-static void init_palette(void)
-{
-    int  nn, mm = 0;
-    /* fun with colors */
-    for (nn = 0; nn < PALETTE_SIZE/4; nn++) {
-        int  jj = (nn-mm)*4*255/PALETTE_SIZE;
-        palette[nn] = make565(255, jj, 255-jj);
-    }
-    
-    for ( mm = nn; nn < PALETTE_SIZE/2; nn++ ) {
-        int  jj = (nn-mm)*4*255/PALETTE_SIZE;
-        palette[nn] = make565(255-jj, 255, jj);
-    }
-    
-    for ( mm = nn; nn < PALETTE_SIZE*3/4; nn++ ) {
-        int  jj = (nn-mm)*4*255/PALETTE_SIZE;
-        palette[nn] = make565(0, 255-jj, 255);
-    }
-    
-    for ( mm = nn; nn < PALETTE_SIZE; nn++ ) {
-        int  jj = (nn-mm)*4*255/PALETTE_SIZE;
-        palette[nn] = make565(jj, 0, 255);
-    }
-}
-
-static __inline__ uint16_t  palette_from_fixed( Fixed  x )
-{
-    if (x < 0) x = -x;
-    if (x >= FIXED_ONE) x = FIXED_ONE-1;
-    int  idx = FIXED_FRAC(x) >> (FIXED_BITS - PALETTE_BITS);
-    return palette[idx & (PALETTE_SIZE-1)];
-}
-
-/* Angles expressed as fixed point radians */
-
-static void init_tables(void)
-{
-    init_palette();
-}
 
 /* simple stats management */
 typedef struct {
@@ -297,10 +238,7 @@ static void engine_term_display(struct engine* engine) {
 static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) {
     struct engine* engine = (struct engine*)app->userData;
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-        if(!engine->animating)
-        {
-        	engine->animating = 1;
-            
+        if (AInputEvent_getType(event) == AMOTION_EVENT_ACTION_MOVE) {
         }
         return 1;
     } else if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
@@ -308,6 +246,7 @@ static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) 
              AKeyEvent_getAction(event),
              AKeyEvent_getKeyCode(event),
              AKeyEvent_getMetaState(event));
+		exit(0);
     }
     
     return 0;
@@ -319,30 +258,16 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
         case APP_CMD_INIT_WINDOW:
             if (engine->app->window != NULL) {
                 //engine_draw_frame(engine);
-#if defined(NETPLAYER)
-				createCodecTest("--listen-address * --listen-port 5004"
-                                " --display-device NativeWindow G.711-uLaw-64k H.263P-DINSK",
+				createCodecTest("--listen-address * --listen-port 1234"
+                                " --display-device NativeWindow G.711-uLaw-64k YUV420P",
                                 (void*) engine->app->window);
-#elif defined(PREVIEWER)
-				createCodecTest("--grab-device Fake/MovingBlocks --frame-size cif --frame-rate 30"
-                                " --display-device NativeWindow G.711-uLaw-64k H.264-0",
-                                (void*) engine->app->window);
-#else
-				if(!engine->calling)
-				{
-					engine->calling = 1;
-					setupOptions();
-					doCall();
-				}
-#endif
             }
             break;
         case APP_CMD_TERM_WINDOW:
             engine_term_display(engine);
             break;
         case APP_CMD_LOST_FOCUS:
-            engine->animating = 0;
-            //engine_draw_frame(engine);
+            //engine->animating = 0;
             break;
     }
 }
@@ -362,7 +287,6 @@ void android_main(struct android_app* state) {
     engine.app = state;
     
     if (!init) {
-        init_tables();
         init = 1;
     }
     
@@ -370,7 +294,7 @@ void android_main(struct android_app* state) {
     
 	opalInitialize();
     // loop waiting for stuff to do.
-    
+
     while (1) {
         // Read all pending events.
         int ident;
@@ -395,10 +319,6 @@ void android_main(struct android_app* state) {
             	opalShutdown();
                 return;
             }
-        }
-        
-        if (engine.animating) {
-            engine_draw_frame(&engine);
         }
     }
     

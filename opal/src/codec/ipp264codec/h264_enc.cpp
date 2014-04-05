@@ -17,6 +17,8 @@
 
 #include <codec/opalplugin.hpp>
 
+//#define TEST_IMAGE
+
 extern int h264TraceLevel;
 extern const char* UMCStatusToText(UMC::Status status);
 
@@ -206,6 +208,33 @@ int H264Encoder::EncodeFrames (const uchar* src, unsigned& srcLen, uchar* dst, u
     if (!_ActivationMonitor.CanUse())
         return false;
 #endif
+
+#ifdef TEST_IMAGE
+    u32 nWH = _frameWidth * _frameHeight;
+    unsigned char* pY = ((unsigned char*) src) + 16+12;
+    unsigned char* pU = pY + nWH;
+    unsigned char* pV = pU + (nWH>>2);
+
+    memset(pY, 128, _frameSize);
+
+    static unsigned char iii = 120;
+    memset(pU+(nWH>>5), iii, nWH>>4);
+
+    if (++iii > 200)
+        iii = 50;
+
+    unsigned char* pLine = pY;
+    for (int y=0;y<_frameHeight/4; y++, pLine += _frameWidth) {
+        unsigned char* p = pLine;
+        for (int x=0;x<_frameWidth/4; x++)
+            p[x] = 0+x;
+    }
+
+	memset((void*) pY, rand() & 0xFF, nWH);
+	memset((void*) pU, rand() & 0xFF, nWH>>2);
+	memset((void*) pV, rand() & 0xFF, nWH>>2);
+
+ #endif // TEST_IMAGE
     
     RTPFrame srcRTP(src, srcLen);
     RTPFrame dstRTP(dst, dstLen, _nRtpPayload);

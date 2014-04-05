@@ -7,7 +7,10 @@
 //
 
 #include <player/mpeg2ts.h>
+#ifdef DINSK_CODEC
 #include <player/h264tsdec.h>
+
+#endif
 #include <player/audio.h>
 
 void dump(void* ptr, unsigned sz);
@@ -39,14 +42,14 @@ inline u16 GET_16U(const u8* p) { return (((u16)p[0])<<8) | p[1];}
 int Mpeg2TS::Stream::process(const u8* data, int iPos)
 {
     if (_inFrameSize == 0) {
-        printf("Broken packet \n");
+    	PTRACE(4, "" << psprintf("Broken packet \n"));
         return 0;
     }
 
     int sz = PACKET_SIZE - iPos;
     if (_frameSize + sz > _inFrameSize) {
         _inFrameSize = _frameSize = 0;
-        printf("frameSize + sz > _inFrameSize");
+        PTRACE(4, "" << psprintf("frameSize + sz > _inFrameSize"));
         return 0;
     }
     
@@ -136,7 +139,7 @@ void Mpeg2TS::dispatchPacket(const u8* data)
         iPos += 1 + adapt_field_len;
     }
     
-    //printf("iPid=0x%4.4x bPreStart=%d, adapt_field_ctrl=%d adapt_field_len=%d iPos=%d\n", iPid, bPreStart, adapt_field_ctrl, adapt_field_len, iPos);
+    PTRACE(4, "" << psprintf("iPid=0x%4.4x bPreStart=%d, adapt_field_ctrl=%d adapt_field_len=%d iPos=%d\n", iPid, bPreStart, adapt_field_ctrl, adapt_field_len, iPos));
     
     if(!bPreStart)
     {
@@ -167,14 +170,47 @@ void Mpeg2TS::dispatchPacket(const u8* data)
 
 void Mpeg2TS::videoFrame(u8* frame, u32 frameSize)
 {
+    PTRACE(4, "Mpeg2TS::videoFrame 1");
     if (_decoder)
     {
+#ifdef DINSK_CODEC
         _decoder->decode(frame, frameSize);
         
-        if(_decoder && _decoder->getOutBuffer())
+        PTRACE(4, "Mpeg2TS::videoFrame 2");
+        
+        Ipp8u* outBuffer = _decoder->getOutBuffer();
+        int frameWidth = _decoder->getFrameWidth();
+        int frameHeight = _decoder->getFrameHeight();
+#else
+        int frameWidth = 0;
+        int frameHeight = 0;
+
+        void* data[3];
+        memset(data, 0, sizeof(data));
+        SBufferInfo bufInfo;
+        memset(&bufInfo, 0, sizeof(SBufferInfo));
+		DECODING_STATE rv = _decoder->DecodeFrame2(frame, frameSize, data, &bufInfo);
+        
+        frameWidth = bufInfo.UsrData.sSystemBuffer.iWidth;
+        frameHeight = bufInfo.UsrData.sSystemBuffer.iHeight;
+
+        unsigned char* outBuffer = NULL;
+//        int stride  = 0;
+//        DECODING_STATE rv = _decoder->DecodeFrame (frame, frameSize, &outBuffer, &stride, frameWidth, frameHeight);
+
+        PTRACE(4, "Mpeg2TS::DecodeFrame2 result " << rv << ", frame width " << frameWidth << ", frame height " << frameHeight);
+
+        if (bufInfo.iBufferStatus == 1)
+            outBuffer = static_cast<uint8_t*>(data[0]);
+#endif
+        if(_decoder && outBuffer)
         {
+            PTRACE(4, "Mpeg2TS::videoFrame 3");
             if(_opaque && _yuv420PlaybackCallback)
-                _yuv420PlaybackCallback(_opaque, _decoder->getOutBuffer(), _decoder->getFrameWidth(), _decoder->getFrameHeight());
+            {
+                PTRACE(4, "Mpeg2TS::videoFrame 4");
+                _yuv420PlaybackCallback(_opaque, outBuffer, frameWidth, frameHeight);
+            }
         }
     }
 }
@@ -182,7 +218,7 @@ void Mpeg2TS::videoFrame(u8* frame, u32 frameSize)
 
 void Mpeg2TS::audioFrame(u8* frame, u32 frameSize)
 {
-    _audioStream.aacDecoder.decode(frame, frameSize);
+    // _audioStream.aacDecoder.decode(frame, frameSize);
 }
 
 void AAC_Dec::decode(const void* frame, unsigned frameSize)
@@ -206,11 +242,11 @@ void AAC_Dec::decode(const void* frame, unsigned frameSize)
     {
         switch(result) {
             case ERR_AAC_INDATA_UNDERFLOW:
-                printf("AAC_Dec error ERR_AAC_INDATA_UNDERFLOW\n");
+            	PTRACE(4, "" << psprintf("AAC_Dec error ERR_AAC_INDATA_UNDERFLOW\n"));
                 _pInEnd = _inBuf;
                 break;
             default:
-                printf("AAC_Dec error %d\n", result);
+            	PTRACE(4, "" << psprintf("AAC_Dec error %d\n", result));
                 _pInEnd = _inBuf;
                 break;
         }

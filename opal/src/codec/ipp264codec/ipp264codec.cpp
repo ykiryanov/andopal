@@ -8,6 +8,12 @@
  * Contributor(s): Sergey Bezruchkin, sergey@dinsk.net and Yuri Kiryanov, yuri@dinsk.net
  */
 
+#ifdef __TIMESTAMP__
+#undef __TIMESTAMP__
+#endif
+
+#define __TIMESTAMP__ "1156040055"
+
 #ifndef PLUGIN_CODEC_DLL_EXPORTS
 #include <plugin_config.h>
 #endif
@@ -17,9 +23,9 @@
 
 #include "h264.h"
 
-#ifndef PLUGINCODEC_CONTROL_LOG_FUNCTION_DEF
+//#ifndef PLUGINCODEC_CONTROL_LOG_FUNCTION_DEF
 PLUGINCODEC_CONTROL_LOG_FUNCTION_DEF
-#endif
+//#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -38,25 +44,47 @@ IActivation*    ActivationMonitor::s_pActivation = NULL;
 
 int h264TraceLevel = -1;
 
-PLUGINCODEC_LICENSE(
-  "Sergey Bezruchkin\n"
-  "Yuri Kiryanov, Dinsk LLP.",                                  // source code author
-  "1.0",                                                        // source code version
-  "developer@dinsk.net",                                        // source code email
-  "http://www.dinsk.net",                                       // source code URL
-  "Copyright (C) 2009-2013 by Dinsk, LLP, All Rights Reserved", // source code copyright
-  "Proprietary License",                                        // source code license
-  PluginCodec_License_RoyaltiesRequired,                        // source code license
-  
-  D264Description,                                              // codec description
-  "Dinsk, LLP",                                                 // codec author
-  "1.0",                                                        // codec version
-  "developer@dinsk.net",                                        // codec email
-  "http://www.dinsk.net",                                       // codec URL
-  "Copyright (C) 2009-2012 by Dinsk, LLP, All Rights Reserved", // codec copyright information
-  "Royalities Required",                                        //
-  PluginCodec_License_RoyaltiesRequired                         // codec license code
-);
+//PLUGINCODEC_LICENSE(
+//  "Sergey Bezruchkin\n"
+//  "Yuri Kiryanov, Dinsk LLP.",                                  // source code author
+//  "1.0",                                                        // source code version
+//  "developer@dinsk.net",                                        // source code email
+//  "http://www.dinsk.net",                                       // source code URL
+//  "Copyright (C) 2009-2013 by Dinsk, LLP, All Rights Reserved", // source code copyright
+//  "Proprietary License",                                        // source code license
+//  PluginCodec_License_RoyaltiesRequired,                        // source code license
+//
+//  D264Description,                                              // codec description
+//  "Dinsk, LLP",                                                 // codec author
+//  "1.0",                                                        // codec version
+//  "developer@dinsk.net",                                        // codec email
+//  "http://www.dinsk.net",                                       // codec URL
+//  "Copyright (C) 2009-2012 by Dinsk, LLP, All Rights Reserved", // codec copyright information
+//  "Royalities Required",                                        //
+//  PluginCodec_License_RoyaltiesRequired                         // codec license code
+//);
+
+static struct PluginCodec_information MyLicenseInfo =
+{
+	  1593790110,
+	  "Sergey Bezruchkin\nYuri Kiryanov, Dinsk LLP.",               // source code author
+	  "1.0",                                                        // source code version
+	  "developer@dinsk.net",                                        // source code email
+	  "http://www.dinsk.net",                                       // source code URL
+	  "Copyright (C) 2009-2013 by Dinsk, LLP, All Rights Reserved", // source code copyright
+	  "Proprietary License",                                        // source code license
+	  PluginCodec_License_RoyaltiesRequired,                        // source code license
+
+	  D264Description,                                              // codec description
+	  "Dinsk, LLP",                                                 // codec author
+	  "1.0",                                                        // codec version
+	  "developer@dinsk.net",                                        // codec email
+	  "http://www.dinsk.net",                                       // codec URL
+	  "Copyright (C) 2009-2012 by Dinsk, LLP, All Rights Reserved", // codec copyright information
+	  "Royalities Required",                                        //
+	  PluginCodec_License_RoyaltiesRequired,                         // codec license code
+	  "1593790110"
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -470,7 +498,6 @@ static struct PluginCodec_H323GenericCodecData MyH323GenericData = {
   OpalPluginCodec_Identifer_H264_Generic
 };
 
-#ifndef BONEPLAYER
 ///////////////////////////////////////////////////////////////////////////////
 
 bool H264Encoder::SetOption(const char * optionName, const char * optionValue)
@@ -564,8 +591,6 @@ bool H264Encoder::SetPacketisationMode(unsigned mode)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#endif // !BONEPLAYER
-
 ///////////////////////////////////////////////////////////////////////////////
 
 class H264_PluginMediaFormat : public PluginCodec_VideoFormat<D264>
@@ -601,8 +626,6 @@ static H264_PluginMediaFormat MyMediaFormatInfo_High (H264_High_FormatName,  MyO
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef BONEPLAYER
-
 ///////////////////////////////////////////////////////////////////////////////
 
 static struct PluginCodec_Definition CodecDefinition[] =
@@ -614,29 +637,15 @@ static struct PluginCodec_Definition CodecDefinition[] =
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#else
-
-static struct PluginCodec_Definition CodecDefinition[] =
-{
-    PLUGINCODEC_VIDEO_CODEC_CXX(MyMediaFormatInfo_Mode0, H264Decoder, H264Decoder),
-    PLUGINCODEC_VIDEO_CODEC_CXX(MyMediaFormatInfo_Mode1, H264Decoder, H264Decoder),
-    PLUGINCODEC_VIDEO_CODEC_CXX(MyMediaFormatInfo_High,  H264Decoder, H264Decoder)
-};
-
-#endif // !BONEPLAYER
-
-///////////////////////////////////////////////////////////////////////////////
-
 // PLUGIN_CODEC_IMPLEMENT_CXX(D264, CodecDefinition);
-
 
 /////////////////////////////////////////////////////////////////////////////
 
 static struct PluginCodec_Description gPluginDescr =
 {
-    1,     // same as plugin version
-    &MyLicenseInfo,                       //
-    (int) ACTIVATION_UNREGISTERED
+	PLUGIN_CODEC_VERSION_OPTIONS,     // same as plugin version
+    &MyLicenseInfo                       //
+    //,(int) ACTIVATION_UNREGISTERED
 };
 
 

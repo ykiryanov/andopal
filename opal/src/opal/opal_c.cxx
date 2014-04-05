@@ -1,5 +1,4 @@
 /*
- * opal_c.cxx
  *
  * "C" language interface for OPAL
  *
@@ -32,6 +31,7 @@
  */
 
 #include <ptlib.h>
+#include <ptclib/mime.h>
 
 #include <opal_config.h>
 
@@ -55,19 +55,21 @@
 
 #include <queue>
 
-extern "C" {
-	unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
-	unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
-	unsigned int Opal_StaticCodec_D264_GetAPIVersion();
-	struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned version);
-};
-
 class OpalManager_C;
 
+enum {
+    eMovingBlocks,
+    eMovingLine,
+    eBouncingBoxes,
+    eSolidColour,
+    eOriginalMovingBlocks,
+    eText,
+    eNTSCTest,
+    eNumTestPatterns
+};
 
-#define PTraceModule() "Opal C"
+
+#define PTraceModule() "OPALC"
 
 static const char * const LocalPrefixes[] = {
   OPAL_PREFIX_PCSS,
@@ -143,7 +145,7 @@ inline bool IsNullString(const char * str)
   return str == NULL || *str == '\0';
 }
 
-#ifdef ANDROID
+#if PTRACING
 #include <android/log.h>
 
 #define  LOG_TAG    "opal"
@@ -273,7 +275,6 @@ class OpalPCSSEndPoint_C : public OpalPCSSEndPoint, public OpalMediaDataCallback
     virtual bool OnWriteMediaFrame(const OpalLocalConnection &, const OpalMediaStream &, RTP_DataFrame & frame);
     virtual bool OnReadMediaData(const OpalLocalConnection &, const OpalMediaStream &, void *, PINDEX, PINDEX &);
     virtual bool OnWriteMediaData(const OpalLocalConnection &, const OpalMediaStream &, const void *, PINDEX, PINDEX &);
-
   protected:
     OpalManager_C & m_manager;
 };
@@ -298,44 +299,6 @@ class OpalLocalEndPoint_C : public OpalLocalEndPoint, public OpalMediaDataCallba
   private:
     OpalManager_C & m_manager;
 };
-
-
-#if OPAL_GSTREAMER
-
-class OpalGstEndPoint_C : public GstEndPoint
-{
-    PCLASSINFO(OpalGstEndPoint_C, GstEndPoint);
-  public:
-    OpalGstEndPoint_C(OpalManager_C & manager);
-
-    virtual bool OnOutgoingCall(const OpalLocalConnection &);
-    virtual bool OnIncomingCall(OpalLocalConnection & connection);
-
-  private:
-    OpalManager_C & m_manager;
-};
-
-#endif // OPAL_GSTREAMER
-
-
-#if OPAL_IVR
-
-class OpalIVREndPoint_C : public OpalIVREndPoint
-{
-    PCLASSINFO(OpalIVREndPoint_C, OpalIVREndPoint);
-  public:
-    OpalIVREndPoint_C(OpalManager_C & manager);
-
-    virtual bool OnOutgoingCall(const OpalLocalConnection &);
-    virtual bool OnIncomingCall(OpalLocalConnection & connection);
-    virtual void OnEndDialog(OpalIVRConnection & connection);
-
-  private:
-    OpalManager_C & m_manager;
-};
-
-#endif // OPAL_IVR
-
 
 #if OPAL_SIP
 class SIPEndPoint_C : public SIPEndPoint
@@ -496,8 +459,8 @@ static PProcess::CodeStatus GetCodeStatus(const PString & str)
 struct OpalHandleStruct
 {
   OpalHandleStruct(unsigned version, const PArgList & args)
-    : m_process(args.GetOptionString("manufacturer", "OPAL VoIP"),
-                args.GetOptionString("name", "OPAL"),
+    : m_process(args.GetOptionString("manufacturer", "CrowdOptic"),
+                args.GetOptionString("name", "Crowd"),
                 args.GetOptionString("major", "1").AsUnsigned(),
                 args.GetOptionString("minor", "0").AsUnsigned(),
                 GetCodeStatus(args.GetOptionString("status")),
@@ -509,38 +472,37 @@ struct OpalHandleStruct
       m_process.SetConfigurationPath(args.GetOptionString("config"));
 #endif
 
-    if (args.HasOption("plugin"))
-      PPluginManager::GetPluginManager().SetDirectories(args.GetOptionString("plugin").Lines());
-
     m_process.Startup();
+	m_manager = new OpalManager_C(version, args);
 
-	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
-    new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
-	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
-
-    PTRACE(1, "H.261 version: " << Opal_StaticCodec_VIC_H261_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.261",
-			Opal_StaticCodec_VIC_H261_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
-
-    PTRACE(1, "H.263 version: " << Opal_StaticCodec_DINSK_H263_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.263-DINSK",
-			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
-
-	PTRACE(1, "H.264 version: " << Opal_StaticCodec_D264_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.264-DINSK",
-			Opal_StaticCodec_D264_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
-
-    m_manager = new OpalManager_C(version, args);
-
+#if PTRACING
+	PTrace::SetLevel(0);
 #ifdef ANDROID
-	PTrace::SetLevel(4);
 	PTrace::SetStream(new PAndroidDebugStream);
+#endif
 #endif
 
    PTRACE(1, "Start Up, OPAL version " << OpalGetVersion());
+
+    PTRACE(1, "OpalMan\tValid video input devices:");
+	PStringList vinDevices = PVideoInputDevice::GetDriversDeviceNames("*");
+	for (PINDEX i = 0; i < vinDevices.GetSize(); i++)
+		PTRACE(1, "   " << vinDevices[i]);
+
+    PTRACE(1, "OpalMan\tValid video output devices:");
+	PStringList voutDevices = PVideoOutputDevice::GetDriversDeviceNames("*");
+	for (PINDEX i = 0; i < voutDevices.GetSize(); i++)
+		PTRACE(1, "   " << voutDevices[i]);
+
+	PVideoDevice::OpenArgs displayArgs = m_manager->GetVideoOutputDevice();
+	displayArgs.driverName = "Null Video Out";
+	displayArgs.videoFormat = PVideoDevice::Auto;
+	displayArgs.channelNumber = 0;
+	displayArgs.rate = 30;
+
+	m_manager->SetVideoOutputDevice(displayArgs);
+    PTRACE(1, "OpalMan\tVideo output device driver name: " << m_manager->GetVideoOutputDevice().driverName);
+
   }
 
   ~OpalHandleStruct()
@@ -1244,6 +1206,8 @@ OpalManager_C::~OpalManager_C()
 
 void OpalManager_C::PostMessage(OpalMessageBuffer & message)
 {
+  m_messageAvailableCallback = NULL; // SB
+
   m_messageMutex.Wait();
   if (m_messageAvailableCallback == NULL || m_messageAvailableCallback(message)) {
     m_messageQueue.push(message.Detach());
@@ -1365,12 +1329,16 @@ void OpalManager_C::HandleSetGeneral(const OpalMessage & command, OpalMessageBuf
       pcssEP->SetSoundChannelPlayDevice(command.m_param.m_general.m_audioPlayerDevice);
 
 #if OPAL_VIDEO
+    PTRACE(1, "1");
+
     PVideoDevice::OpenArgs video = GetVideoInputDevice();
     SET_MESSAGE_STRING(response, m_param.m_general.m_videoInputDevice, video.deviceName);
     if (!IsNullString(command.m_param.m_general.m_videoInputDevice)) {
       video.deviceName = command.m_param.m_general.m_videoInputDevice;
       SetVideoInputDevice(video);
     }
+
+    PTRACE(1, "2");
 
     video = GetVideoOutputDevice();
     SET_MESSAGE_STRING(response, m_param.m_general.m_videoOutputDevice, video.deviceName);
@@ -1379,12 +1347,15 @@ void OpalManager_C::HandleSetGeneral(const OpalMessage & command, OpalMessageBuf
       SetVideoOutputDevice(video);
     }
 
+    PTRACE(1, "3");
+
     video = GetVideoPreviewDevice();
     SET_MESSAGE_STRING(response, m_param.m_general.m_videoPreviewDevice, video.deviceName);
     if (!IsNullString(command.m_param.m_general.m_videoPreviewDevice)) {
       video.deviceName = command.m_param.m_general.m_videoPreviewDevice;
       SetVideoPreviewDevice(video);
     }
+    PTRACE(1, "4");
 #endif // OPAL_VIDEO
   }
   else
@@ -1481,6 +1452,7 @@ void OpalManager_C::HandleSetGeneral(const OpalMessage & command, OpalMessageBuf
         definition->SetAutoStart(autoStart, true);
     }
   }
+
 
 #if P_NAT
   {
@@ -1756,6 +1728,7 @@ void OpalManager_C::HandleSetGeneral(const OpalMessage & command, OpalMessageBuf
     }
   }
 #endif
+
 }
 
 
@@ -2153,7 +2126,6 @@ static void SetOptionOverrides(bool originating,
   }
 }
 
-
 void OpalManager_C::HandleSetUpCall(const OpalMessage & command, OpalMessageBuffer & response)
 {
   if (IsNullString(command.m_param.m_callSetUp.m_partyB)) {
@@ -2199,6 +2171,9 @@ void OpalManager_C::HandleSetUpCall(const OpalMessage & command, OpalMessageBuff
     options.SetAt(OPAL_OPT_ALERTING_TYPE, command.m_param.m_callSetUp.m_alertingType);
   if (m_apiVersion >= 26)
     SetOptionOverrides(true, options, command.m_param.m_answerCall.m_overrides);
+
+  SetAutoStartReceiveVideo(true);
+  SetAutoStartTransmitVideo(true);
 
   PString token;
   if (SetUpCall(partyA, command.m_param.m_callSetUp.m_partyB, token, NULL, 0, &options)) {

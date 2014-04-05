@@ -1,11 +1,27 @@
 LOCAL_PATH := $(call my-dir)
 
+BASE_CFLAGS := -fexceptions -frtti
+BASE_CFLAGS += -DCIF_FRAME
+#BASE_CFLAGS += -DNDK_DEBUG=1
+#BASE_CFLAGS += -DPTRACING=1
+BASE_CFLAGS += -DANDROID
+BASE_CFLAGS += -DLINUX32
+BASE_CFLAGS += -DWOT_NO_FILESYSTEM
+
+BASE_CFLAGS += -DDINSK_CODEC
+
 #$(warning $(TARGET_C_INCLUDES))
+
+IPPASM_SRC_PATH := ../../opal/src/ipp
+IPPCOMMON_SRC_PATH := ../../opal/src/codec/common
 
 ##################PTLIB STATIC LIBRARY COMPILE##################
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := libptlibs
+LOCAL_CPP_FEATURES := rtti exceptions
+LOCAL_CFLAGS := -fexceptions -frtti
+LOCAL_CPPFLAGS := -fexceptions -frtti
 
 #LOCAL_EXPORT_C_INCLUDES := ../include
 LOCAL_C_INCLUDES := \
@@ -110,13 +126,119 @@ LOCAL_SRC_FILES := \
 	$(PTCLIB_SRC_PATH)/xmpp.cxx \
 	$(PTCLIB_SRC_PATH)/xmpp_c2s.cxx \
 	$(PTCLIB_SRC_PATH)/xmpp_muc.cxx \
-	$(PTCLIB_SRC_PATH)/xmpp_roster.cxx
+	$(PTCLIB_SRC_PATH)/xmpp_roster.cxx \
+	$(PTCLIB_SRC_PATH)/yuv2rgb.cxx
 
 include $(BUILD_STATIC_LIBRARY)
 ################################################################
 
+OPAL_SRC_PATH := ../../opal/src
+
+
+A := $(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp \
+
+LOCAL_UMC_FILES := \
+	$(OPAL_SRC_PATH)/umc/umc_video_processing.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_default_memory_allocator.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_dual_thread_codec.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_index.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_buffer.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_data.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_media_data_ex.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_muxer.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_splitter.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_utils.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_data.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_decoder.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_video_render.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_event.cpp
+
+LOCAL_UMC_FILES += \
+	$(OPAL_SRC_PATH)/umc/umc_malloc.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_mmap.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_mutex.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_par_reader.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_pendulum.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_semaphore.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_sys_info.cpp \
+	$(OPAL_SRC_PATH)/umc/umc_thread.cpp
+
+UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
+VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
+
+LOCAL_IPP_FILES := \
+	$(VM_SRC_PATH)/vm_debug_linux32.c \
+	$(VM_SRC_PATH)/vm_event_linux32.c \
+	$(VM_SRC_PATH)/vm_mmap_linux32.c \
+	$(VM_SRC_PATH)/vm_mutex_linux32.c \
+	$(VM_SRC_PATH)/vm_semaphore_linux32.c \
+	$(VM_SRC_PATH)/vm_shared_object_linux32.c \
+	$(VM_SRC_PATH)/vm_sys_info_linux32.c \
+	$(VM_SRC_PATH)/vm_thread_linux32.c \
+	$(VM_SRC_PATH)/vm_time_linux32.c \
+	$(VM_SRC_PATH)/vm_file_unix.c
+
+LOCAL_IPP_COMMON_FILES := \
+	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
+
+UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
+VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
+
+#LOCAL_IPP_FILES := \
+	$(UMC_SRC_PATH)/umc_base_codec.cpp \
+	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
+	$(UMC_SRC_PATH)/umc_media_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_data.cpp \
+	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
+	$(VM_SRC_PATH)/vm_debug_linux32.c
+
+LOCAL_IPP_COMMON_FILES := \
+	$(IPPASM_SRC_PATH)/ippslib.s \
+	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
+	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
+
+
+
+LOCAL_H263_FILES := \
+	$(IPPASM_SRC_PATH)/ippslib.s \
+	$(H263_SRC_PATH)/ipp263codec.cpp \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframeb.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframei.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decframep.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263decfuncs.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263parse.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263stream.c \
+	$(H263_SRC_PATH)/h263_dec/src/h263tbl.c \
+	$(H263_SRC_PATH)/h263_dec/src/umc_h263_video_decoder.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_bitstream.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_frame.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_headers.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_misc.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/h263_enc_tables.cpp \
+	$(H263_SRC_PATH)/h263_enc/src/umc_h263_video_encoder.cpp
+
+H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
+
+
+
+
 ##################OPAL STATIC LIBRARY COMPILE###################
 include $(CLEAR_VARS)
+
+LOCAL_MODULE := libopals
+LOCAL_STATIC_LIBRARIES := libptlibs
+
+LOCAL_CFLAGS := $(BASE_CFLAGS)
 
 #LOCAL_EXPORT_C_INCLUDES := ../include
 LOCAL_C_INCLUDES := \
@@ -124,14 +246,6 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../ptlib/include \
 	$(LOCAL_PATH)/../../opal/include \
 	$(TARGET_C_INCLUDES)
-
-OPAL_SRC_PATH := ../../opal/src
-H264_SRC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec
-H264_DEC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_dec/src
-H264_ENC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_enc/src
-H261_SRC_PATH := ../../opal/plugins/video/H.261-vic
-
-AAC_SRC_PATH := $(OPAL_SRC_PATH)/codec/aac
 
 LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/ep/skinnyep.cxx \
@@ -152,30 +266,6 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/rtp/rtp_session.cxx \
 	$(OPAL_SRC_PATH)/rtp/srtp_session.cxx \
 	$(OPAL_SRC_PATH)/rtp/zrtpudp.cxx \
-	$(OPAL_SRC_PATH)/asn/gcc.cxx \
-	$(OPAL_SRC_PATH)/asn/h225_1.cxx \
-	$(OPAL_SRC_PATH)/asn/h225_2.cxx \
-	$(OPAL_SRC_PATH)/asn/h235.cxx \
-	$(OPAL_SRC_PATH)/asn/h235_srtp.cxx \
-	$(OPAL_SRC_PATH)/asn/h245_1.cxx \
-	$(OPAL_SRC_PATH)/asn/h245_2.cxx \
-	$(OPAL_SRC_PATH)/asn/h245_3.cxx \
-	$(OPAL_SRC_PATH)/asn/h248.cxx \
-	$(OPAL_SRC_PATH)/asn/h4501.cxx \
-	$(OPAL_SRC_PATH)/asn/h45010.cxx \
-	$(OPAL_SRC_PATH)/asn/h45011.cxx \
-	$(OPAL_SRC_PATH)/asn/h4502.cxx \
-	$(OPAL_SRC_PATH)/asn/h4503.cxx \
-	$(OPAL_SRC_PATH)/asn/h4504.cxx \
-	$(OPAL_SRC_PATH)/asn/h4505.cxx \
-	$(OPAL_SRC_PATH)/asn/h4506.cxx \
-	$(OPAL_SRC_PATH)/asn/h4507.cxx \
-	$(OPAL_SRC_PATH)/asn/h4508.cxx \
-	$(OPAL_SRC_PATH)/asn/h4509.cxx \
-	$(OPAL_SRC_PATH)/asn/h501.cxx \
-	$(OPAL_SRC_PATH)/asn/mcs.cxx \
-	$(OPAL_SRC_PATH)/asn/t38.cxx \
-	$(OPAL_SRC_PATH)/asn/x880.cxx \
 	$(OPAL_SRC_PATH)/codec/h261mf.cxx \
 	$(OPAL_SRC_PATH)/codec/h263mf.cxx \
 	$(OPAL_SRC_PATH)/codec/h264mf.cxx \
@@ -205,62 +295,11 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/h224/h281.cxx \
 	$(OPAL_SRC_PATH)/h224/h323h224.cxx \
 	$(OPAL_SRC_PATH)/h224/q922.cxx \
-	$(OPAL_SRC_PATH)/h323/h235dh.cxx \
-	$(OPAL_SRC_PATH)/h323/channels.cxx \
-	$(OPAL_SRC_PATH)/h323/gkclient.cxx \
-	$(OPAL_SRC_PATH)/h323/gkserver.cxx \
-	$(OPAL_SRC_PATH)/h323/h225ras.cxx \
-	$(OPAL_SRC_PATH)/h323/h235auth.cxx \
-	$(OPAL_SRC_PATH)/h323/h235auth1.cxx \
-	$(OPAL_SRC_PATH)/h323/h323.cxx \
-	$(OPAL_SRC_PATH)/h323/h323annexg.cxx \
-	$(OPAL_SRC_PATH)/h323/h323caps.cxx \
-	$(OPAL_SRC_PATH)/h323/h323ep.cxx \
-	$(OPAL_SRC_PATH)/h323/h323neg.cxx \
-	$(OPAL_SRC_PATH)/h323/h323pdu.cxx \
-	$(OPAL_SRC_PATH)/h323/h323rtp.cxx \
-	$(OPAL_SRC_PATH)/h323/h323trans.cxx \
-	$(OPAL_SRC_PATH)/h323/h450pdu.cxx \
-	$(OPAL_SRC_PATH)/h323/h501pdu.cxx \
-	$(OPAL_SRC_PATH)/h323/peclient.cxx \
-	$(OPAL_SRC_PATH)/h323/q931.cxx \
-	$(OPAL_SRC_PATH)/h323/svcctrl.cxx \
-	$(OPAL_SRC_PATH)/h323/transaddr.cxx \
-	$(OPAL_SRC_PATH)/h460/h4601.cxx \
-	$(OPAL_SRC_PATH)/h460/h46018.cxx \
-	$(OPAL_SRC_PATH)/h460/h46019.cxx \
-	$(OPAL_SRC_PATH)/h460/h4609.cxx \
-	$(OPAL_SRC_PATH)/h460/h460p.cxx \
-	$(OPAL_SRC_PATH)/h460/h460pres.cxx \
-	$(OPAL_SRC_PATH)/h460/h460tm.cxx \
-	$(OPAL_SRC_PATH)/h460/h460_std19.cxx \
-	$(OPAL_SRC_PATH)/h460/h46024b.cxx \
-	$(OPAL_SRC_PATH)/h460/h460_std18.cxx \
-	$(OPAL_SRC_PATH)/h460/h460_std23.cxx \
-	$(OPAL_SRC_PATH)/h460/h460_std24.cxx \
-	$(OPAL_SRC_PATH)/iax2/callprocessor.cxx \
-	$(OPAL_SRC_PATH)/iax2/frame.cxx \
-	$(OPAL_SRC_PATH)/iax2/iax2con.cxx \
-	$(OPAL_SRC_PATH)/iax2/iax2ep.cxx \
-	$(OPAL_SRC_PATH)/iax2/iax2medstrm.cxx \
-	$(OPAL_SRC_PATH)/iax2/iedata.cxx \
-	$(OPAL_SRC_PATH)/iax2/ies.cxx \
-	$(OPAL_SRC_PATH)/iax2/processor.cxx \
-	$(OPAL_SRC_PATH)/iax2/receiver.cxx \
-	$(OPAL_SRC_PATH)/iax2/regprocessor.cxx \
-	$(OPAL_SRC_PATH)/iax2/remote.cxx \
-	$(OPAL_SRC_PATH)/iax2/safestrings.cxx \
-	$(OPAL_SRC_PATH)/iax2/sound.cxx \
-	$(OPAL_SRC_PATH)/iax2/specialprocessor.cxx \
-	$(OPAL_SRC_PATH)/iax2/transmit.cxx \
 	$(OPAL_SRC_PATH)/im/im_mf.cxx \
 	$(OPAL_SRC_PATH)/im/msrp.cxx \
 	$(OPAL_SRC_PATH)/im/rfc4103.cxx \
 	$(OPAL_SRC_PATH)/im/sipim.cxx \
 	$(OPAL_SRC_PATH)/im/t140.cxx \
-	$(OPAL_SRC_PATH)/lids/lid.cxx \
-	$(OPAL_SRC_PATH)/lids/lidep.cxx \
-	$(OPAL_SRC_PATH)/lids/lidpluginmgr.cxx \
 	$(OPAL_SRC_PATH)/opal/mediasession.cxx \
 	$(OPAL_SRC_PATH)/opal/call.cxx \
 	$(OPAL_SRC_PATH)/opal/connection.cxx \
@@ -271,7 +310,6 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/opal/mediafmt.cxx \
 	$(OPAL_SRC_PATH)/opal/mediastrm.cxx \
 	$(OPAL_SRC_PATH)/opal/mediatype.cxx \
-	$(OPAL_SRC_PATH)/opal/opal_c.cxx \
 	$(OPAL_SRC_PATH)/opal/patch.cxx \
 	$(OPAL_SRC_PATH)/opal/pres_ent.cxx \
 	$(OPAL_SRC_PATH)/opal/recording.cxx \
@@ -283,14 +321,21 @@ LOCAL_SRC_FILES := \
 	$(OPAL_SRC_PATH)/sip/sipep.cxx \
 	$(OPAL_SRC_PATH)/sip/sippdu.cxx \
 	$(OPAL_SRC_PATH)/sip/sippres.cxx \
-	$(OPAL_SRC_PATH)/t38/h323t38.cxx \
-	$(OPAL_SRC_PATH)/t38/sipt38.cxx \
-	$(OPAL_SRC_PATH)/t38/t38mf.cxx \
-	$(OPAL_SRC_PATH)/t38/t38proto.cxx
+	$(OPAL_SRC_PATH)/opal/opal_c.cxx
 
 
+include $(BUILD_STATIC_LIBRARY)
+##################################################################
+
+
+
+H264_SRC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec
+H264_DEC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_dec/src
+H264_ENC_PATH := $(OPAL_SRC_PATH)/codec/ipp264codec/codec/h264_enc/src
+
+################## H261 ###################
 	
-
+H261_SRC_PATH := ../../opal/plugins/video/H.261-vic
 LOCAL_H261_FILES := \
 	$(H261_SRC_PATH)/h261vic.cxx \
 	$(H261_SRC_PATH)/vic/bv.c \
@@ -303,6 +348,9 @@ LOCAL_H261_FILES := \
 	$(H261_SRC_PATH)/vic/vid_coder.cxx
 
 
+################## AAC ###################
+
+AAC_SRC_PATH := $(OPAL_SRC_PATH)/codec/aac
 LOCAL_AAC_FILES := $(AAC_SRC_PATH)/codec/fixpt/decoder/aacdec.c \
 			$(AAC_SRC_PATH)/codec/fixpt/decoder/aactabs.c \
 			$(AAC_SRC_PATH)/codec/fixpt/decoder/real/pns.c \
@@ -455,106 +503,23 @@ LOCAL_H264_ENC_FILES := \
 
 
 
-A :=	$(OPAL_SRC_PATH)/umc/umc_color_space_conversion.cpp \
-
-LOCAL_UMC_FILES := \
-	$(OPAL_SRC_PATH)/umc/umc_video_processing.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_audio_codec.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_audio_render.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_base_codec.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_default_memory_allocator.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_dual_thread_codec.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_index.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_media_buffer.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_media_data.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_media_data_ex.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_muxer.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_splitter.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_utils.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_video_data.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_video_decoder.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_video_encoder.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_video_render.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_event.cpp
-	
-
-LOCAL_UMC_FILES += \
-	$(OPAL_SRC_PATH)/umc/umc_malloc.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_mmap.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_mutex.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_par_reader.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_pendulum.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_semaphore.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_sys_info.cpp \
-	$(OPAL_SRC_PATH)/umc/umc_thread.cpp
-
-UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
-VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
-
-LOCAL_IPP_FILES := \
-        $(VM_SRC_PATH)/vm_debug_linux32.c \
-        $(VM_SRC_PATH)/vm_event_linux32.c \
-        $(VM_SRC_PATH)/vm_mmap_linux32.c \
-        $(VM_SRC_PATH)/vm_mutex_linux32.c \
-        $(VM_SRC_PATH)/vm_semaphore_linux32.c \
-        $(VM_SRC_PATH)/vm_shared_object_linux32.c \
-        $(VM_SRC_PATH)/vm_sys_info_linux32.c \
-        $(VM_SRC_PATH)/vm_thread_linux32.c \
-        $(VM_SRC_PATH)/vm_time_linux32.c \
-	$(VM_SRC_PATH)/vm_file_unix.c
-
-LOCAL_IPP_COMMON_FILES := \
-	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
-	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
-	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
-
-LOCAL_H263_FILES := \
-	$(IPPASM_SRC_PATH)/ippslib.s \
-	$(H263_SRC_PATH)/ipp263codec.cpp \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframe.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ei.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframe_ep.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframeb.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframei.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decframep.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263decfuncs.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263parse.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263stream.c \
-	$(H263_SRC_PATH)/h263_dec/src/h263tbl.c \
-	$(H263_SRC_PATH)/h263_dec/src/umc_h263_video_decoder.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/h263_enc_bitstream.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/h263_enc_frame.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/h263_enc_headers.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/h263_enc_misc.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/h263_enc_tables.cpp \
-	$(H263_SRC_PATH)/h263_enc/src/umc_h263_video_encoder.cpp
-
-H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
 
 LOCAL_PLAYER_FILES := \
-	$(OPAL_SRC_PATH)/player/mpeg2ts.cxx \
+	$(OPAL_SRC_PATH)/player/codectest.cxx \
 	$(OPAL_SRC_PATH)/player/udplistener.cxx \
-	$(OPAL_SRC_PATH)/player/audio.cxx
+	$(OPAL_SRC_PATH)/player/audio.cxx \
+	$(OPAL_SRC_PATH)/player/video.cxx \
+	$(OPAL_SRC_PATH)/player/h264TSDec.cxx \
+	$(OPAL_SRC_PATH)/player/mpeg2ts.cxx
 
-LOCAL_PLAYER_FILES +=	$(OPAL_SRC_PATH)/player/h264TSDec.cxx
-LOCAL_PLAYER_FILES +=   $(LOCAL_H264_DEC_FILES)
-LOCAL_PLAYER_FILES +=   $(LOCAL_H264_ENC_FILES)
-LOCAL_PLAYER_FILES +=	$(LOCAL_H264_FILES)
-LOCAL_PLAYER_FILES +=	$(LOCAL_UMC_FILES)
-
-LOCAL_STATIC_LIBRARIES := libptlibs
-LOCAL_MODULE := libopals
-
-include $(BUILD_STATIC_LIBRARY)
-##################################################################
 
 ##################OPAL STATIC LIBRARY COMPILE###################
 #include $(CLEAR_VARS)
 
 H263_SRC_PATH := ../../opal/src/codec/ipp263codec
-IPPCOMMON_SRC_PATH := ../../opal/src/codec/common
 
-IPPASM_SRC_PATH := ../../opal/src/ipp
+
+
 
 H263_INCLUDE := \
 	$(LOCAL_PATH)/../../opal/src/codec/common \
@@ -572,22 +537,6 @@ H263_LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/../../opal/src/codec/aac/codec/fixpt/decoder/pub \
 	$(H263_INCLUDE)
 
-UMC_SRC_PATH = $(OPAL_SRC_PATH)/umc
-VM_SRC_PATH = $(OPAL_SRC_PATH)/vm/unix
-
-#LOCAL_IPP_FILES := \
-	$(UMC_SRC_PATH)/umc_base_codec.cpp \
-	$(UMC_SRC_PATH)/umc_default_memory_allocator.cpp \
-	$(UMC_SRC_PATH)/umc_media_data.cpp \
-	$(UMC_SRC_PATH)/umc_video_data.cpp \
-	$(UMC_SRC_PATH)/umc_video_decoder.cpp \
-	$(VM_SRC_PATH)/vm_debug_linux32.c
-
-LOCAL_IPP_COMMON_FILES := \
-	$(IPPASM_SRC_PATH)/ippslib.s \
-	$(IPPCOMMON_SRC_PATH)/ippCode.cpp \
-	$(IPPCOMMON_SRC_PATH)/ippMem.cpp \
-	$(IPPCOMMON_SRC_PATH)/ippStatusToText.cpp
 
 LOCAL_H263_FILES := \
 	$(H263_SRC_PATH)/ipp263codec.cpp \
@@ -614,20 +563,28 @@ H263_LOCAL_SRC_FILES := $(LOCAL_H263_FILES)
 #include $(BUILD_STATIC_LIBRARY)
 ##################################################################
 
-#####################OPAL SHARE LIBRARY COMPILE###################
+
+
+
+##################### ANDOPAL SHARE LIBRARY COMPILE###################
 include $(CLEAR_VARS)
+LOCAL_CPP_FEATURES := rtti exceptions
 
-LOCAL_SRC_FILES := 	plasma.c \
-			NativeActivity.cpp \
-			$(OPAL_SRC_PATH)/player/codectest.cxx \
-			$(OPAL_SRC_PATH)/player/video.cxx \
-			$(OPAL_SRC_PATH)/player/yuv2rgb.cxx \
-			$(LOCAL_H261_FILES) \
- 			$(LOCAL_H263_FILES) \
-			$(LOCAL_IPP_COMMON_FILES) \
-			$(LOCAL_IPP_FILES)
+LOCAL_SRC_FILES := \
+	plasma.c \
+	$(LOCAL_IPP_COMMON_FILES) \
+	$(LOCAL_IPP_FILES)
 
+LOCAL_SRC_FILES += NativeActivity.cpp
+
+LOCAL_SRC_FILES +=	$(LOCAL_UMC_FILES)
+
+#LOCAL_SRC_FILES += $(LOCAL_H261_FILES)
+#LOCAL_SRC_FILES += $(LOCAL_H263_FILES)
 LOCAL_SRC_FILES += $(LOCAL_AAC_FILES)
+LOCAL_SRC_FILES += $(LOCAL_H264_DEC_FILES)
+LOCAL_SRC_FILES += $(LOCAL_H264_ENC_FILES)
+LOCAL_SRC_FILES += $(LOCAL_H264_FILES)
 LOCAL_SRC_FILES += $(LOCAL_PLAYER_FILES)
 
 LOCAL_C_INCLUDES := \
@@ -648,17 +605,25 @@ LOCAL_C_INCLUDES := \
 	$(H263_INCLUDE) \
 	$(TARGET_C_INCLUDES)
 
+LOCAL_CFLAGS += $(BASE_CFLAGS)
+
+LOCAL_LDLIBS := -lOpenSLES -ldl -lc -lm -llog -landroid -lEGL -lGLESv2
+#LOCAL_LDLIBS += -lgcc
+#LOCAL_LDLIBS += -L$(ANDROID_SYS_LIBRARY_PATH) 
+#LOCAL_LDLIBS += -lcamera_client -lbinder -lutils -lgui
+# -llog
+
 LOCAL_STATIC_LIBRARIES := libptlibs
 LOCAL_STATIC_LIBRARIES += libopals
 LOCAL_STATIC_LIBRARIES += android_native_app_glue
 
-LOCAL_CFLAGS += -DNDK_DEBUG=1
-LOCAL_CFLAGS += -DPTRACING=1
-LOCAL_CFLAGS += -DANDROID
-LOCAL_CFLAGS += -DLINUX32
-LOCAL_CFLAGS += -DWOT_NO_FILESYSTEM
-LOCAL_LDLIBS := -lOpenSLES -ldl -lc -lm -llog -lgcc -landroid -lEGL -lGLESv2
 #LOCAL_LDFLAGS := -nostdlib -Wl,--no-undefined
+#LOCAL_LDFLAGS := -Wl,-z,noexecstack
+
+ANDROID_SYS_LIBRARY_PATH := $(LOCAL_PATH)/../../android_src/lib  
+
+
+#LOCAL_PRELINK_MODULE := false
 
 LOCAL_MODULE    := native-plasma
 

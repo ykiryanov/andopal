@@ -33,6 +33,7 @@
 
 #include <codec/ratectl.h>
 #include <opal/patch.h>
+#include <codec/opalpluginmgr.h>
 
 #include <ptclib/random.h>
 
@@ -48,11 +49,25 @@
 PMutex coutMutex;
 static unsigned g_infoCount = 0;
 
+extern "C" {
+	unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
+	struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
+};
+
+
 PCREATE_PROCESS(CodecTest);
 
 CodecTest::CodecTest()
   : PProcess("OPAL Audio/Video Codec Tester", "codectest", 1, 0, ReleaseCode, 0)
 {
+    PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
+    	new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
+		OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
+
+    PTRACE(1, "H.263 version: " << Opal_StaticCodec_DINSK_H263_GetAPIVersion());
+	pluginManager->RegisterStaticCodec("H.263",
+			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
+						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
 }
 
 

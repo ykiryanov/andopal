@@ -1026,7 +1026,7 @@ bool H263PEncoderContext::EncodeFrames(const unsigned char* src, unsigned& srcLe
 #ifdef H263_PLUGIN_ACTIVATION    
 	if (!_ActivationMonitor.CanUse())
         return false;
-#endif // H263_PLUGIN_ACTIVATION	���������
+#endif // H263_PLUGIN_ACTIVATION
 	
 	// if this is the first frame, or the frame size has changed, deal with it
 
@@ -1054,7 +1054,7 @@ bool H263PEncoderContext::EncodeFrames(const unsigned char* src, unsigned& srcLe
             return false;
         }
 
-        _TimeStamp = srcRTP.GetTimestamp();
+        _TimeStamp += 100; // srcRTP.GetTimestamp();
 
         if (srcRTP.GetPayloadSize()-sizeof(PluginCodec_Video_FrameHeader) < _frameSize) {
             PTRACE(h263TraceLevel, DINSK_CODEC_LOG, "Encoded srcRTP.GetPayloadSize()-sizeof(PluginCodec_Video_FrameHeader) < _frameSize");

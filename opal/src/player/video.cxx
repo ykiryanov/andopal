@@ -36,8 +36,6 @@ void yuv420_to_rgb32_clip(
                           uchar* pDst, int iPitchX, int iPitchY,
                           const BoneRect& rOut, const BoneRect& rClip);
 
-void yuv420_to_rgb32(const uchar* pYUV, uint width, uint height, uchar* pDst, int iPitchX, int iPitchY);
-
 ANativeWindow* _native_window = NULL;
 static PVideoOutputDevice_NativeWindow* _native_window_thisclass = NULL;
 
@@ -48,8 +46,11 @@ PVideoOutputDevice_NativeWindow::PVideoOutputDevice_NativeWindow()
     , _window(_native_window)
     , _surface(NULL)
 {
+    frameWidth = 640;
+    frameHeight = 360;
+
 	// INIT HERE
-    PVideoOutputDevice::SetFrameSize(352, 288);
+    PVideoOutputDevice::SetFrameSize(frameWidth, frameHeight);
 
     if(_surface)
     	delete _surface;
@@ -160,11 +161,25 @@ PBoolean PVideoOutputDevice_NativeWindow::SetFrameSize(unsigned width, unsigned 
 	return PTrue;
 }
 
+void hexdump(void* ptr, unsigned sz)
+{
+    BYTE* p = (BYTE*) ptr;
+    PString s = PString();
+    s += psprintf("packet size =%d \n",sz);
+    for (unsigned i=0;i<sz;) {
+        for (unsigned k=0;k<32 && i< sz;++k)
+            s += psprintf("0x%2.2x ", p[i++]);
+        s += psprintf("\n");
+    }
+
+    PTRACE(3, s);
+}
+
 PBoolean PVideoOutputDevice_NativeWindow::FrameComplete()
 {
 	PWaitAndSignal m(_mutex);
 
-    BoneSurfaceInfo si;
+    BoneSurfaceInfo si = BoneSurfaceInfo();
     if (!_pYUV420_Image)
         return PTrue;
     
@@ -173,7 +188,7 @@ PBoolean PVideoOutputDevice_NativeWindow::FrameComplete()
 	const uchar* pU = pY + nWH;
 	const uchar* pV = pU + (nWH>>2);
     
-    BoneRect rOut;
+    BoneRect rOut = BoneRect();
     rOut.left = 0;
     rOut.top = 0;
     rOut.right = frameWidth;
@@ -187,17 +202,19 @@ PBoolean PVideoOutputDevice_NativeWindow::FrameComplete()
 	si.iPitchY = frameWidth * 4;	// -int(view->nWidth*4);
 
     si.mViewX = 0;
-    si.mViewY = 200;
+    si.mViewY = 0;
 
     si.mViewWidth = frameWidth;
     si.mViewHeight = frameHeight;
 
+ 	PTRACE(3, "ANWin\tPVideoOutputDevice_NativeWindow yuv420_to_argb32_clip, frameWidth " << frameWidth << ", height " << frameHeight);
     yuv420_to_argb32_clip(pY, pU, pV, frameWidth, frameWidth, frameHeight,
                           si.pImage, si.iPitchX, si.iPitchY, rOut, rOut);
+    //hexdump(si.pImage, 64);
 	
-    ANativeWindow_Buffer buffer;
+    ANativeWindow_Buffer buffer = ANativeWindow_Buffer();
     if (ANativeWindow_lock(_window, &buffer, NULL) == 0) {
-        memcpy(buffer.bits, si.pImage,  frameWidth * frameHeight * 2);
+        memcpy(buffer.bits, si.pImage, frameWidth * frameHeight * 4);
         ANativeWindow_unlockAndPost(_window);
     }
     
@@ -211,6 +228,7 @@ PBoolean PVideoOutputDevice_NativeWindow::SetFrameData(unsigned x, unsigned y,
     if ( x != 0 || y != 0 || width != frameWidth || height != frameHeight)
         return bRet;
     
+	//PTRACE(3, "PVideoOutputDevice_NativeWindow::SetFrameData, end frame? " << endFrame);
     if ( endFrame ) {
         _pYUV420_Image = data;
 		bRet = FrameComplete();

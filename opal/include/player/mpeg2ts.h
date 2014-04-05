@@ -11,10 +11,15 @@
 
 #include <player/udplistener.h>
 #include <player/audio.h>
-#include "h264TSDec.h"
-#include <h264/umc/umc_h264_dec.h>
-//#include "umc_config.h"
-//#include "rtpframe.h"
+
+class UdpListener;
+#ifdef DINSK_CODEC
+	#include "h264TSDec.h"
+	#include <h264/umc/umc_h264_dec.h>
+	class H264TSVideoDecoder;
+#else
+	#include <codec_api.h>
+#endif
 
 #include <../src/codec/aac/codec/fixpt/decoder/pub/aacdec.h>
 
@@ -39,9 +44,6 @@ public:
             AACFreeDecoder(_decoder);
     }
 };
-
-class H264TSVideoDecoder;
-class UdpListener;
 
 class Mpeg2TS
 {
@@ -86,7 +88,11 @@ public:
     Stream  _videoStream;
     
 public:
+#ifdef DINSK_CODEC
     H264TSVideoDecoder*    _decoder;
+#else
+    ISVCDecoder* 	   _decoder;
+#endif
     
     UdpListener* _opaque;
     void (*_yuv420PlaybackCallback)(void* opaque, u8* pYUV, int frameWidth, int frameHeight);

@@ -19,16 +19,12 @@
 #include "TargetConditionals.h"
 #endif // OSX32
 
-#ifdef dbLog
-#undef dbLog
-#endif
-
 #include <codec/opalplugin.hpp>
-
-#define dbLog __noop
 
 //#define PLATFORM_DEP_DECODER
 #define ENABLE_H264_DECODER 1
+
+//#define TEST_IMAGE
 
 #ifdef PLATFORM_DEP_DECODER
 #if P_IOS && !TARGET_IPHONE_SIMULATOR
@@ -146,7 +142,7 @@ bool H264Decoder::SetFrameSize()
 	_out.Init(_frameWidth, _frameHeight, UMC::YUV420, 8);	
 	
 	PTRACE(h264TraceLevel, D264_LOG, "Decoder SetFrameSize: width= " << _frameWidth << " height= " << _frameHeight << std::endl);		
-	return true;
+    return true;
 }
 
 bool H264Decoder::UpdateFrameSize()
@@ -176,8 +172,18 @@ void H264Decoder::CloseCodec()
 //	Close();
 }
 
+void MemChk(const char* pszFilename, int iLine)
+{
+}
+
 int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, unsigned& nDstLen, unsigned& nFlags)
 {
+    unsigned nFrameSize = _frameSize + 12 + sizeof(PluginCodec_Video_FrameHeader);
+    if (nDstLen < nFrameSize) {
+        nDstLen = 0;
+        return 0;
+    }
+
 #if DUMP
     char buf[512];
     PTRACE(0, D264_LOG, "DecodeFrames nSrcLen=" << dec << nSrcLen);
@@ -194,7 +200,7 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
     if (!_ActivationMonitor.CanUse())
         return false;
 #endif
-    
+
     RTPFrame srcRTP((const unsigned char*) pSrc, nSrcLen);
     RTPFrame dstRTP((unsigned char*) pDst, nDstLen, 0);
 	uint nDstSize = nDstLen;
@@ -208,7 +214,7 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
     
     // HACK !!!
 #else // !HACK
-    
+
 	if (_bSkipUntilEndOfFrame) {
         if (srcRTP.GetMarker())  {
             PTRACE(h264TraceLevel, D264_LOG, "_bSkipUntilEndOfFrame" );
@@ -267,21 +273,18 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
  
     // HACK !!!!
 #endif
-    
+
     if (!_bInit && !OpenCodec())
-    {
         return 0; 
-    }
 
 	PluginCodec_Video_FrameHeader* frameHeader = (PluginCodec_Video_FrameHeader*)  dstRTP.GetPayloadPtr();
-	
+
 #ifndef HACK
-    if (nDstSize > sizeof(PluginCodec_Video_FrameHeader)) {
-		frameHeader->x = frameHeader->y = 0;
-		frameHeader->width = _frameWidth;
-		frameHeader->height = _frameHeight;
-	}
-    if (nDstSize < _frameSize + sizeof(PluginCodec_Video_FrameHeader)) {
+	frameHeader->x = frameHeader->y = 0;
+	frameHeader->width = _frameWidth;
+	frameHeader->height = _frameHeight;
+
+    if (nDstSize < _frameSize + sizeof(PluginCodec_Video_FrameHeader) + 12) {
         PTRACE(h264TraceLevel, D264_LOG, "decode nDstSize < _frameSize + sizeof(PluginCodec_Video_FrameHeader");
         dstRTP.SetPayloadSize(sizeof(PluginCodec_Video_FrameHeader));
         nDstLen = dstRTP.GetFrameLen();
@@ -293,18 +296,17 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
     _in.Reset();
     _in.SetDataSize(_h264Frame.GetFrameSize());
 #endif
-    
-    _out.SetBufferPointer((Ipp8u*)(frameHeader+1),_frameSize);
+
+    _out.SetBufferPointer((Ipp8u*)(frameHeader+1), _frameSize);
 	
-#if ENABLE_H264_DECODER
-	
+
+#if ENABLE_H264_DECODER	
 	_status = _Decoder.GetFrame(&_in, &_out);
 
 #else
 	memset((Ipp8u*)(frameHeader+1),128,_frameSize);
 	_status = UMC::UMC_OK;	
 #endif
-
 
 #if ENABLE_H264_DECODER
     if (_status != UMC::UMC_OK ) {
@@ -361,15 +363,43 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
         _bGotGoodFrame = true;
 
     dstRTP.SetPayloadSize(sizeof(PluginCodec_Video_FrameHeader) + _frameSize);
+    dstRTP.SetMarker(true);
     dstRTP.SetPayloadType(0);//RTP_DYNAMIC_PAYLOAD);
     dstRTP.SetTimestamp(srcRTP.GetTimestamp());
-    dstRTP.SetMarker(true);
 
     nFlags = _bGotGoodFrame 
 		? PluginCodec_ReturnCoderLastFrame 
 		: PluginCodec_ReturnCoderLastFrame | PluginCodec_ReturnCoderRequestIFrame;
 	
     nDstLen = dstRTP.GetFrameLen();
+
+#ifdef TEST_IMAGE
+    u32 nWH = _frameWidth * _frameHeight;
+    unsigned char* pY = ((unsigned char*) pDst) + 16+12;
+    unsigned char* pU = pY + nWH;
+    unsigned char* pV = pU + (nWH>>2);
+
+    memset(pY, 128, _frameSize);
+
+    static unsigned char iii = 120;
+    memset(pU+(nWH>>5), iii, nWH>>4);
+
+    if (++iii > 200)
+        iii = 50;
+
+    unsigned char* pLine = pY;
+    for (int y=0;y<_frameHeight/4; y++, pLine += _frameWidth) {
+        unsigned char* p = pLine;
+        for (int x=0;x<_frameWidth/4; x++)
+            p[x] = 0+x;
+    }
+
+	memset((void*) pY, rand() & 0xFF, nWH);
+	memset((void*) pU, rand() & 0xFF, nWH>>2);
+	memset((void*) pV, rand() & 0xFF, nWH>>2);
+
+ #endif // TEST_IMAGE
+
     ++_frameCount;
 
 	return 1;
@@ -377,32 +407,3 @@ int H264Decoder::DecodeFrames(const void* pSrc, unsigned& nSrcLen, void* pDst, u
 
 
 /////////////////////////////////////////////////////////////////////////////
-#if 0
-bool H264Decoder::DecodeFrames(const BYTE* src, unsigned& srcLenRef, BYTE* dst, unsigned& dstLen, unsigned& flags)
-{//
-    unsigned srcLen = srcLenRef;
-
-#ifdef SB_DEBUG_IN_FILE
-    BYTE buf[2000];
-    static bool bTryOpenInput = false;
-    if (!bTryOpenInput && !s_FileIn) {
-        bTryOpenInput = true;
-        s_FileIn = fopen(SB_DEBUG_IN_FILE,"rb");
-    }
-
-    if (s_FileIn) {
-        RecDescr hdr;
-        if ((fread(&hdr, sizeof(hdr), 1, s_FileIn) != 1) ||
-            (hdr.dwSrcSize > sizeof(buf)) ||
-            (fread(&buf, hdr.dwSrcSize, 1, s_FileIn) != 1))
-        {
-            fclose(s_FileIn);
-            s_FileIn  = NULL;
-        }
-        else {
-            src = buf;
-            srcLen = hdr.dwSrcSize;
-        }
-    }
-#endif
-#endif

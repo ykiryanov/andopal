@@ -152,5 +152,4 @@ gl ippsVLCDecodeBlock_1u16s
 //  "_ippsSynthesisFilter_SBR_RToR_32f_D2L", referenced from:
 //      _sbrGetFrame in libBoneKitPlayer.a(aac_dec_sbr_fp.o)
 
-
 #endif

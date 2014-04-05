@@ -265,7 +265,7 @@ void UdpListener::Main()
 	{
         uint nDataSize = sizeof(data);
 		int result = readFrom(addrFrom, data, &nDataSize, 100);
-        if (result == 0 && _bStarted) {
+		if (result == 0 && _bStarted) {
             OnReceive onReceive = _onReceive;
             if (onReceive != NULL)
                 onReceive(_opaque, data, nDataSize);

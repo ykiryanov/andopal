@@ -20,6 +20,8 @@
 #include <opal/patch.h>
 #include <rtp/rtpep.h>
 
+//#define BONEPLAYER
+
 class BoneCodecTest;
 
 class Mpeg2TSListener;
@@ -29,9 +31,6 @@ class Mpeg2TSListener;
 #ifdef USE_OPALRATECONTROLER
 #undef USE_OPALRATECONTROLER
 #endif
-
-//#define BONEPLAYER
-
 
 struct IPlaybackSource
 {

@@ -274,7 +274,6 @@ private:
 using namespace UMC;
 #include "ActivationMonitor.h"
 
-#ifndef BONEPLAYER
 class H264Encoder : public PluginCodec<D264>
 {
 protected:
@@ -297,12 +296,15 @@ protected:
     uint                    _bInit;
     uint                    _flags;
     UMC::Status             _status;
+
+
     UMC::H264VideoEncoder   _Encoder;
     UMC::H264EncoderParams  _params;
     UMC::VideoData          _in;
     UMC::MediaData          _out;
     H264Frame               _h264Frame;
-    
+    unsigned long           _TimeStamp;
+
     bool                    _bNewParam;
     unsigned char           _nRtpPayload;
 
@@ -344,7 +346,6 @@ public:
 protected:
 //    CriticalSection _mutex;
 };
-#endif // BONEPLAYER
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -394,7 +395,7 @@ public:
     virtual bool Construct()                                                        { return true; }
 //  virtual bool SetOption(const char* optionName, const char* optionValue);
     virtual bool OnChangedOptions()                                                 { return true; }
-    virtual size_t GetOutputDataSize()                                              { return _frameSize; }
+    virtual size_t GetOutputDataSize()          { return _frameSize + 12 + 16;}
     virtual bool Transcode(const void* fromPtr, unsigned& fromLen, void* toPtr, unsigned& toLen, unsigned& flags)
     {
 #ifdef H264_PLUGIN_ACTIVATION

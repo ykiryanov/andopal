@@ -306,7 +306,12 @@ PBoolean OpalMediaStream::ReadPacket(RTP_DataFrame & packet)
   // If the ReadData() function did not change the timestamp then use the default
   // method or fixed frame times and sizes.
   if (oldTimestamp == timestamp)
-    IncrementTimestamp(lastReadCount);
+  {
+    // IncrementTimestamp(lastReadCount);
+      PTimeInterval tick = PTimer::Tick();
+      timestamp = tick.GetMilliSeconds();
+      packet.SetTimestamp(timestamp);
+  }
 
   if (oldSeqNumber == m_sequenceNumber)
     m_sequenceNumber++;

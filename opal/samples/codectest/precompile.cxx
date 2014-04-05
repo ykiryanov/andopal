@@ -1,11 +1,9 @@
 /*
  * precompile.cxx
  *
- * PWLib application source file for vidtest
+ * OPAL application source file for console mode OPAL videophone
  *
- * Precompiled header generation file.
- *
- * Copyright (c) 2003 Equivalence Pty. Ltd.
+ * Copyright (c) 2008 Vox Lucida Pty. Ltd.
  *
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.0 (the "License"); you may not use this file except in
@@ -17,15 +15,15 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  *
- * The Original Code is Portable Windows Library.
+ * The Original Code is Open Phone Abstraction Library.
  *
  * The Initial Developer of the Original Code is Equivalence Pty. Ltd.
  *
  * Contributor(s): ______________________________________.
  *
- * $Revision: 19279 $
+ * $Revision: 22832 $
  * $Author: rjongbloed $
- * $Date: 2008-01-17 04:08:34 +0000 (Thu, 17 Jan 2008) $
+ * $Date: 2009-06-05 14:58:07 +1000 (Fri, 05 Jun 2009) $
  */
 
 #include "precompile.h"

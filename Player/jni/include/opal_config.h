@@ -119,19 +119,14 @@
 //
 
 #define OPAL_SIP 1
-#if P_ASN
-  #undef OPAL_H323
-#endif
+#undef OPAL_H323
 #undef  OPAL_IAX2
-#define OPAL_SKINNY 1
+#undef OPAL_SKINNY
 #undef  OPAL_LID
 #undef  OPAL_CAPI
 #undef  OPAL_DAHDI
 #undef  OPAL_T120DATA
-
-#if OPAL_PTLIB_VXML
-  #define OPAL_IVR 1
-#endif
+#undef OPAL_IVR
 
 #if OPAL_H323
   #if OPAL_VIDEO

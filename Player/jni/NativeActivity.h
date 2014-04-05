@@ -8,9 +8,6 @@
 #ifndef NATIVEACTIVITY_H_
 #define NATIVEACTIVITY_H_
 
-//#define NETPLAYER 1
-#define PREVIEWER 1
-
 #define TRACE_FILE "syslog"
 //#define TRACE_FILE "/sdcard/data/opal.log"
 
@@ -26,16 +23,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	extern 	int setupOptions();
-	extern  int doCall();
+	void* createCodecTest(const char* szArguments, void* reserved);
+	void deleteCodecTest(void* handle);
+	void opalInitialize();
+	void opalShutdown();
 
-	extern void opalInitialize();
-	extern void opalShutdown();
-
-	extern	void* createCodecTest(const char* szArguments, void* reserved);
-	extern 	void deleteCodecTest(void* handle);
-	extern 	int setupOptions();
-	extern  int doCall();
 #ifdef __cplusplus
 };
 #endif

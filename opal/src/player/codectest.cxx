@@ -7,6 +7,7 @@
  *
  */
 
+
 #include <ptlib.h>
 #include <math.h>
 #include <rtp/rtpconn.h>
@@ -14,90 +15,19 @@
 #include <codec/vidcodec.h>
 #include <codec/opalpluginmgr.h>
 
+#define BONEPLAYER
+
 #include <player/codectest.h>
 
 // #include "ippdefs.h"
 
 #include <player/udplistener.h>
 
-int codecTestTraceLevel = 5;
+int codecTestTraceLevel = 4;
 
-extern "C" {
-unsigned int Opal_StaticCodec_VIC_H261_GetAPIVersion();
-struct PluginCodec_Definition * Opal_StaticCodec_VIC_H261_GetCodecs(unsigned * count, unsigned /*version*/);
-unsigned int Opal_StaticCodec_DINSK_H263_GetAPIVersion();
-struct PluginCodec_Definition * Opal_StaticCodec_DINSK_H263_GetCodecs(unsigned * count, unsigned /*version*/);
-unsigned int Opal_StaticCodec_D264_GetAPIVersion();
-struct PluginCodec_Definition * Opal_StaticCodec_D264_GetCodecs(unsigned * count, unsigned version);
-};
-
-#ifdef ANDROID
-#include <android/log.h>
-
-#define  LOG_TAG    "opal"
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-
-class CodecTestAndroidDebugStream : public ostream {
-  public:
-	CodecTestAndroidDebugStream();
-
-  private:
-    class Buffer : public streambuf {
-      public:
-        Buffer();
-        virtual int overflow(int=EOF);
-        virtual int underflow();
-        virtual int sync();
-        char buffer[250];
-    } buffer;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// PAndroidDebugStream
-
-CodecTestAndroidDebugStream::CodecTestAndroidDebugStream()
-  : ostream(&buffer)
-{
-}
-
-
-CodecTestAndroidDebugStream::Buffer::Buffer()
-{
-  setg(buffer, buffer, &buffer[sizeof(buffer)-2]);
-  setp(buffer, &buffer[sizeof(buffer)-2]);
-}
-
-int CodecTestAndroidDebugStream::Buffer::overflow(int c)
-{
-  size_t bufSize = pptr() - pbase();
-
-  if (c != EOF) {
-    *pptr() = (char)c;
-    bufSize++;
-  }
-
-  if (bufSize != 0) {
-    char * p = pbase();
-    setp(p, epptr());
-    p[bufSize] = '\0';
-
-    LOGI("%s", p);
-  }
-
-  return 0;
-}
-
-int CodecTestAndroidDebugStream::Buffer::underflow()
-{
-  return EOF;
-}
-
-int CodecTestAndroidDebugStream::Buffer::sync()
-{
-  return overflow(EOF);
-}
+#ifndef DINSK_CODEC
+#include <codec_api.h>
+#include <codec_def.h>
 #endif
 
 #ifdef BONEPLAYER
@@ -143,8 +73,21 @@ public:
         m_tsParser._opaque = this;
         m_tsParser._yuv420PlaybackCallback = yuv420PlaybackCallback;
         m_tsParser._pcmPlaybackCallback = pcmPlaybackCallback;
-
+#ifdef DINSK_CODEC
         m_tsParser._decoder = new H264TSVideoDecoder();
+#else
+        long rv = CreateDecoder(&m_tsParser._decoder);
+        PTRACE(codecTestTraceLevel, "Mpg2TS\tCreated Open H.264 decoder, result :" << rv);
+        SDecodingParam decParam;
+        memset(&decParam, 0, sizeof(SDecodingParam));
+        decParam.iOutputColorFormat  = videoFormatI420;
+        decParam.uiTargetDqLayer = UCHAR_MAX;
+        decParam.uiEcActiveFlag  = 1;
+        decParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
+        
+        rv = m_tsParser._decoder->Initialize(&decParam);
+        PTRACE(codecTestTraceLevel, "Mpg2TS\tInited Open H.264 decoder, result :" << rv);
+#endif
     }
 
     PVideoOutputDevice *getVideoDisplay() const
@@ -200,30 +143,6 @@ BoneCodecTest::BoneCodecTest(const PString& pstrArguments, void* native_window)
 {
     memset(m_pSyncPoint, 0, sizeof(m_pSyncPoint));
 	m_arguments = pstrArguments;
-    
-#ifdef ANDROID
-	PTrace::SetLevel(4);
-	PTrace::SetStream(new CodecTestAndroidDebugStream);
-#endif
-
-	PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>* pluginFactory =
-    new PFactory<PPluginModuleManager>::Worker<OpalPluginCodecManager>("PluginCodecManager", true);
-	OpalPluginCodecManager* pluginManager = PFactory<PPluginModuleManager>::CreateInstanceAs<OpalPluginCodecManager>("PluginCodecManager");
-
-	printf("H.261 version: %d", Opal_StaticCodec_VIC_H261_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.261",
-			Opal_StaticCodec_VIC_H261_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_VIC_H261_GetCodecs);
-
-	printf("H.263 version: %d", Opal_StaticCodec_DINSK_H263_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.263-DINSK",
-			Opal_StaticCodec_DINSK_H263_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_DINSK_H263_GetCodecs);
-
-	printf("H.264 version: %d", Opal_StaticCodec_D264_GetAPIVersion());
-	pluginManager->RegisterStaticCodec("H.264-DINSK",
-			Opal_StaticCodec_D264_GetAPIVersion,
-						(PluginCodec_GetCodecFunction) Opal_StaticCodec_D264_GetCodecs);
 
 	_native_window = (ANativeWindow*) native_window;
 
@@ -1046,7 +965,8 @@ void TranscoderThread::Main()
 			PTRACE(codecTestTraceLevel, "Error\tSource " << (state ? "restor" : "fail") << "ed at frame " << frameCount);
 		}
 
-        timestamp += 10L; // frameTime;
+		PTimeInterval tick = PTimer::Tick();
+		srcFrame.SetTimestamp(tick.GetMilliSeconds());
 
 #ifdef USE_OPALRATECONTROLER
 		bool skip;
@@ -1219,13 +1139,16 @@ bool VideoThread::Read(RTP_DataFrame & data)
     frame->width = width;
     frame->height = height;
 
+	//PTRACE(3, "VideoThread::Read");
     return grabber->GetFrameData(OPAL_VIDEO_FRAME_DATA_PTR(frame));
 }
 
 
 bool VideoThread::Write(RTP_DataFrame & data)
 {
+	//PTRACE(3, "VideoThread::Write");
 	const OpalVideoTranscoder::FrameHeader * frame = (const OpalVideoTranscoder::FrameHeader *)data.GetPayloadPtr();
+
     PBoolean ok = (frame->width >= 16 && frame->height >= 16 && frame->width < 65536 && frame->height < 65536);
     if(ok)
         display->SetFrameSize(frame->width, frame->height);
